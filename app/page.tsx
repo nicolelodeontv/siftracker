@@ -130,15 +130,6 @@ export default function Page() {
           <div className="grid gap-3 lg:grid-cols-2">
             {workloads.map((workload) => (
               <Fragment key={workload.id}>
-                {workload.id === 'lateOrders' && (
-                  <section aria-label="Total estimated time" className="flex flex-col gap-4 rounded-lg bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:p-8">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-semibold uppercase tracking-[0.16em] opacity-70">Combined total</span>
-                      <span className="text-sm opacity-80">Across all entered workloads</span>
-                    </div>
-                    <strong className="font-mono text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{formatDuration(totalMinutes)}</strong>
-                  </section>
-                )}
                 <article className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
@@ -173,6 +164,15 @@ export default function Page() {
                   ))}
                 </div>
                 </article>
+                {workload.id === 'lateOrders' && (
+                  <section aria-label="Total estimated time" className="flex flex-col gap-4 rounded-lg bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-semibold uppercase tracking-[0.16em] opacity-70">Combined total</span>
+                      <span className="text-sm opacity-80">Across all entered workloads</span>
+                    </div>
+                    <strong className="font-mono text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{formatDuration(totalMinutes)}</strong>
+                  </section>
+                )}
               </Fragment>
             ))}
           </div>
