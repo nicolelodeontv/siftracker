@@ -70,9 +70,14 @@ export default function Page() {
   )
 
   function calculateValue(value: string) {
-    const expression = value.replace(/=/g, '').replace(/\s+/g, '')
-    if (!expression || !/^\d+(?:\+\d+)*$/.test(expression)) return 0
-    return expression.split('+').reduce((total, part) => total + Number(part), 0)
+    const normalized = value.replace(/\s+/g, '')
+    if (!normalized || normalized.length > 200 || !/^\d+(?:\+\d+)*(?:=\d+)?$/.test(normalized)) return 0
+
+    const [expression, declaredTotal] = normalized.split('=')
+    const total = expression.split('+').reduce((sum, part) => sum + Number(part), 0)
+    if (!Number.isSafeInteger(total) || total > 1_000_000) return 0
+    if (declaredTotal !== undefined && Number(declaredTotal) !== total) return 0
+    return total
   }
 
   const totalMinutes = useMemo(
@@ -125,7 +130,7 @@ export default function Page() {
           <div className="grid gap-3 lg:grid-cols-2">
             {workloads.map((workload) => (
               <Fragment key={workload.id}>
-                <article key={workload.id} className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
+                <article className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
                     <span aria-hidden="true" className="mt-1.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} />
@@ -160,7 +165,7 @@ export default function Page() {
                 </div>
                 </article>
                 {workload.id === 'lateOrders' && (
-                  <section aria-label="Total estimated time" className="flex flex-col gap-4 rounded-lg bg-primary p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                  <section aria-label="Total estimated time" className="flex flex-col gap-4 rounded-lg bg-primary lg:col-span-2 p-6 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:p-8">
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-semibold uppercase tracking-[0.16em] opacity-70">Combined total</span>
                       <span className="text-sm opacity-80">Across all entered workloads</span>
