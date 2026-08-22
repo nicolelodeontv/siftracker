@@ -69,24 +69,63 @@ export default function Page() {
     Object.fromEntries(workloads.map((workload) => [workload.id, ''])),
   )
 
-  function calculateValue(value: string) {
+  function calculateValue(value: string): number | null {
     const normalized = value.replace(/\s+/g, '')
-    if (!normalized || normalized.length > 200 || !/^\d+(?:\+\d+)*(?:=\d+)?$/.test(normalized)) return 0
+    if (!normalized || normalized.length > 200 || !/^[\d+*/().=-]+$/.test(normalized)) return null
 
     const [expression, declaredTotal] = normalized.split('=')
-    const total = expression.split('+').reduce((sum, part) => sum + Number(part), 0)
-    if (!Number.isSafeInteger(total) || total > 1_000_000) return 0
-    if (declaredTotal !== undefined && Number(declaredTotal) !== total) return 0
-    return total
+    if (!expression || normalized.split('=').length > 2 || normalized.endsWith('=')) return null
+    try {
+      const tokens = expression.match(/\d+(?:\.\d+)?|[()+*/-]/g) ?? []
+      if (tokens.join('') !== expression) return null
+      const parseExpression = (index: { value: number }): number => {
+        let result = parseTerm(index)
+        while (tokens[index.value] === '+' || tokens[index.value] === '-') {
+          const operator = tokens[index.value++]
+          const next = parseTerm(index)
+          result = operator === '+' ? result + next : result - next
+        }
+        return result
+      }
+      const parseTerm = (index: { value: number }): number => {
+        let result = parseFactor(index)
+        while (tokens[index.value] === '*' || tokens[index.value] === '/') {
+          const operator = tokens[index.value++]
+          const next = parseFactor(index)
+          if (operator === '/' && next === 0) throw new Error('division by zero')
+          result = operator === '*' ? result * next : result / next
+        }
+        return result
+      }
+      const parseFactor = (index: { value: number }): number => {
+        const token = tokens[index.value++]
+        if (token === '(') {
+          const result = parseExpression(index)
+          if (tokens[index.value++] !== ')') throw new Error('unclosed expression')
+          return result
+        }
+        if (token === '-') return -parseFactor(index)
+        if (!token || Number.isNaN(Number(token))) throw new Error('invalid expression')
+        return Number(token)
+      }
+      const index = { value: 0 }
+      const result = parseExpression(index)
+      if (index.value !== tokens.length || !Number.isFinite(result) || Math.abs(result) > 1_000_000) return null
+      const roundedResult = Number.isInteger(result) ? result : Number(result.toFixed(2))
+      if (declaredTotal !== undefined && Number(declaredTotal) !== roundedResult) return null
+      return roundedResult
+    } catch {
+      return null
+    }
   }
 
   const totalMinutes = useMemo(
-    () => workloads.reduce((total, workload) => total + calculateValue(values[workload.id]) * workload.minutesPerUnit, 0),
+    () => workloads.reduce((total, workload) => total + (calculateValue(values[workload.id]) ?? 0) * workload.minutesPerUnit, 0),
     [values],
   )
 
   function updateValue(id: string, value: string) {
-    if (!/^[\d+\s=]*$/.test(value)) return
+    if (!/^[\d+*/().=\s-]*$/.test(value)) return
     setValues((current) => ({ ...current, [id]: value }))
   }
 
@@ -95,16 +134,16 @@ export default function Page() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-8 lg:px-12">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
-        <header className="flex flex-col gap-5 border-b border-border pb-7 sm:flex-row sm:items-end sm:justify-between">
+    <main className="min-h-screen bg-background px-4 py-10 text-foreground sm:px-8 lg:px-12 lg:py-16">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-12">
+        <header className="flex flex-col gap-8 border-b border-border pb-10 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2.5 text-sif-yellow">
+            <div className="flex items-center gap-2.5 text-sif-green">
               <TimerReset aria-hidden="true" className="size-4" />
-              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em]">Operations utility</span>
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em]">SIF / Operations</span>
             </div>
             <div className="flex flex-col gap-2">
-              <h1 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">SIF Tracker</h1>
+              <h1 className="text-balance text-4xl font-semibold tracking-[-0.04em] text-primary sm:text-6xl">SIF Tracker</h1>
               <p className="max-w-xl text-pretty text-sm leading-6 text-muted-foreground sm:text-base">
                 Estimate production time across edits, clips, builds, and late orders.
               </p>
@@ -113,7 +152,7 @@ export default function Page() {
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 self-start rounded-md border border-border bg-secondary px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:self-auto"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-full border border-border bg-transparent px-5 py-3 text-xs font-semibold uppercase tracking-wider text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:self-auto"
           >
             <RotateCcw aria-hidden="true" className="size-4" />
             Reset all
@@ -130,7 +169,7 @@ export default function Page() {
           <div className="grid gap-3 lg:grid-cols-2">
             {workloads.map((workload) => (
               <Fragment key={workload.id}>
-                <article className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
+                <article className="flex flex-col gap-6 rounded-xl border border-border/80 bg-card/80 p-5 shadow-none backdrop-blur-sm sm:p-7">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
                     <span aria-hidden="true" className="mt-1.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} />
@@ -144,23 +183,30 @@ export default function Page() {
                     style={{ color: workload.accent }}
                     aria-live="polite"
                   >
-                    {formatDuration(calculateValue(values[workload.id]) * workload.minutesPerUnit)}
+                    {formatDuration((calculateValue(values[workload.id]) ?? 0) * workload.minutesPerUnit)}
                   </output>
                 </div>
                 <label className="flex flex-col gap-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Number of {workload.unit}</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={values[workload.id]}
-                    onChange={(event) => updateValue(workload.id, event.target.value)}
-                    aria-label={`${workload.label} ${workload.unit}`}
-                    className="h-12 rounded-md border border-input bg-background px-4 font-mono text-lg tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={values[workload.id]}
+                      onChange={(event) => updateValue(workload.id, event.target.value)}
+                      aria-label={`${workload.label} ${workload.unit}`}
+                      className="h-14 w-full rounded-lg border border-input bg-background/70 px-4 pr-20 font-mono text-lg tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
+                    />
+                    {calculateValue(values[workload.id]) !== null && (
+                      <output className="pointer-events-none absolute inset-y-0 right-4 flex items-center font-mono text-lg tabular-nums text-foreground opacity-50" aria-label="Calculated result">
+                        {calculateValue(values[workload.id])}
+                      </output>
+                    )}
+                  </div>
                 </label>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-border pt-4 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-2 border-t border-border pt-4 sm:grid-cols-4">
                   {workload.examples.map((example) => (
-                    <span key={example} className="font-mono text-xs leading-5 text-muted-foreground">{example}</span>
+                    <span key={example} className="whitespace-nowrap font-mono text-[10px] font-semibold leading-5 tracking-tight text-sif-green">{example}</span>
                   ))}
                 </div>
                 </article>
