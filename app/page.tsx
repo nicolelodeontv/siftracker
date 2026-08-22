@@ -204,9 +204,9 @@ export default function Page() {
                     )}
                   </div>
                 </label>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-border pt-4 sm:grid-cols-4">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-2 border-t border-border pt-4 sm:grid-cols-4">
                   {workload.examples.map((example) => (
-                    <span key={example} className="font-mono text-xs leading-5 text-muted-foreground">{example}</span>
+                    <span key={example} className="whitespace-nowrap font-mono text-[10px] font-semibold leading-5 tracking-tight text-sif-green">{example}</span>
                   ))}
                 </div>
                 </article>
