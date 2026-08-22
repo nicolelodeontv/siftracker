@@ -134,16 +134,16 @@ export default function Page() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-8 lg:px-12">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
-        <header className="flex flex-col gap-5 border-b border-border pb-7 sm:flex-row sm:items-end sm:justify-between">
+    <main className="min-h-screen bg-background px-4 py-10 text-foreground sm:px-8 lg:px-12 lg:py-16">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-12">
+        <header className="flex flex-col gap-8 border-b border-border pb-10 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2.5 text-sif-yellow">
+            <div className="flex items-center gap-2.5 text-sif-green">
               <TimerReset aria-hidden="true" className="size-4" />
-              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em]">Operations utility</span>
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em]">SIF / Operations</span>
             </div>
             <div className="flex flex-col gap-2">
-              <h1 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">SIF Tracker</h1>
+              <h1 className="text-balance text-4xl font-semibold tracking-[-0.04em] text-primary sm:text-6xl">SIF Tracker</h1>
               <p className="max-w-xl text-pretty text-sm leading-6 text-muted-foreground sm:text-base">
                 Estimate production time across edits, clips, builds, and late orders.
               </p>
@@ -152,7 +152,7 @@ export default function Page() {
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 self-start rounded-md border border-border bg-secondary px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:self-auto"
+            className="inline-flex items-center justify-center gap-2 self-start rounded-full border border-border bg-transparent px-5 py-3 text-xs font-semibold uppercase tracking-wider text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:self-auto"
           >
             <RotateCcw aria-hidden="true" className="size-4" />
             Reset all
@@ -169,7 +169,7 @@ export default function Page() {
           <div className="grid gap-3 lg:grid-cols-2">
             {workloads.map((workload) => (
               <Fragment key={workload.id}>
-                <article className="flex flex-col gap-5 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
+                <article className="flex flex-col gap-6 rounded-xl border border-border/80 bg-card/80 p-5 shadow-none backdrop-blur-sm sm:p-7">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
                     <span aria-hidden="true" className="mt-1.5 size-2.5 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} />
@@ -195,7 +195,7 @@ export default function Page() {
                       value={values[workload.id]}
                       onChange={(event) => updateValue(workload.id, event.target.value)}
                       aria-label={`${workload.label} ${workload.unit}`}
-                      className="h-12 w-full rounded-md border border-input bg-background px-4 pr-20 font-mono text-lg tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
+                      className="h-14 w-full rounded-lg border border-input bg-background/70 px-4 pr-20 font-mono text-lg tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
                     />
                     {calculateValue(values[workload.id]) !== null && (
                       <output className="pointer-events-none absolute inset-y-0 right-4 flex items-center font-mono text-lg tabular-nums text-foreground opacity-50" aria-label="Calculated result">
