@@ -69,24 +69,63 @@ export default function Page() {
     Object.fromEntries(workloads.map((workload) => [workload.id, ''])),
   )
 
-  function calculateValue(value: string) {
+  function calculateValue(value: string): number | null {
     const normalized = value.replace(/\s+/g, '')
-    if (!normalized || normalized.length > 200 || !/^\d+(?:\+\d+)*(?:=\d+)?$/.test(normalized)) return 0
+    if (!normalized || normalized.length > 200 || !/^[\d+*/().=-]+$/.test(normalized)) return null
 
     const [expression, declaredTotal] = normalized.split('=')
-    const total = expression.split('+').reduce((sum, part) => sum + Number(part), 0)
-    if (!Number.isSafeInteger(total) || total > 1_000_000) return 0
-    if (declaredTotal !== undefined && Number(declaredTotal) !== total) return 0
-    return total
+    if (!expression || normalized.split('=').length > 2 || normalized.endsWith('=')) return null
+    try {
+      const tokens = expression.match(/\d+(?:\.\d+)?|[()+*/-]/g) ?? []
+      if (tokens.join('') !== expression) return null
+      const parseExpression = (index: { value: number }): number => {
+        let result = parseTerm(index)
+        while (tokens[index.value] === '+' || tokens[index.value] === '-') {
+          const operator = tokens[index.value++]
+          const next = parseTerm(index)
+          result = operator === '+' ? result + next : result - next
+        }
+        return result
+      }
+      const parseTerm = (index: { value: number }): number => {
+        let result = parseFactor(index)
+        while (tokens[index.value] === '*' || tokens[index.value] === '/') {
+          const operator = tokens[index.value++]
+          const next = parseFactor(index)
+          if (operator === '/' && next === 0) throw new Error('division by zero')
+          result = operator === '*' ? result * next : result / next
+        }
+        return result
+      }
+      const parseFactor = (index: { value: number }): number => {
+        const token = tokens[index.value++]
+        if (token === '(') {
+          const result = parseExpression(index)
+          if (tokens[index.value++] !== ')') throw new Error('unclosed expression')
+          return result
+        }
+        if (token === '-') return -parseFactor(index)
+        if (!token || Number.isNaN(Number(token))) throw new Error('invalid expression')
+        return Number(token)
+      }
+      const index = { value: 0 }
+      const result = parseExpression(index)
+      if (index.value !== tokens.length || !Number.isFinite(result) || Math.abs(result) > 1_000_000) return null
+      const roundedResult = Number.isInteger(result) ? result : Number(result.toFixed(2))
+      if (declaredTotal !== undefined && Number(declaredTotal) !== roundedResult) return null
+      return roundedResult
+    } catch {
+      return null
+    }
   }
 
   const totalMinutes = useMemo(
-    () => workloads.reduce((total, workload) => total + calculateValue(values[workload.id]) * workload.minutesPerUnit, 0),
+    () => workloads.reduce((total, workload) => total + (calculateValue(values[workload.id]) ?? 0) * workload.minutesPerUnit, 0),
     [values],
   )
 
   function updateValue(id: string, value: string) {
-    if (!/^[\d+\s=]*$/.test(value)) return
+    if (!/^[\d+*/().=\s-]*$/.test(value)) return
     setValues((current) => ({ ...current, [id]: value }))
   }
 
@@ -144,19 +183,26 @@ export default function Page() {
                     style={{ color: workload.accent }}
                     aria-live="polite"
                   >
-                    {formatDuration(calculateValue(values[workload.id]) * workload.minutesPerUnit)}
+                    {formatDuration((calculateValue(values[workload.id]) ?? 0) * workload.minutesPerUnit)}
                   </output>
                 </div>
                 <label className="flex flex-col gap-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Number of {workload.unit}</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={values[workload.id]}
-                    onChange={(event) => updateValue(workload.id, event.target.value)}
-                    aria-label={`${workload.label} ${workload.unit}`}
-                    className="h-12 rounded-md border border-input bg-background px-4 font-mono text-lg tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={values[workload.id]}
+                      onChange={(event) => updateValue(workload.id, event.target.value)}
+                      aria-label={`${workload.label} ${workload.unit}`}
+                      className="h-12 w-full rounded-md border border-input bg-background px-4 pr-20 font-mono text-lg tabular-nums text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
+                    />
+                    {calculateValue(values[workload.id]) !== null && (
+                      <output className="pointer-events-none absolute inset-y-0 right-4 flex items-center font-mono text-lg tabular-nums text-foreground opacity-50" aria-label="Calculated result">
+                        {calculateValue(values[workload.id])}
+                      </output>
+                    )}
+                  </div>
                 </label>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-border pt-4 sm:grid-cols-4">
                   {workload.examples.map((example) => (
