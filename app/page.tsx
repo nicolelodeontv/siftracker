@@ -224,7 +224,8 @@ export default function Page() {
           </div>
         </section>
         <footer className="border-t border-border pt-4 text-center font-mono text-xs text-muted-foreground">
-          SIF Tracker — internal production estimate tool
+          <p>SIF Tracker — internal production estimate tool</p>
+          <p>Created by Nicole</p>
         </footer>
       </div>
     </main>
