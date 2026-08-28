@@ -132,7 +132,7 @@ export default function Page() {
           <div className="grid gap-2.5 lg:grid-cols-2">
             {workloads.map((workload) => {
               const calculated = calculateValue(values[workload.id])
-              return <article key={workload.id} className="group rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition duration-200 hover:border-primary/30 sm:p-4">
+              return <article key={workload.id} className="group rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition duration-200 hover:border-primary/30">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-2.5"><span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} /><div><h3 className="text-sm font-semibold tracking-tight">{workload.label}</h3><p className="mt-0.5 text-[10px] text-muted-foreground">{workload.minutesPerUnit} minutes per {workload.unit.slice(0, -1)}</p></div></div>
                   <output aria-live="polite" className="font-mono text-[15px] font-bold tabular-nums" style={{ color: workload.accent }}>{formatDuration((calculated ?? 0) * workload.minutesPerUnit)}</output>
@@ -141,13 +141,13 @@ export default function Page() {
                 <div className="mt-2.5 grid grid-cols-2 gap-x-2 gap-y-1 border-t border-border pt-2.5 sm:grid-cols-4">{workload.examples.map((example) => <span key={example} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground transition group-hover:text-foreground">{example}</span>)}</div>
               </article>
             })}
-          </div>
-        </section>
 
-        <section id="workflow" className="mt-3 scroll-mt-16 rounded-xl border border-primary/15 bg-primary p-4 text-primary-foreground shadow-[0_12px_40px_var(--primary-shadow)] sm:p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-md"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4.5 opacity-75">The combined estimate updates automatically as you enter quantities above.</p></div>
-            <div className="sm:text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Combined total</span><strong className="mt-0.5 block font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalMinutes)}</strong></div>
+            <section id="workflow" className="scroll-mt-16 rounded-xl border border-primary/15 bg-primary p-4 text-primary-foreground shadow-[0_12px_40px_var(--primary-shadow)] sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="max-w-md"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4.5 opacity-75">The combined estimate updates automatically as you enter quantities above.</p></div>
+                <div className="sm:text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Combined total</span><strong className="mt-0.5 block font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalMinutes)}</strong></div>
+              </div>
+            </section>
           </div>
         </section>
 
