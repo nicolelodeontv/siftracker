@@ -25,14 +25,14 @@ body { height:100%; min-height:100%; margin:0; overflow:hidden; background:var(-
   main #calculator { flex:none!important; }
   main #calculator > .mb-3 { margin-bottom:8px!important; }
   main #calculator > .grid { gap:8px!important; align-items:start!important; }
-  main #calculator article { padding:14px!important; min-height:172px!important; height:max-content!important; align-self:start!important; }
+  main #calculator article { padding:14px!important; min-height:172px!important; height:172px!important; box-sizing:border-box!important; align-self:start!important; }
   main #calculator article label { margin-top:10px!important; }
   main #calculator article input { height:44px!important; font-size:15px!important; }
   main #calculator article .mt-2\\.5 { margin-top:8px!important; padding-top:8px!important; }
-  main #workflow { padding:12px!important; height:max-content!important; min-height:0!important; align-self:start!important; }
+  main #workflow { padding:14px!important; height:172px!important; min-height:172px!important; box-sizing:border-box!important; align-self:start!important; background:var(--primary)!important; color:var(--primary-foreground)!important; border-color:color-mix(in srgb,var(--primary) 15%,transparent)!important; }
   main #workflow .gap-4 { gap:10px!important; }
   main #workflow strong { font-size:1.55rem!important; white-space:nowrap!important; }
-  main #workflow > div { display:grid!important; grid-template-columns:minmax(320px,auto) 150px!important; align-items:center!important; justify-content:center!important; width:max-content!important; max-width:100%!important; margin-inline:auto!important; gap:16px!important; }
+  main #workflow > div { display:grid!important; grid-template-columns:minmax(320px,auto) 150px!important; align-items:center!important; justify-content:center!important; width:max-content!important; max-width:100%!important; margin-inline:auto!important; gap:16px!important; height:100%!important; }
   main #workflow > div > div:first-child { min-width:320px!important; max-width:420px!important; text-align:left!important; }
   main #workflow > div > div:last-child { width:150px!important; min-width:150px!important; text-align:right!important; }
   main #about { margin-top:8px!important; padding-top:8px!important; padding-bottom:8px!important; flex:none!important; }
@@ -44,11 +44,11 @@ body { height:100%; min-height:100%; margin:0; overflow:hidden; background:var(-
   main section.py-8 p.mt-3, main section.py-10 p.mt-3 { margin-top:5px!important; }
   main #calculator > .mb-3 { margin-bottom:6px!important; }
   main #calculator > .grid { gap:6px!important; align-items:start!important; }
-  main #calculator article { padding:8px!important; min-height:144px!important; height:max-content!important; }
+  main #calculator article { padding:8px!important; min-height:144px!important; height:144px!important; box-sizing:border-box!important; }
   main #calculator article input { height:32px!important; font-size:15px!important; }
   main #calculator article label { margin-top:7px!important; }
   main #calculator article .mt-2\\.5 { margin-top:5px!important; padding-top:5px!important; }
-  main #workflow { padding:9px!important; min-height:0!important; height:max-content!important; }
+  main #workflow { padding:9px!important; min-height:144px!important; height:144px!important; box-sizing:border-box!important; }
   main #about { margin-top:4px!important; padding-top:4px!important; padding-bottom:4px!important; }
   main footer { margin-top:3px!important; padding-top:4px!important; padding-bottom:4px!important; }
 }
