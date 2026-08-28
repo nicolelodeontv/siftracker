@@ -34,6 +34,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
   --color-sif-yellow: var(--sif-yellow);
@@ -136,31 +137,15 @@
   --sidebar-ring: #f3f4f6;
 }
 
-html {
-  height: 100%;
-  overflow: hidden;
-  scroll-behavior: smooth;
-}
-
-body {
-  height: 100%;
-  min-height: 100%;
-  margin: 0;
-  overflow: hidden;
-  background: var(--background);
-}
-
-::selection {
-  background: var(--foreground);
-  color: var(--background);
-}
+html { height: 100%; overflow: hidden; scroll-behavior: smooth; }
+body { height: 100%; min-height: 100%; margin: 0; overflow: hidden; background: var(--background); }
+::selection { background: var(--foreground); color: var(--background); }
 
 @layer base {
   * { @apply border-border outline-ring/50; }
   body { @apply bg-background text-foreground; }
 }
 
-/* Compact viewport-first layout: keep the dashboard inside one screen. */
 @media (min-width: 768px) {
   main { height: 100dvh; min-height: 0 !important; overflow: hidden !important; }
   main > div.relative { height: 100%; max-height: 100dvh; padding-bottom: 10px !important; }
@@ -174,11 +159,17 @@ body {
   main #calculator article, main #workflow { padding: 10px !important; border-radius: 10px !important; }
   main #calculator article label { margin-top: 8px !important; }
   main #calculator article input { height: 36px !important; }
-  main #calculator article .mt-2\.5 { margin-top: 6px !important; padding-top: 6px !important; }
+  main #calculator article .mt-2\\.5 { margin-top: 6px !important; padding-top: 6px !important; }
   main #workflow .gap-4 { gap: 8px !important; }
   main #workflow strong { font-size: 1.55rem !important; }
   main #about { margin-top: 8px !important; padding-top: 8px !important; padding-bottom: 8px !important; }
   main footer { padding-top: 6px !important; padding-bottom: 2px !important; }
+
+  /* Stable Workflow columns: description never shifts when total width changes. */
+  main #workflow > div { display: grid !important; grid-template-columns: minmax(0, 1fr) 150px !important; align-items: end !important; gap: 16px !important; }
+  main #workflow > div > div:first-child { min-width: 0 !important; max-width: none !important; }
+  main #workflow > div > div:last-child { width: 150px !important; min-width: 150px !important; text-align: right !important; }
+  main #workflow strong { white-space: nowrap !important; }
 }
 
 @media (max-height: 760px) and (min-width: 768px) {
