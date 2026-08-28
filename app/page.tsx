@@ -61,7 +61,7 @@ export default function Page() {
         </nav>
 
         <section className="py-8 sm:py-10">
-          <div className="max-w-3xl"><div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground shadow-sm backdrop-blur"><span className="size-1.5 rounded-full bg-[var(--sif-green)]" aria-hidden="true" />Production time calculator</div><h1 className="whitespace-nowrap text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Plan the workload. <span className="text-primary">Know the time.</span></h1><p className="mt-3 max-w-xl text-sm leading-5 text-muted-foreground">A fast, focused way to estimate production time across team edits, individual work, builds, and late orders.</p></div>
+          <div className="max-w-3xl"><div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground shadow-sm backdrop-blur"><span className="size-1.5 rounded-full bg-[var(--sif-green)]" aria-hidden="true" />Production time calculator</div><h1 className="whitespace-nowrap text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Plan the workload. <span className="text-primary">Know the time.</span></h1><p className="mt-3 max-w-none whitespace-nowrap text-sm leading-5 text-muted-foreground">A fast, focused way to estimate production time across team edits, individual work, builds, and late orders.</p></div>
         </section>
 
         <section id="calculator" aria-labelledby="calculator-heading" className="scroll-mt-16">
