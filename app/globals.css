@@ -160,31 +160,125 @@ body {
   body { @apply bg-background text-foreground; }
 }
 
-/* Compact viewport-first layout: keep the dashboard inside one screen. */
+/* Compact desktop viewport + centered text. */
 @media (min-width: 768px) {
-  main { height: 100dvh; min-height: 0 !important; overflow: hidden !important; }
-  main > div.relative { height: 100%; max-height: 100dvh; padding-bottom: 10px !important; }
+  main {
+    height: 100dvh;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    text-align: center;
+  }
+
+  main > div.relative {
+    height: 100%;
+    max-height: 100dvh;
+    padding-bottom: 10px !important;
+  }
+
   main nav { height: 48px !important; }
   main nav .size-8 { width: 28px; height: 28px; }
-  main section.py-8, main section.py-10 { padding-top: 16px !important; padding-bottom: 14px !important; }
-  main section.py-8 h1, main section.py-10 h1 { font-size: clamp(2.15rem, 4vw, 3.4rem) !important; line-height: .98 !important; }
-  main section.py-8 p.mt-3, main section.py-10 p.mt-3 { margin-top: 8px !important; line-height: 1.3 !important; }
+
+  main section.py-8,
+  main section.py-10 {
+    padding-top: 16px !important;
+    padding-bottom: 14px !important;
+    text-align: center !important;
+  }
+
+  main section.py-8 h1,
+  main section.py-10 h1 {
+    margin-inline: auto;
+    font-size: clamp(2.15rem, 4vw, 3.4rem) !important;
+    line-height: .98 !important;
+    text-align: center !important;
+  }
+
+  main section.py-8 p.mt-3,
+  main section.py-10 p.mt-3 {
+    margin: 8px auto 0 !important;
+    line-height: 1.3 !important;
+    text-align: center !important;
+  }
+
+  main #calculator,
+  main #workflow,
+  main #about,
+  main footer {
+    text-align: center !important;
+  }
+
   main #calculator > .mb-3 { margin-bottom: 8px !important; }
   main #calculator > .grid { gap: 8px !important; }
-  main #calculator article, main #workflow { padding: 10px !important; border-radius: 10px !important; }
-  main #calculator article label { margin-top: 8px !important; }
-  main #calculator article input { height: 36px !important; }
-  main #calculator article .mt-2\.5 { margin-top: 6px !important; padding-top: 6px !important; }
+
+  main #calculator article,
+  main #workflow {
+    padding: 10px !important;
+    border-radius: 10px !important;
+    text-align: center !important;
+  }
+
+  main #calculator article > div:first-child {
+    justify-content: center !important;
+  }
+
+  main #calculator article > div:first-child > div {
+    align-items: center !important;
+  }
+
+  main #calculator article label {
+    margin-top: 8px !important;
+    text-align: center !important;
+  }
+
+  main #calculator article label > span {
+    text-align: center !important;
+  }
+
+  main #calculator article input {
+    height: 36px !important;
+    text-align: center !important;
+  }
+
+  main #calculator article .mt-2\.5 {
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+    text-align: center !important;
+  }
+
   main #workflow .gap-4 { gap: 8px !important; }
   main #workflow strong { font-size: 1.55rem !important; }
-  main #about { margin-top: 8px !important; padding-top: 8px !important; padding-bottom: 8px !important; }
-  main footer { padding-top: 6px !important; padding-bottom: 2px !important; }
+
+  main #about {
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  main #about > div:first-child {
+    margin-inline: auto;
+  }
+
+  main footer {
+    padding-top: 6px !important;
+    padding-bottom: 2px !important;
+  }
 }
 
 @media (max-height: 760px) and (min-width: 768px) {
-  main section.py-8, main section.py-10 { padding-top: 10px !important; padding-bottom: 8px !important; }
-  main section.py-8 h1, main section.py-10 h1 { font-size: 2.35rem !important; }
+  main section.py-8, main section.py-10 {
+    padding-top: 10px !important;
+    padding-bottom: 8px !important;
+  }
+
+  main section.py-8 h1, main section.py-10 h1 {
+    font-size: 2.35rem !important;
+  }
+
   main #calculator article { padding: 8px !important; }
   main #calculator article input { height: 32px !important; }
-  main #about { margin-top: 5px !important; padding-top: 5px !important; padding-bottom: 5px !important; }
+  main #about {
+    margin-top: 5px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
 }
