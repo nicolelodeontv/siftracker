@@ -19,11 +19,9 @@ body { height:100%; min-height:100%; margin:0; overflow:hidden; background:var(-
   main > div.relative { display:flex!important; flex-direction:column!important; height:100%; max-height:100dvh; min-height:0!important; padding-bottom:0!important; box-sizing:border-box!important; }
   main nav { height:48px!important; min-height:48px!important; flex:none!important; }
   main nav .size-8 { width:28px; height:28px; }
-
   main section.py-8, main section.py-10 { padding-top:14px!important; padding-bottom:12px!important; flex:none!important; }
   main section.py-8 h1, main section.py-10 h1 { font-size:clamp(2.15rem,4vw,3.4rem)!important; line-height:.98!important; }
   main section.py-8 p.mt-3, main section.py-10 p.mt-3 { margin-top:7px!important; line-height:1.25!important; white-space:nowrap!important; }
-
   main #calculator { flex:none!important; }
   main #calculator > .mb-3 { margin-bottom:8px!important; }
   main #calculator > .grid { gap:8px!important; }
@@ -31,18 +29,15 @@ body { height:100%; min-height:100%; margin:0; overflow:hidden; background:var(-
   main #calculator article label { margin-top:10px!important; }
   main #calculator article input { height:44px!important; font-size:15px!important; }
   main #calculator article .mt-2\\.5 { margin-top:8px!important; padding-top:8px!important; }
-
   main #workflow { padding:12px!important; }
   main #workflow .gap-4 { gap:10px!important; }
   main #workflow strong { font-size:1.55rem!important; white-space:nowrap!important; }
   main #workflow > div { display:grid!important; grid-template-columns:minmax(320px,auto) 150px!important; align-items:center!important; justify-content:center!important; width:max-content!important; max-width:100%!important; margin-inline:auto!important; gap:16px!important; }
   main #workflow > div > div:first-child { min-width:320px!important; max-width:420px!important; text-align:left!important; }
   main #workflow > div > div:last-child { width:150px!important; min-width:150px!important; text-align:right!important; }
-
   main #about { margin-top:8px!important; padding-top:8px!important; padding-bottom:8px!important; flex:none!important; }
-  main footer { position:static!important; margin-top:auto!important; flex:none!important; width:100%!important; box-sizing:border-box!important; padding-top:6px!important; padding-bottom:6px!important; }
+  main footer { position:static!important; margin-top:6px!important; flex:none!important; width:100%!important; box-sizing:border-box!important; padding-top:6px!important; padding-bottom:6px!important; }
 }
-
 @media (max-height:760px) and (min-width:768px) {
   main section.py-8, main section.py-10 { padding-top:8px!important; padding-bottom:7px!important; }
   main section.py-8 h1, main section.py-10 h1 { font-size:2.35rem!important; }
@@ -55,5 +50,5 @@ body { height:100%; min-height:100%; margin:0; overflow:hidden; background:var(-
   main #calculator article .mt-2\\.5 { margin-top:5px!important; padding-top:5px!important; }
   main #workflow { padding:9px!important; }
   main #about { margin-top:4px!important; padding-top:4px!important; padding-bottom:4px!important; }
-  main footer { padding-top:4px!important; padding-bottom:4px!important; }
+  main footer { margin-top:3px!important; padding-top:4px!important; padding-bottom:4px!important; }
 }
