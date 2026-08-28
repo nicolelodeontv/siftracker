@@ -5,177 +5,42 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --color-sif-yellow: var(--sif-yellow);
-  --color-sif-red: var(--sif-red);
-  --color-sif-green: var(--sif-green);
-  --color-sif-white: var(--sif-white);
-  --font-sans: var(--font-jetbrains-mono), monospace;
-  --font-mono: var(--font-jetbrains-mono), monospace;
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-sidebar-ring: var(--sidebar-ring); --color-sidebar-border: var(--sidebar-border); --color-sidebar-accent-foreground: var(--sidebar-accent-foreground); --color-sidebar-accent: var(--sidebar-accent); --color-sidebar-primary-foreground: var(--sidebar-primary-foreground); --color-sidebar-primary: var(--sidebar-primary); --color-sidebar-foreground: var(--sidebar-foreground); --color-sidebar: var(--sidebar); --color-chart-5: var(--chart-5); --color-chart-4: var(--chart-4); --color-chart-3: var(--chart-3); --color-chart-2: var(--chart-2); --color-chart-1: var(--chart-1); --color-ring: var(--ring); --color-input: var(--input); --color-border: var(--border); --color-destructive: var(--destructive); --color-accent-foreground: var(--accent-foreground); --color-accent: var(--accent); --color-muted-foreground: var(--muted-foreground); --color-muted: var(--muted); --color-secondary-foreground: var(--secondary-foreground); --color-secondary: var(--secondary); --color-primary-foreground: var(--primary-foreground); --color-primary: var(--primary); --color-popover-foreground: var(--popover-foreground); --color-popover: var(--popover); --color-card-foreground: var(--card-foreground); --color-card: var(--card); --color-foreground: var(--foreground); --color-background: var(--background); --color-sif-yellow: var(--sif-yellow); --color-sif-red: var(--sif-red); --color-sif-green: var(--sif-green); --color-sif-white: var(--sif-white); --font-sans: var(--font-jetbrains-mono), monospace; --font-mono: var(--font-jetbrains-mono), monospace; --radius-sm: calc(var(--radius) * .6); --radius-md: calc(var(--radius) * .8); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) * 1.4); --radius-2xl: calc(var(--radius) * 1.8); --radius-3xl: calc(var(--radius) * 2.2); --radius-4xl: calc(var(--radius) * 2.6);
 }
+:root { color-scheme:light; --background:#f7f8fa; --foreground:#111318; --card:#fff; --card-foreground:#111318; --popover:#fff; --popover-foreground:#111318; --primary:#111318; --primary-foreground:#fff; --secondary:#f0f1f3; --secondary-foreground:#24262d; --muted:#eff1f4; --muted-foreground:#737983; --accent:#e9ebef; --accent-foreground:#111318; --destructive:#c85c5c; --border:#e1e4e8; --input:#d8dce2; --ring:#111318; --chart-1:#c9a227; --chart-2:#3d9b6f; --chart-3:#5683c6; --chart-4:#9562c9; --chart-5:#d2684a; --sif-yellow:#a88a18; --sif-red:#b85f5f; --sif-green:#39875f; --sif-white:#1a1c20; --grid-dot:#cfd4da; --card-shadow:rgba(16,24,40,.06); --primary-shadow:rgba(17,19,24,.14); --radius:.75rem; --sidebar:#fff; --sidebar-foreground:#111318; --sidebar-primary:#111318; --sidebar-primary-foreground:#fff; --sidebar-accent:#f0f1f3; --sidebar-accent-foreground:#111318; --sidebar-border:#e1e4e8; --sidebar-ring:#111318; }
+.dark { color-scheme:dark; --background:#080a0d; --foreground:#f3f4f6; --card:#101318; --card-foreground:#f3f4f6; --popover:#101318; --popover-foreground:#f3f4f6; --primary:#f3f4f6; --primary-foreground:#0b0d10; --secondary:#171a20; --secondary-foreground:#f3f4f6; --muted:#171a20; --muted-foreground:#9298a3; --accent:#1d2129; --accent-foreground:#f3f4f6; --destructive:#df7575; --border:#252a33; --input:#303642; --ring:#f3f4f6; --chart-1:#e2c44d; --chart-2:#69c293; --chart-3:#78a4e6; --chart-4:#b080dd; --chart-5:#e08362; --sif-yellow:#e2c44d; --sif-red:#df7575; --sif-green:#69c293; --sif-white:#f3f4f6; --grid-dot:#2b3038; --card-shadow:rgba(0,0,0,.24); --primary-shadow:rgba(255,255,255,.07); --sidebar:#101318; --sidebar-foreground:#f3f4f6; --sidebar-primary:#f3f4f6; --sidebar-primary-foreground:#111318; --sidebar-accent:#171a20; --sidebar-accent-foreground:#f3f4f6; --sidebar-border:#252a33; --sidebar-ring:#f3f4f6; }
+html { height:100%; overflow:hidden; scroll-behavior:smooth; }
+body { height:100%; min-height:100%; margin:0; overflow:hidden; background:var(--background); }
+::selection { background:var(--foreground); color:var(--background); }
+@layer base { * { @apply border-border outline-ring/50; } body { @apply bg-background text-foreground; } }
+@media (min-width:768px) {
+  main { height:100dvh; min-height:0!important; overflow:hidden!important; }
+  main > div.relative { height:100%; max-height:100dvh; padding-bottom:10px!important; }
+  main nav { height:48px!important; }
+  main nav .size-8 { width:28px; height:28px; }
+  main section.py-8, main section.py-10 { padding-top:16px!important; padding-bottom:14px!important; }
+  main section.py-8 h1, main section.py-10 h1 { font-size:clamp(2.15rem,4vw,3.4rem)!important; line-height:.98!important; }
+  main section.py-8 p.mt-3, main section.py-10 p.mt-3 { margin-top:8px!important; line-height:1.3!important; }
+  main #calculator > .mb-3 { margin-bottom:8px!important; }
+  main #calculator > .grid { gap:8px!important; }
+  main #calculator article, main #workflow { padding:10px!important; border-radius:10px!important; }
+  main #calculator article label { margin-top:8px!important; }
+  main #calculator article input { height:36px!important; }
+  main #calculator article .mt-2\\.5 { margin-top:6px!important; padding-top:6px!important; }
+  main #workflow .gap-4 { gap:8px!important; }
+  main #workflow strong { font-size:1.55rem!important; white-space:nowrap!important; }
+  main #about { margin-top:8px!important; padding-top:8px!important; padding-bottom:8px!important; }
+  main footer { padding-top:6px!important; padding-bottom:2px!important; }
 
-:root {
-  color-scheme: light;
-  --background: #f7f8fa;
-  --foreground: #111318;
-  --card: #ffffff;
-  --card-foreground: #111318;
-  --popover: #ffffff;
-  --popover-foreground: #111318;
-  --primary: #111318;
-  --primary-foreground: #ffffff;
-  --secondary: #f0f1f3;
-  --secondary-foreground: #24262d;
-  --muted: #eff1f4;
-  --muted-foreground: #737983;
-  --accent: #e9ebef;
-  --accent-foreground: #111318;
-  --destructive: #c85c5c;
-  --border: #e1e4e8;
-  --input: #d8dce2;
-  --ring: #111318;
-  --chart-1: #c9a227;
-  --chart-2: #3d9b6f;
-  --chart-3: #5683c6;
-  --chart-4: #9562c9;
-  --chart-5: #d2684a;
-  --sif-yellow: #a88a18;
-  --sif-red: #b85f5f;
-  --sif-green: #39875f;
-  --sif-white: #1a1c20;
-  --grid-dot: #cfd4da;
-  --card-shadow: rgba(16, 24, 40, 0.06);
-  --primary-shadow: rgba(17, 19, 24, 0.14);
-  --radius: 0.75rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #111318;
-  --sidebar-primary: #111318;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0f1f3;
-  --sidebar-accent-foreground: #111318;
-  --sidebar-border: #e1e4e8;
-  --sidebar-ring: #111318;
+  /* Center the complete Workflow group without letting the total width move the text. */
+  main #workflow > div { display:grid!important; grid-template-columns:minmax(0, 1fr) 150px!important; align-items:center!important; justify-content:center!important; gap:16px!important; width:min(100%, 620px)!important; margin-inline:auto!important; }
+  main #workflow > div > div:first-child { min-width:0!important; max-width:none!important; text-align:left!important; }
+  main #workflow > div > div:last-child { width:150px!important; min-width:150px!important; text-align:right!important; }
 }
-
-.dark {
-  color-scheme: dark;
-  --background: #080a0d;
-  --foreground: #f3f4f6;
-  --card: #101318;
-  --card-foreground: #f3f4f6;
-  --popover: #101318;
-  --popover-foreground: #f3f4f6;
-  --primary: #f3f4f6;
-  --primary-foreground: #0b0d10;
-  --secondary: #171a20;
-  --secondary-foreground: #f3f4f6;
-  --muted: #171a20;
-  --muted-foreground: #9298a3;
-  --accent: #1d2129;
-  --accent-foreground: #f3f4f6;
-  --destructive: #df7575;
-  --border: #252a33;
-  --input: #303642;
-  --ring: #f3f4f6;
-  --chart-1: #e2c44d;
-  --chart-2: #69c293;
-  --chart-3: #78a4e6;
-  --chart-4: #b080dd;
-  --chart-5: #e08362;
-  --sif-yellow: #e2c44d;
-  --sif-red: #df7575;
-  --sif-green: #69c293;
-  --sif-white: #f3f4f6;
-  --grid-dot: #2b3038;
-  --card-shadow: rgba(0, 0, 0, 0.24);
-  --primary-shadow: rgba(255, 255, 255, 0.07);
-  --sidebar: #101318;
-  --sidebar-foreground: #f3f4f6;
-  --sidebar-primary: #f3f4f6;
-  --sidebar-primary-foreground: #111318;
-  --sidebar-accent: #171a20;
-  --sidebar-accent-foreground: #f3f4f6;
-  --sidebar-border: #252a33;
-  --sidebar-ring: #f3f4f6;
-}
-
-html { height: 100%; overflow: hidden; scroll-behavior: smooth; }
-body { height: 100%; min-height: 100%; margin: 0; overflow: hidden; background: var(--background); }
-::selection { background: var(--foreground); color: var(--background); }
-
-@layer base {
-  * { @apply border-border outline-ring/50; }
-  body { @apply bg-background text-foreground; }
-}
-
-@media (min-width: 768px) {
-  main { height: 100dvh; min-height: 0 !important; overflow: hidden !important; }
-  main > div.relative { height: 100%; max-height: 100dvh; padding-bottom: 10px !important; }
-  main nav { height: 48px !important; }
-  main nav .size-8 { width: 28px; height: 28px; }
-  main section.py-8, main section.py-10 { padding-top: 16px !important; padding-bottom: 14px !important; }
-  main section.py-8 h1, main section.py-10 h1 { font-size: clamp(2.15rem, 4vw, 3.4rem) !important; line-height: .98 !important; }
-  main section.py-8 p.mt-3, main section.py-10 p.mt-3 { margin-top: 8px !important; line-height: 1.3 !important; }
-  main #calculator > .mb-3 { margin-bottom: 8px !important; }
-  main #calculator > .grid { gap: 8px !important; }
-  main #calculator article, main #workflow { padding: 10px !important; border-radius: 10px !important; }
-  main #calculator article label { margin-top: 8px !important; }
-  main #calculator article input { height: 36px !important; }
-  main #calculator article .mt-2\\.5 { margin-top: 6px !important; padding-top: 6px !important; }
-  main #workflow .gap-4 { gap: 8px !important; }
-  main #workflow strong { font-size: 1.55rem !important; }
-  main #about { margin-top: 8px !important; padding-top: 8px !important; padding-bottom: 8px !important; }
-  main footer { padding-top: 6px !important; padding-bottom: 2px !important; }
-
-  /* Stable Workflow columns: description never shifts when total width changes. */
-  main #workflow > div { display: grid !important; grid-template-columns: minmax(0, 1fr) 150px !important; align-items: end !important; gap: 16px !important; }
-  main #workflow > div > div:first-child { min-width: 0 !important; max-width: none !important; }
-  main #workflow > div > div:last-child { width: 150px !important; min-width: 150px !important; text-align: right !important; }
-  main #workflow strong { white-space: nowrap !important; }
-}
-
-@media (max-height: 760px) and (min-width: 768px) {
-  main section.py-8, main section.py-10 { padding-top: 10px !important; padding-bottom: 8px !important; }
-  main section.py-8 h1, main section.py-10 h1 { font-size: 2.35rem !important; }
-  main #calculator article { padding: 8px !important; }
-  main #calculator article input { height: 32px !important; }
-  main #about { margin-top: 5px !important; padding-top: 5px !important; padding-bottom: 5px !important; }
+@media (max-height:760px) and (min-width:768px) {
+  main section.py-8, main section.py-10 { padding-top:10px!important; padding-bottom:8px!important; }
+  main section.py-8 h1, main section.py-10 h1 { font-size:2.35rem!important; }
+  main #calculator article { padding:8px!important; }
+  main #calculator article input { height:32px!important; }
+  main #about { margin-top:5px!important; padding-top:5px!important; padding-bottom:5px!important; }
 }
