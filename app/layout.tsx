@@ -3,6 +3,7 @@ import { JetBrains_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import './mobile.css'
+import './final-fixes.css'
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
