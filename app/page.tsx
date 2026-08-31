@@ -25,15 +25,12 @@ const EMPTY_VALUES = Object.fromEntries(workloads.map(({ id }) => [id, '']))
 const TIME_ZONE = 'Asia/Manila'
 
 function formatDuration(totalMinutes: number) {
-  const roundedMinutes = Math.max(0, Math.round(totalMinutes))
-  if (roundedMinutes === 0) return '0 mins'
+  const totalSeconds = Math.max(0, Math.round(totalMinutes * 60))
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
 
-  const hours = Math.floor(roundedMinutes / 60)
-  const minutes = roundedMinutes % 60
-
-  if (!hours) return `${minutes} ${minutes === 1 ? 'min' : 'mins'}`
-  if (!minutes) return `${hours} ${hours === 1 ? 'hour' : 'hours'}`
-  return `${hours}h ${minutes}m`
+  return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':')
 }
 
 function formatPhilippineDate(date: Date) {
@@ -45,24 +42,26 @@ function formatPhilippineTime(date: Date) {
 }
 
 function getPhilippineParts(date: Date) {
-  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(date)
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(date)
   return Object.fromEntries(parts.map(({ type, value }) => [type, value])) as Record<string, string>
 }
 
-function getTimeMinutes(value: string) {
-  const match = /^(\d{2}):(\d{2})$/.exec(value)
+function getTimeSeconds(value: string) {
+  const match = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(value)
   if (!match) return null
+
   const hours = Number(match[1])
   const minutes = Number(match[2])
-  return hours <= 23 && minutes <= 59 ? hours * 60 + minutes : null
+  const seconds = Number(match[3] ?? '0')
+  return hours <= 23 && minutes <= 59 && seconds <= 59 ? hours * 3600 + minutes * 60 + seconds : null
 }
 
 function getDurationBetweenTimes(startTime: string, endTime: string) {
-  const start = getTimeMinutes(startTime)
-  const end = getTimeMinutes(endTime)
+  const start = getTimeSeconds(startTime)
+  const end = getTimeSeconds(endTime)
   if (start === null || end === null) return null
   const duration = end - start
-  return duration < 0 ? duration + 24 * 60 : duration
+  return duration < 0 ? duration + 24 * 60 * 60 : duration
 }
 
 function calculateValue(value: string): number | null {
@@ -124,7 +123,7 @@ export default function Page() {
   const [philippineTime, setPhilippineTime] = useState('00:00:00')
   const [philippineDate, setPhilippineDate] = useState('Jan 01, 1970')
   const [mounted, setMounted] = useState(false)
-  const [startTime, setStartTime] = useState('09:00')
+  const [startTime, setStartTime] = useState('09:00:00')
   const [clockOutTime, setClockOutTime] = useState('')
 
   useEffect(() => {
@@ -136,7 +135,7 @@ export default function Page() {
 
     const current = new Date()
     const parts = getPhilippineParts(current)
-    setStartTime(`${parts.hour}:${parts.minute}`)
+    setStartTime(`${parts.hour}:${parts.minute}:${parts.second}`)
     updateClock()
 
     const interval = window.setInterval(updateClock, 1000)
@@ -153,7 +152,7 @@ export default function Page() {
   const totalUnits = useMemo(() => calculatedValues.reduce((total, { value }) => total + Math.max(0, value ?? 0), 0), [calculatedValues])
 
   const shiftDuration = getDurationBetweenTimes(startTime, clockOutTime)
-  const hoursWorked = shiftDuration === null ? null : Math.max(0, shiftDuration - 60)
+  const hoursWorked = shiftDuration === null ? null : Math.max(0, shiftDuration - 60 * 60)
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
 
   function updateValue(id: string, value: string) {
@@ -208,9 +207,9 @@ export default function Page() {
         <section id="finish-time" className={`mt-5 rounded-xl border border-border bg-card/70 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition-all duration-500 ease-out hover:border-primary/20 ${motion}`} style={{ transitionDelay: '560ms' }}>
           <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Clock in & out</p><h2 className="mt-1 text-base font-semibold tracking-tight">Track your work hours</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · 24-hour</span></div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock out</span><input type="time" value={clockOutTime} onChange={(event) => setClockOutTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hoursWorked !== null ? formatDuration(hoursWorked) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">1 hour break deducted</span></div>
+            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" step="1" value={startTime} onChange={(event) => setStartTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
+            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock out</span><input type="time" step="1" value={clockOutTime} onChange={(event) => setClockOutTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
+            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hoursWorked !== null ? formatDuration(hoursWorked / 60) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">1 hour break deducted</span></div>
           </div>
         </section>
 
@@ -228,7 +227,7 @@ export default function Page() {
           <strong>{formatDuration(totalMinutes)}</strong>
         </div>
         <div className="mobile-total-meta">
-          <span>{hoursWorked !== null ? formatDuration(hoursWorked) : '—'}</span>
+          <span>{hoursWorked !== null ? formatDuration(hoursWorked / 60) : '—'}</span>
           <span>Hours worked</span>
         </div>
       </div>
