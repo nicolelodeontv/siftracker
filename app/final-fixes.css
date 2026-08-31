@@ -55,7 +55,3 @@ main h1 {
   .mobile-total-bar { max-width: calc(100vw - 14px); overflow: hidden; }
   .mobile-total-bar strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 }
-
-/* Avoid the Tailwind decimal utility selector that triggers the Next CSS optimizer warning. */
-main #calculator article .mt-2\\.5 { margin-top: 10px !important; }
-main #calculator article .pt-2\\.5 { padding-top: 10px !important; }
