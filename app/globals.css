@@ -16,7 +16,6 @@ body { min-height:100%; margin:0; overflow-x:hidden; overflow-y:auto; background
 @layer base { * { @apply border-border outline-ring/50; } body { @apply bg-background text-foreground; } }
 
 @media (min-width:768px) {
-  /* Keep the compact desktop layout, but let the document grow and scroll. */
   main { min-height:100dvh; height:auto; overflow:visible!important; }
   main > div.relative { display:flex!important; flex-direction:column!important; min-height:100dvh; height:auto; max-height:none; padding-bottom:24px!important; box-sizing:border-box!important; }
   main nav { height:48px!important; min-height:48px!important; flex:none!important; }
@@ -56,25 +55,46 @@ body { min-height:100%; margin:0; overflow-x:hidden; overflow-y:auto; background
 }
 
 @media (max-width:767px) {
-  html,
-  body {
-    min-height:100% !important;
-    overflow-x:hidden !important;
-    overflow-y:auto !important;
-  }
-
+  html, body { min-height:100% !important; overflow-x:hidden !important; overflow-y:auto !important; }
   body { overscroll-behavior-y:auto; }
+  main { height:auto !important; min-height:100dvh !important; max-height:none !important; overflow:visible !important; }
+  main > div.relative { min-height:100dvh !important; height:auto !important; max-height:none !important; }
+}
 
-  main {
-    height:auto !important;
-    min-height:100dvh !important;
-    max-height:none !important;
-    overflow:visible !important;
-  }
+/* Responsive safety net: no fixed-height clipping and predictable overflow on every viewport. */
+@media (min-width:768px) {
+  main #calculator article,
+  main #workflow { height:auto!important; min-height:172px!important; }
+  main #workflow > div { height:auto!important; min-height:140px!important; }
+  main #calculator article { overflow:visible!important; }
+  main #workflow { overflow:visible!important; }
+}
 
-  main > div.relative {
-    min-height:100dvh !important;
-    height:auto !important;
-    max-height:none !important;
-  }
+@media (max-width:1100px) and (min-width:768px) {
+  main > div.relative { padding-left:20px!important; padding-right:20px!important; }
+  main #workflow > div { grid-template-columns:minmax(0,1fr) 140px!important; width:100%!important; }
+  main #workflow > div > div:first-child { min-width:0!important; }
+}
+
+@media (max-width:767px) {
+  main > div.relative { width:100%; max-width:100%; box-sizing:border-box; }
+  main nav { min-width:0; }
+  main nav > div { min-width:0; }
+  main #calculator,
+  main #finish-time,
+  main #workflow,
+  main #about,
+  main footer { min-width:0; max-width:100%; }
+  main #finish-time .grid { grid-template-columns:1fr!important; }
+  main #finish-time input { min-width:0; max-width:100%; }
+  main #workflow > div { min-width:0; }
+}
+
+@media (max-width:380px) {
+  main > div.relative { padding-left:10px!important; padding-right:10px!important; }
+  main nav { gap:8px; }
+  main nav .text-right { min-width:0; }
+  main section.py-8 h1, main section.py-10 h1 { font-size:1.8rem!important; }
+  main #finish-time { padding:12px!important; }
+  .mobile-total-bar { left:8px!important; right:8px!important; }
 }
