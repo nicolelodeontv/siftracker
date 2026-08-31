@@ -13,13 +13,6 @@ type Workload = {
   examples: string[]
 }
 
-type HistoryItem = {
-  id: string
-  createdAt: number
-  totalMinutes: number
-  totalUnits: number
-}
-
 const workloads: Workload[] = [
   { id: 'teamEdit', label: 'Team edit', unit: 'teams', minutesPerUnit: 15, accent: 'var(--chart-1)', examples: ['1 team = 15m', '4 teams = 1h', '16 teams = 4h', '32 teams = 8h'] },
   { id: 'indiClip', label: 'Indi clip', unit: 'indis', minutesPerUnit: 5, accent: 'var(--chart-2)', examples: ['1 indi = 5m', '12 indi = 1h', '48 indi = 4h', '96 indi = 8h'] },
@@ -29,8 +22,6 @@ const workloads: Workload[] = [
 ]
 
 const EMPTY_VALUES = Object.fromEntries(workloads.map(({ id }) => [id, '']))
-const HISTORY_KEY = 'sif-tracker-history-v1'
-const MAX_HISTORY = 5
 const TIME_ZONE = 'Asia/Manila'
 
 function formatDuration(totalMinutes: number) {
@@ -51,10 +42,6 @@ function formatPhilippineDate(date: Date) {
 
 function formatPhilippineTime(date: Date) {
   return new Intl.DateTimeFormat('en-PH', { timeZone: TIME_ZONE, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, hourCycle: 'h23' }).format(date)
-}
-
-function formatHistoryDate(timestamp: number) {
-  return new Intl.DateTimeFormat('en-PH', { timeZone: TIME_ZONE, month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' }).format(new Date(timestamp))
 }
 
 function getPhilippineParts(date: Date) {
@@ -139,7 +126,6 @@ export default function Page() {
   const [mounted, setMounted] = useState(false)
   const [startTime, setStartTime] = useState('09:00')
   const [clockOutTime, setClockOutTime] = useState('')
-  const [history, setHistory] = useState<HistoryItem[]>([])
 
   useEffect(() => {
     const updateClock = () => {
@@ -156,13 +142,6 @@ export default function Page() {
     const interval = window.setInterval(updateClock, 1000)
     const frame = window.requestAnimationFrame(() => setMounted(true))
 
-    try {
-      const stored = JSON.parse(window.localStorage.getItem(HISTORY_KEY) ?? '[]')
-      if (Array.isArray(stored)) setHistory(stored.slice(0, MAX_HISTORY))
-    } catch {
-      setHistory([])
-    }
-
     return () => {
       window.clearInterval(interval)
       window.cancelAnimationFrame(frame)
@@ -176,24 +155,6 @@ export default function Page() {
   const shiftDuration = getDurationBetweenTimes(startTime, clockOutTime)
   const hoursWorked = shiftDuration === null ? null : Math.max(0, shiftDuration - 60)
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-  const hasWorkload = totalMinutes > 0
-
-  useEffect(() => {
-    if (!hasWorkload) return
-    const save = window.setTimeout(() => {
-      const item: HistoryItem = { id: `${Date.now()}-${totalMinutes}`, createdAt: Date.now(), totalMinutes, totalUnits }
-      setHistory((current) => {
-        const next = [item, ...current.filter((entry) => entry.totalMinutes !== totalMinutes)].slice(0, MAX_HISTORY)
-        try {
-          window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next))
-        } catch {
-          // Ignore storage failures; calculations remain available in memory.
-        }
-        return next
-      })
-    }, 1400)
-    return () => window.clearTimeout(save)
-  }, [hasWorkload, totalMinutes, totalUnits])
 
   function updateValue(id: string, value: string) {
     if (/^[\d+*/().=\s-]*$/.test(value)) setValues((current) => ({ ...current, [id]: value }))
@@ -202,15 +163,6 @@ export default function Page() {
   function reset() {
     setValues({ ...EMPTY_VALUES })
     setClockOutTime('')
-  }
-
-  function clearHistory() {
-    setHistory([])
-    try {
-      window.localStorage.removeItem(HISTORY_KEY)
-    } catch {
-      // Ignore storage failures.
-    }
   }
 
   return (
@@ -262,15 +214,8 @@ export default function Page() {
           </div>
         </section>
 
-        {history.length > 0 && (
-          <section id="history" className={`mt-5 rounded-xl border border-border bg-card/60 p-4 transition-all duration-500 ease-out ${motion}`} style={{ transitionDelay: '640ms' }}>
-            <div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Recent</p><h2 className="mt-1 text-base font-semibold tracking-tight">Recent calculations</h2></div><button type="button" onClick={clearHistory} className="text-[9px] font-semibold text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline">Clear</button></div>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">{history.map((item) => <div key={item.id} className="rounded-lg border border-border bg-background/60 px-3 py-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20"><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground">{formatHistoryDate(item.createdAt)}</span><strong className="mt-1 block font-mono text-sm font-bold tabular-nums">{formatDuration(item.totalMinutes)}</strong><span className="mt-0.5 block text-[9px] text-muted-foreground">{item.totalUnits} units</span></div>)}</div>
-          </section>
-        )}
-
-        <section id="about" className={`mt-5 scroll-mt-16 border-y border-border py-4 transition-all duration-500 ease-out hover:border-foreground/20 sm:flex sm:items-center sm:justify-between sm:gap-5 ${motion}`} style={{ transitionDelay: '700ms' }}>
-          <div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / About</p><p className="mt-1 max-w-xl text-[10px] leading-4 text-muted-foreground"><span className="block">Built as a simple internal production planning tool.</span><span className="block">Type numbers or expressions such as <span className="font-mono text-foreground">4*3</span> directly into any field.</span></p></div>
+        <section id="about" className={`mt-5 scroll-mt-16 border-y border-border py-4 transition-all duration-500 ease-out hover:border-foreground/20 sm:flex sm:items-center sm:justify-between sm:gap-5 ${motion}`} style={{ transitionDelay: '640ms' }}>
+          <div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / About</p><p className="mt-1 max-w-xl text-[10px] leading-4 text-muted-foreground"><span className="block">Built as a simple internal production planning tool.</span><span className="block">Type numbers or expressions such as <span className="font-mono text-foreground">4*3</span> directly into any field.</span></p></div>
           <button type="button" onClick={reset} className="mt-3 inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm active:translate-y-0 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:mt-0"><RotateCcw className="size-3" aria-hidden="true" />Reset all<ArrowUpRight className="size-3 opacity-50 transition-transform duration-200" aria-hidden="true" /></button>
         </section>
 
