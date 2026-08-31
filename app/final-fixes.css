@@ -1,6 +1,15 @@
 /* Final responsive UI normalization */
 html, body { min-width: 0; overflow-x: hidden; }
 
+/* Keep the hero tagline on one line while scaling it down gracefully on narrow screens. */
+main h1 {
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  letter-spacing: -0.055em !important;
+  font-size: clamp(1.45rem, 5.7vw, 3.75rem) !important;
+  max-width: 100%;
+}
+
 /* Keep the hero subtitle on one line on desktop without forcing mobile overflow. */
 @media (min-width: 768px) {
   main section.py-7 > div > p.mt-3,
@@ -10,15 +19,22 @@ html, body { min-width: 0; overflow-x: hidden; }
     max-width: none !important;
   }
 
-  /* Keep the workflow result visually aligned with the workload cards. */
+  /* Let the grid determine the row height naturally so Workflow matches its paired workload card exactly. */
+  main #calculator > .grid {
+    align-items: stretch !important;
+    grid-auto-rows: 1fr;
+  }
+
+  main #calculator article,
   main #workflow {
-    min-height: 226px;
-    height: 226px;
+    height: 100% !important;
+    min-height: 0 !important;
+    align-self: stretch !important;
     box-sizing: border-box;
   }
 
   main #workflow > div {
-    height: 100%;
+    height: 100% !important;
   }
 }
 
@@ -41,5 +57,5 @@ html, body { min-width: 0; overflow-x: hidden; }
 }
 
 /* Avoid the Tailwind decimal utility selector that triggers the Next CSS optimizer warning. */
-main #calculator article .mt-2\.5 { margin-top: 10px !important; }
-main #calculator article .pt-2\.5 { padding-top: 10px !important; }
+main #calculator article .mt-2\\.5 { margin-top: 10px !important; }
+main #calculator article .pt-2\\.5 { padding-top: 10px !important; }
