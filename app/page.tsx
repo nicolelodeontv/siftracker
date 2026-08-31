@@ -84,14 +84,12 @@ function calculateValue(value: string): number | null {
   if (!normalized || normalized.length > 200 || !/^[\d+*/().=-]+$/.test(normalized)) return null
   const parts = normalized.split('=')
   if (parts.length > 2 || !parts[0] || normalized.endsWith('=')) return null
-
   const [expression, declaredTotal] = parts
   const tokens = expression.match(/\d+(?:\.\d+)?|[()+*/-]/g) ?? []
   if (tokens.join('') !== expression) return null
 
   try {
     const index = { value: 0 }
-
     const parseExpression = (): number => {
       let result = parseTerm()
       while (tokens[index.value] === '+' || tokens[index.value] === '-') {
@@ -101,7 +99,6 @@ function calculateValue(value: string): number | null {
       }
       return result
     }
-
     const parseTerm = (): number => {
       let result = parseFactor()
       while (tokens[index.value] === '*' || tokens[index.value] === '/') {
@@ -112,7 +109,6 @@ function calculateValue(value: string): number | null {
       }
       return result
     }
-
     const parseFactor = (): number => {
       const token = tokens[index.value++]
       if (token === '(') {
@@ -124,7 +120,6 @@ function calculateValue(value: string): number | null {
       if (!token || Number.isNaN(Number(token))) throw new Error('Invalid expression')
       return Number(token)
     }
-
     const result = parseExpression()
     if (index.value !== tokens.length || !Number.isFinite(result) || Math.abs(result) > 1_000_000) return null
     const rounded = Number.isInteger(result) ? result : Number(result.toFixed(2))
@@ -165,12 +160,10 @@ export default function Page() {
       setPhilippineTime(formatPhilippineTime(now))
       setPhilippineDate(formatPhilippineDate(now))
     }
-
     setClockInTime(getCurrentClockIn())
     updateClock()
     const interval = window.setInterval(updateClock, 1000)
     const frame = window.requestAnimationFrame(() => setMounted(true))
-
     return () => {
       window.clearInterval(interval)
       window.cancelAnimationFrame(frame)
@@ -231,13 +224,6 @@ export default function Page() {
     }
   }
 
-  function addQuickValue(id: string, amount: number) {
-    setValues((current) => ({
-      ...current,
-      [id]: String((calculateValue(current[id] ?? '') ?? 0) + amount),
-    }))
-  }
-
   function adjustRate(id: string, delta: number) {
     setRates((current) => ({
       ...current,
@@ -277,10 +263,10 @@ export default function Page() {
         </nav>
 
         <section className={`py-7 sm:py-9 ${motion}`}>
-          <div className="max-w-3xl whitespace-nowrap">
+          <div className="max-w-4xl">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div>
-            <h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Time, tracked simply.</h1>
-            <p className="mt-3 text-sm leading-5 text-muted-foreground">Enter your workload and the tracker automatically calculates total work time and your clock-out time.</p>
+            <h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Work smart. Clock out smarter.</h1>
+            <p className="mt-3 text-sm leading-5 text-muted-foreground sm:whitespace-nowrap">Enter your workload. SIF handles the math and tells you when you’re done.</p>
           </div>
         </section>
 
@@ -313,7 +299,6 @@ export default function Page() {
                   <output className="shrink-0 font-mono text-[15px] font-bold tabular-nums" style={{ color: workload.accent }}>{formatDuration((value ?? 0) * workload.minutesPerUnit * 60)}</output>
                 </div>
                 <label className="mt-3 block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Number of {workload.unit}</span><div className="relative"><input type="text" inputMode="text" value={values[workload.id]} onChange={(event) => updateValue(workload.id, event.target.value)} className="h-11 w-full min-w-0 rounded-lg border border-input bg-background/70 px-3 pr-16 font-mono text-[15px] font-medium tabular-nums outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" />{value !== null && values[workload.id] !== '' && <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground opacity-60">{value}</output>}</div></label>
-                <div className="mt-2 flex flex-wrap items-center gap-1.5"><span className="mr-auto text-[8px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Quick add</span>{[1, 5, 10].map((amount) => <button key={amount} type="button" onClick={() => addQuickValue(workload.id, amount)} className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[9px] font-semibold hover:bg-accent">+{amount}</button>)}</div>
                 <div className="mt-auto grid grid-cols-2 gap-x-2 gap-y-1 border-t border-border pt-2.5 sm:grid-cols-4">{workload.examples.map((example) => <span key={example} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground">{example}</span>)}</div>
               </article>
             ))}
@@ -333,9 +318,11 @@ export default function Page() {
           </div>
         </section>
 
-        <section id="tools" className="mt-5 flex flex-col gap-3 border-y border-border py-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">Workload values reset on refresh. Saved rates stay in this browser.</p></div><button type="button" onClick={resetAll} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold hover:bg-accent"><RotateCcw className="size-3" />Reset all</button></section>
+        <section id="tools" className="mt-5 rounded-xl border border-border/80 bg-card/50 p-3.5 shadow-sm backdrop-blur sm:flex sm:items-center sm:justify-between sm:gap-4"><div className="min-w-0"><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">Reset today’s workload without touching your saved settings.</p></div><button type="button" onClick={resetAll} className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-1.5 text-[10px] font-semibold hover:bg-accent sm:mt-0 sm:w-auto"><RotateCcw className="size-3" />Reset workload</button></section>
+
         <footer className="flex flex-col gap-1 py-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
       </div>
+
       <div className="mobile-total-bar" aria-live="polite"><div><span className="mobile-total-label">WORKED</span><strong>{formatDuration(totalSeconds)}</strong></div><div><span className="mobile-total-label">OUT</span><strong>{formatAmPmTime(estimatedClockOutSeconds)}</strong></div><div><span className="mobile-total-label">BREAK</span><strong>01:00:00</strong></div></div>
     </main>
   )
