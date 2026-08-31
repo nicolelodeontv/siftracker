@@ -1,0 +1,45 @@
+/* Final responsive UI normalization */
+html, body { min-width: 0; overflow-x: hidden; }
+
+/* Keep the hero subtitle on one line on desktop without forcing mobile overflow. */
+@media (min-width: 768px) {
+  main section.py-7 > div > p.mt-3,
+  main section.py-8 > div > p.mt-3,
+  main section.py-10 > div > p.mt-3 {
+    white-space: nowrap !important;
+    max-width: none !important;
+  }
+
+  /* Keep the workflow result visually aligned with the workload cards. */
+  main #workflow {
+    min-height: 226px;
+    height: 226px;
+    box-sizing: border-box;
+  }
+
+  main #workflow > div {
+    height: 100%;
+  }
+}
+
+/* Small-screen cleanup: prevent fixed/mobile elements from creating horizontal overflow. */
+@media (max-width: 767px) {
+  main { width: 100%; max-width: 100%; overflow-x: hidden !important; }
+  main > div.relative { width: 100%; max-width: 100%; }
+  main section { max-width: 100%; }
+  main #calculator > .grid { width: 100%; max-width: 100%; }
+  main #calculator article,
+  main #workflow,
+  main #settings,
+  main #shift,
+  main #tools { width: 100%; max-width: 100%; box-sizing: border-box; }
+  main #workflow { min-height: 0 !important; height: auto !important; }
+  main #workflow > div { height: auto !important; }
+  main #workflow strong { white-space: nowrap; }
+  .mobile-total-bar { max-width: calc(100vw - 14px); overflow: hidden; }
+  .mobile-total-bar strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Avoid the Tailwind decimal utility selector that triggers the Next CSS optimizer warning. */
+main #calculator article .mt-2\.5 { margin-top: 10px !important; }
+main #calculator article .pt-2\.5 { padding-top: 10px !important; }
