@@ -86,6 +86,14 @@ function getElapsedFromStart(startTime: string, now: Date) {
   return elapsed < 0 ? elapsed + 24 * 60 : elapsed
 }
 
+function getDurationBetweenTimes(startTime: string, endTime: string) {
+  const start = getTimeMinutes(startTime)
+  const end = getTimeMinutes(endTime)
+  if (start === null || end === null) return null
+  const duration = end - start
+  return duration < 0 ? duration + 24 * 60 : duration
+}
+
 function calculateValue(value: string): number | null {
   const normalized = value.replace(/\s+/g, '')
   if (!normalized || normalized.length > 200 || !/^[\d+*/().=-]+$/.test(normalized)) return null
@@ -146,6 +154,7 @@ export default function Page() {
   const [philippineDate, setPhilippineDate] = useState('Jan 01, 1970')
   const [mounted, setMounted] = useState(false)
   const [startTime, setStartTime] = useState('09:00')
+  const [clockOutTime, setClockOutTime] = useState('')
   const [breakMinutes, setBreakMinutes] = useState('60')
   const [now, setNow] = useState(() => new Date())
   const [history, setHistory] = useState<HistoryItem[]>([])
@@ -153,7 +162,6 @@ export default function Page() {
   useEffect(() => {
     const updateClock = () => {
       const current = new Date()
-      const parts = getPhilippineParts(current)
       setNow(current)
       setPhilippineTime(formatPhilippineTime(current))
       setPhilippineDate(formatPhilippineDate(current))
@@ -186,7 +194,9 @@ export default function Page() {
 
   const validBreakMinutes = Math.max(0, Math.min(720, Number(breakMinutes) || 0))
   const plannedMinutes = totalMinutes + validBreakMinutes
-  const finishTime = addMinutesToTime(startTime, plannedMinutes)
+  const estimatedClockOut = addMinutesToTime(startTime, plannedMinutes)
+  const effectiveClockOut = clockOutTime || (totalMinutes > 0 ? estimatedClockOut : '')
+  const shiftDuration = getDurationBetweenTimes(startTime, effectiveClockOut)
   const elapsedMinutes = getElapsedFromStart(startTime, now)
   const remainingMinutes = Math.max(0, plannedMinutes - elapsedMinutes)
   const progress = plannedMinutes > 0 ? Math.min(100, (elapsedMinutes / plannedMinutes) * 100) : 0
@@ -216,6 +226,7 @@ export default function Page() {
 
   function reset() {
     setValues({ ...EMPTY_VALUES })
+    setClockOutTime('')
   }
 
   function clearHistory() {
@@ -268,12 +279,16 @@ export default function Page() {
         </section>
 
         <section id="finish-time" className={`mt-5 rounded-xl border border-border bg-card/70 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition-all duration-500 ease-out hover:border-primary/20 ${motion}`} style={{ transitionDelay: '560ms' }}>
-          <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Finish time</p><h2 className="mt-1 text-base font-semibold tracking-tight">Plan the work window</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · 24-hour</span></div>
+          <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Clock in & out</p><h2 className="mt-1 text-base font-semibold tracking-tight">Track your work hours</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · 24-hour</span></div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Start time</span><input type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
+            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
+            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock out</span><input type="time" value={effectiveClockOut} onChange={(event) => setClockOutTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
             <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Break (minutes)</span><input type="number" min="0" max="720" step="15" value={breakMinutes} onChange={(event) => setBreakMinutes(event.target.value.replace(/\D/g, '').slice(0, 3))} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Estimated finish</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hasWorkload ? finishTime : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">Includes {validBreakMinutes} min break</span></div>
-            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Time remaining</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hasWorkload ? formatDuration(remainingMinutes) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">From current PHT time</span></div>
+            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Hours worked</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{shiftDuration !== null ? formatDuration(Math.max(0, shiftDuration - validBreakMinutes)) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">After {validBreakMinutes} min break</span></div>
+          </div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg border border-primary/15 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Estimated clock out from workload</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{hasWorkload ? estimatedClockOut : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">Based on workload + {validBreakMinutes} min break</span></div>
+            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Time remaining</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{hasWorkload ? formatDuration(remainingMinutes) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">From current PHT time</span></div>
           </div>
           <div className="mt-4"><div className="mb-1.5 flex items-center justify-between gap-3"><span className="text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Work-window progress</span><span className="font-mono text-[9px] font-bold tabular-nums">{Math.round(progress)}%</span></div><div className="h-2 overflow-hidden rounded-full bg-muted" aria-label={`Work-window progress ${Math.round(progress)} percent`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><div className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out" style={{ width: `${progress}%` }} /></div></div>
         </section>
@@ -300,7 +315,7 @@ export default function Page() {
         </div>
         <div className="mobile-total-meta">
           <span>{hasWorkload ? `${Math.round(progress)}%` : 'Ready'}</span>
-          <span>{hasWorkload ? `Finish ${finishTime}` : 'Enter workload'}</span>
+          <span>{hasWorkload ? `Clock out ${effectiveClockOut}` : 'Enter workload'}</span>
         </div>
       </div>
     </main>
