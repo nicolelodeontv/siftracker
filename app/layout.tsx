@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import { JetBrains_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
+import { DynamicWorkloadExamples } from '@/components/dynamic-workload-examples'
 import './globals.css'
 import './mobile.css'
 import './final-fixes.css'
@@ -51,6 +52,7 @@ export default function RootLayout({
     <html lang="en" className="bg-background">
       <body className={`${jetBrainsMono.variable} font-mono antialiased`}>
         {children}
+        <DynamicWorkloadExamples />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
