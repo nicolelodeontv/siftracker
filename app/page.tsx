@@ -70,22 +70,6 @@ function getTimeMinutes(value: string) {
   return hours <= 23 && minutes <= 59 ? hours * 60 + minutes : null
 }
 
-function addMinutesToTime(time: string, minutesToAdd: number) {
-  const base = getTimeMinutes(time) ?? 0
-  const total = (base + Math.max(0, Math.round(minutesToAdd))) % (24 * 60)
-  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
-}
-
-function getElapsedFromStart(startTime: string, now: Date) {
-  const start = getTimeMinutes(startTime)
-  if (start === null) return 0
-
-  const parts = getPhilippineParts(now)
-  const current = Number(parts.hour) * 60 + Number(parts.minute)
-  const elapsed = current - start
-  return elapsed < 0 ? elapsed + 24 * 60 : elapsed
-}
-
 function getDurationBetweenTimes(startTime: string, endTime: string) {
   const start = getTimeMinutes(startTime)
   const end = getTimeMinutes(endTime)
@@ -155,14 +139,11 @@ export default function Page() {
   const [mounted, setMounted] = useState(false)
   const [startTime, setStartTime] = useState('09:00')
   const [clockOutTime, setClockOutTime] = useState('')
-  const [breakMinutes, setBreakMinutes] = useState('60')
-  const [now, setNow] = useState(() => new Date())
   const [history, setHistory] = useState<HistoryItem[]>([])
 
   useEffect(() => {
     const updateClock = () => {
       const current = new Date()
-      setNow(current)
       setPhilippineTime(formatPhilippineTime(current))
       setPhilippineDate(formatPhilippineDate(current))
     }
@@ -192,14 +173,8 @@ export default function Page() {
   const totalMinutes = useMemo(() => calculatedValues.reduce((total, { workload, value }) => total + (value ?? 0) * workload.minutesPerUnit, 0), [calculatedValues])
   const totalUnits = useMemo(() => calculatedValues.reduce((total, { value }) => total + Math.max(0, value ?? 0), 0), [calculatedValues])
 
-  const validBreakMinutes = Math.max(0, Math.min(720, Number(breakMinutes) || 0))
-  const plannedMinutes = totalMinutes + validBreakMinutes
-  const estimatedClockOut = addMinutesToTime(startTime, plannedMinutes)
-  const effectiveClockOut = clockOutTime || (totalMinutes > 0 ? estimatedClockOut : '')
-  const shiftDuration = getDurationBetweenTimes(startTime, effectiveClockOut)
-  const elapsedMinutes = getElapsedFromStart(startTime, now)
-  const remainingMinutes = Math.max(0, plannedMinutes - elapsedMinutes)
-  const progress = plannedMinutes > 0 ? Math.min(100, (elapsedMinutes / plannedMinutes) * 100) : 0
+  const shiftDuration = getDurationBetweenTimes(startTime, clockOutTime)
+  const hoursWorked = shiftDuration === null ? null : Math.max(0, shiftDuration - 60)
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
   const hasWorkload = totalMinutes > 0
 
@@ -239,7 +214,7 @@ export default function Page() {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-background text-foreground">
+    <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
       <div className="pointer-events-none fixed inset-0 opacity-[0.25] [background-image:radial-gradient(circle_at_1px_1px,var(--grid-dot)_1px,transparent_0)] [background-size:24px_24px]" />
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-6 sm:px-7 lg:px-8">
         <nav className={`flex h-14 items-center justify-between border-b border-border/80 transition-all duration-500 ease-out ${motion}`}>
@@ -280,17 +255,11 @@ export default function Page() {
 
         <section id="finish-time" className={`mt-5 rounded-xl border border-border bg-card/70 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition-all duration-500 ease-out hover:border-primary/20 ${motion}`} style={{ transitionDelay: '560ms' }}>
           <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Clock in & out</p><h2 className="mt-1 text-base font-semibold tracking-tight">Track your work hours</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · 24-hour</span></div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-3">
             <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock out</span><input type="time" value={effectiveClockOut} onChange={(event) => setClockOutTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Break (minutes)</span><input type="number" min="0" max="720" step="15" value={breakMinutes} onChange={(event) => setBreakMinutes(event.target.value.replace(/\D/g, '').slice(0, 3))} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Hours worked</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{shiftDuration !== null ? formatDuration(Math.max(0, shiftDuration - validBreakMinutes)) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">After {validBreakMinutes} min break</span></div>
+            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock out</span><input type="time" value={clockOutTime} onChange={(event) => setClockOutTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
+            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hoursWorked !== null ? formatDuration(hoursWorked) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">1 hour break deducted</span></div>
           </div>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-lg border border-primary/15 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Estimated clock out from workload</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{hasWorkload ? estimatedClockOut : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">Based on workload + {validBreakMinutes} min break</span></div>
-            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Time remaining</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{hasWorkload ? formatDuration(remainingMinutes) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">From current PHT time</span></div>
-          </div>
-          <div className="mt-4"><div className="mb-1.5 flex items-center justify-between gap-3"><span className="text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Work-window progress</span><span className="font-mono text-[9px] font-bold tabular-nums">{Math.round(progress)}%</span></div><div className="h-2 overflow-hidden rounded-full bg-muted" aria-label={`Work-window progress ${Math.round(progress)} percent`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><div className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out" style={{ width: `${progress}%` }} /></div></div>
         </section>
 
         {history.length > 0 && (
@@ -314,8 +283,8 @@ export default function Page() {
           <strong>{formatDuration(totalMinutes)}</strong>
         </div>
         <div className="mobile-total-meta">
-          <span>{hasWorkload ? `${Math.round(progress)}%` : 'Ready'}</span>
-          <span>{hasWorkload ? `Clock out ${effectiveClockOut}` : 'Enter workload'}</span>
+          <span>{hoursWorked !== null ? formatDuration(hoursWorked) : '—'}</span>
+          <span>Hours worked</span>
         </div>
       </div>
     </main>
