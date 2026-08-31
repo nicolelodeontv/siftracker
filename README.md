@@ -16,6 +16,9 @@ https://sif-tracker-omega.vercel.app/
 - Supports simple calculations such as `4+8+12`
 - Supports optional checked totals such as `4+8+12=24`
 - Responsive desktop and mobile layout
+- Mobile-friendly scrolling and stacked workload cards
+- Touch-friendly inputs and controls
+- Light and dark mode support
 - Accessible labels and live output updates
 
 ## ⏱️ Workload Rates
@@ -53,16 +56,21 @@ SIF Tracker automatically combines the estimates and displays the total producti
 - Lucide React
 - shadcn/ui tooling
 - Vercel Analytics
+- pnpm
 
 ## 📁 Project Structure
 
 ```text
 siftracker/
 ├── app/                  # Next.js application pages and styles
+│   ├── page.tsx          # Main tracker UI
+│   ├── globals.css       # Global theme and layout styles
+│   └── mobile.css        # Mobile responsive styles
 ├── components/           # Reusable UI components
 ├── lib/                  # Utility functions
 ├── public/               # Static assets
 ├── package.json          # Project scripts and dependencies
+├── pnpm-lock.yaml        # Locked dependency versions
 ├── next.config.mjs       # Next.js configuration
 ├── tsconfig.json         # TypeScript configuration
 └── README.md             # Project documentation
@@ -110,9 +118,34 @@ Each production activity has a fixed time-per-unit value. The application multip
 
 The total updates instantly as values are entered, making it useful for quickly estimating production workload before or during a work session.
 
+## 📱 Mobile Support
+
+The interface is designed to work on phones and tablets as well as desktop screens.
+
+On smaller screens:
+
+- Workload cards switch to a single-column layout.
+- The hero heading and description wrap naturally.
+- Inputs use larger touch-friendly sizing.
+- The workflow total stacks vertically for easier reading.
+- The page uses normal vertical scrolling so the full tracker remains accessible.
+
+## ✅ Build Verification
+
+The repository includes an automated build check for changes pushed to `main` or opened as pull requests. The check installs dependencies with the lockfile and runs the production build:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm run build
+```
+
+This helps catch dependency, TypeScript, Next.js, and build-time configuration errors before deployment.
+
 ## 🚢 Deployment
 
 SIF Tracker is a Next.js application and can be deployed to Vercel or another platform that supports Next.js.
+
+For Vercel deployments, the intended source of truth is the `main` branch of this repository.
 
 The current live version is available at:
 
