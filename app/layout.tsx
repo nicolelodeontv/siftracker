@@ -1,13 +1,14 @@
 import { Analytics } from '@vercel/analytics/next'
 import { JetBrains_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
+import './globals.css'
+import './mobile.css'
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-jetbrains-mono',
 })
-import './globals.css'
 
 export const metadata: Metadata = {
   title: 'SIF Tracker | Production Time Calculator',
