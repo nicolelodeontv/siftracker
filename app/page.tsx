@@ -46,48 +46,19 @@ function formatDuration(totalMinutes: number) {
 }
 
 function formatPhilippineDate(date: Date) {
-  return new Intl.DateTimeFormat('en-PH', {
-    timeZone: TIME_ZONE,
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
-  }).format(date)
+  return new Intl.DateTimeFormat('en-PH', { timeZone: TIME_ZONE, month: 'short', day: '2-digit', year: 'numeric' }).format(date)
 }
 
 function formatPhilippineTime(date: Date) {
-  return new Intl.DateTimeFormat('en-PH', {
-    timeZone: TIME_ZONE,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    hourCycle: 'h23',
-  }).format(date)
+  return new Intl.DateTimeFormat('en-PH', { timeZone: TIME_ZONE, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, hourCycle: 'h23' }).format(date)
 }
 
 function formatHistoryDate(timestamp: number) {
-  return new Intl.DateTimeFormat('en-PH', {
-    timeZone: TIME_ZONE,
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    hourCycle: 'h23',
-  }).format(new Date(timestamp))
+  return new Intl.DateTimeFormat('en-PH', { timeZone: TIME_ZONE, month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' }).format(new Date(timestamp))
 }
 
 function getPhilippineParts(date: Date) {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: TIME_ZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(date)
-
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(date)
   return Object.fromEntries(parts.map(({ type, value }) => [type, value])) as Record<string, string>
 }
 
@@ -96,8 +67,7 @@ function getTimeMinutes(value: string) {
   if (!match) return null
   const hours = Number(match[1])
   const minutes = Number(match[2])
-  if (hours > 23 || minutes > 59) return null
-  return hours * 60 + minutes
+  return hours <= 23 && minutes <= 59 ? hours * 60 + minutes : null
 }
 
 function addMinutesToTime(time: string, minutesToAdd: number) {
@@ -112,9 +82,8 @@ function getElapsedFromStart(startTime: string, now: Date) {
 
   const parts = getPhilippineParts(now)
   const current = Number(parts.hour) * 60 + Number(parts.minute)
-  let elapsed = current - start
-  if (elapsed < 0) elapsed += 24 * 60
-  return elapsed
+  const elapsed = current - start
+  return elapsed < 0 ? elapsed + 24 * 60 : elapsed
 }
 
 function calculateValue(value: string): number | null {
@@ -130,7 +99,6 @@ function calculateValue(value: string): number | null {
 
   try {
     const index = { value: 0 }
-
     const parseExpression = (): number => {
       let result = parseTerm()
       while (tokens[index.value] === '+' || tokens[index.value] === '-') {
@@ -140,7 +108,6 @@ function calculateValue(value: string): number | null {
       }
       return result
     }
-
     const parseTerm = (): number => {
       let result = parseFactor()
       while (tokens[index.value] === '*' || tokens[index.value] === '/') {
@@ -151,7 +118,6 @@ function calculateValue(value: string): number | null {
       }
       return result
     }
-
     const parseFactor = (): number => {
       const token = tokens[index.value++]
       if (token === '(') {
@@ -168,9 +134,7 @@ function calculateValue(value: string): number | null {
     if (index.value !== tokens.length || !Number.isFinite(result) || Math.abs(result) > 1_000_000) return null
 
     const roundedResult = Number.isInteger(result) ? result : Number(result.toFixed(2))
-    if (declaredTotal !== undefined && Number(declaredTotal) !== roundedResult) return null
-
-    return roundedResult
+    return declaredTotal !== undefined && Number(declaredTotal) !== roundedResult ? null : roundedResult
   } catch {
     return null
   }
@@ -189,6 +153,7 @@ export default function Page() {
   useEffect(() => {
     const updateClock = () => {
       const current = new Date()
+      const parts = getPhilippineParts(current)
       setNow(current)
       setPhilippineTime(formatPhilippineTime(current))
       setPhilippineDate(formatPhilippineDate(current))
@@ -197,9 +162,7 @@ export default function Page() {
     const current = new Date()
     const parts = getPhilippineParts(current)
     setStartTime(`${parts.hour}:${parts.minute}`)
-    setNow(current)
-    setPhilippineTime(formatPhilippineTime(current))
-    setPhilippineDate(formatPhilippineDate(current))
+    updateClock()
 
     const interval = window.setInterval(updateClock, 1000)
     const frame = window.requestAnimationFrame(() => setMounted(true))
@@ -218,14 +181,8 @@ export default function Page() {
   }, [])
 
   const calculatedValues = useMemo(() => workloads.map((workload) => ({ workload, value: calculateValue(values[workload.id]) })), [values])
-  const totalMinutes = useMemo(
-    () => calculatedValues.reduce((total, { workload, value }) => total + (value ?? 0) * workload.minutesPerUnit, 0),
-    [calculatedValues],
-  )
-  const totalUnits = useMemo(
-    () => calculatedValues.reduce((total, { value }) => total + (value ?? 0), 0),
-    [calculatedValues],
-  )
+  const totalMinutes = useMemo(() => calculatedValues.reduce((total, { workload, value }) => total + (value ?? 0) * workload.minutesPerUnit, 0), [calculatedValues])
+  const totalUnits = useMemo(() => calculatedValues.reduce((total, { value }) => total + Math.max(0, value ?? 0), 0), [calculatedValues])
 
   const validBreakMinutes = Math.max(0, Math.min(720, Number(breakMinutes) || 0))
   const plannedMinutes = totalMinutes + validBreakMinutes
@@ -239,23 +196,17 @@ export default function Page() {
   useEffect(() => {
     if (!hasWorkload) return
     const save = window.setTimeout(() => {
-      const item: HistoryItem = {
-        id: `${Date.now()}-${totalMinutes}`,
-        createdAt: Date.now(),
-        totalMinutes,
-        totalUnits,
-      }
+      const item: HistoryItem = { id: `${Date.now()}-${totalMinutes}`, createdAt: Date.now(), totalMinutes, totalUnits }
       setHistory((current) => {
         const next = [item, ...current.filter((entry) => entry.totalMinutes !== totalMinutes)].slice(0, MAX_HISTORY)
         try {
           window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next))
         } catch {
-          // Ignore local storage failures; the calculator still works normally.
+          // Ignore storage failures; calculations remain available in memory.
         }
         return next
       })
     }, 1400)
-
     return () => window.clearTimeout(save)
   }, [hasWorkload, totalMinutes, totalUnits])
 
@@ -272,7 +223,7 @@ export default function Page() {
     try {
       window.localStorage.removeItem(HISTORY_KEY)
     } catch {
-      // Ignore local storage failures.
+      // Ignore storage failures.
     }
   }
 
@@ -282,166 +233,75 @@ export default function Page() {
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-6 sm:px-7 lg:px-8">
         <nav className={`flex h-14 items-center justify-between border-b border-border/80 transition-all duration-500 ease-out ${motion}`}>
           <div className="flex items-center gap-2.5">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform duration-300 hover:rotate-3 hover:scale-105">
-              <TimerReset className="size-3.5" aria-hidden="true" />
-            </div>
-            <div className="leading-none">
-              <span className="block text-sm font-bold tracking-tight">SIF Tracker</span>
-              <span className="mt-1 block text-[8px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Operations</span>
-            </div>
+            <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform duration-300 hover:rotate-3 hover:scale-105"><TimerReset className="size-3.5" aria-hidden="true" /></div>
+            <div className="leading-none"><span className="block text-sm font-bold tracking-tight">SIF Tracker</span><span className="mt-1 block text-[8px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Operations</span></div>
           </div>
           <div className="flex items-center gap-3 transition-transform duration-300 hover:-translate-y-px">
-            <div className="text-right font-mono leading-none" aria-label="Philippine Standard Time">
-              <span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">PHT</span>
-              <time className="mt-1 block text-[10px] font-semibold tabular-nums sm:text-[11px]" dateTime={philippineDate}>{philippineDate}</time>
-              <time className="mt-0.5 block text-[11px] font-bold tabular-nums sm:text-xs" dateTime={philippineTime}>{philippineTime}</time>
-            </div>
+            <div className="text-right font-mono leading-none" aria-label="Philippine Standard Time"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">PHT</span><time className="mt-1 block text-[10px] font-semibold tabular-nums sm:text-[11px]" dateTime={philippineDate}>{philippineDate}</time><time className="mt-0.5 block text-[11px] font-bold tabular-nums sm:text-xs" dateTime={philippineTime}>{philippineTime}</time></div>
             <ThemeToggle />
           </div>
         </nav>
 
         <section className={`py-8 transition-all duration-700 ease-out delay-75 sm:py-10 ${motion}`}>
           <div className="max-w-3xl">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-              <span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" aria-hidden="true" />
-              Production time calculator
-            </div>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" aria-hidden="true" />Production time calculator</div>
             <h1 className="text-4xl font-bold tracking-[-0.06em] transition-transform duration-500 sm:text-5xl lg:text-6xl">Time, tracked simply.</h1>
             <p className="mt-3 max-w-3xl text-sm leading-5 text-muted-foreground">A fast, focused way to estimate production time across team edits, individual work, builds, and late orders.</p>
           </div>
         </section>
 
         <section id="calculator" aria-labelledby="calculator-heading" className={`scroll-mt-16 transition-all duration-700 ease-out delay-150 ${motion}`}>
-          <div className="mb-3 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">01 / Calculator</p>
-              <h2 id="calculator-heading" className="mt-1 text-lg font-semibold tracking-tight">Enter your workload</h2>
-            </div>
-            <div className="font-mono text-[10px] text-muted-foreground">Updates instantly</div>
-          </div>
-
+          <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">01 / Calculator</p><h2 id="calculator-heading" className="mt-1 text-lg font-semibold tracking-tight">Enter your workload</h2></div><div className="font-mono text-[10px] text-muted-foreground">Updates instantly</div></div>
           <div className="grid gap-2.5 lg:grid-cols-2">
             {calculatedValues.map(({ workload, value }, index) => (
               <article key={workload.id} style={{ transitionDelay: `${180 + index * 55}ms` }} className={`group min-w-0 h-auto rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg focus-within:-translate-y-0.5 ${motion}`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5">
-                    <span className="mt-1.5 size-2 shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125" style={{ backgroundColor: workload.accent }} />
-                    <div>
-                      <h3 className="text-sm font-semibold tracking-tight">{workload.label}</h3>
-                      <p className="mt-0.5 text-[10px] text-muted-foreground">{workload.minutesPerUnit} minutes per {workload.unit.slice(0, -1)}</p>
-                    </div>
-                  </div>
-                  <output aria-live="polite" className="font-mono text-[15px] font-bold tabular-nums transition-all duration-300" style={{ color: workload.accent }}>{formatDuration((value ?? 0) * workload.minutesPerUnit)}</output>
-                </div>
-
-                <label className="mt-3 block">
-                  <span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Number of {workload.unit}</span>
-                  <div className="relative">
-                    <input type="text" inputMode="numeric" value={values[workload.id]} onChange={(event) => updateValue(workload.id, event.target.value)} aria-label={`${workload.label} ${workload.unit}`} placeholder="0" className="h-11 w-full rounded-lg border border-input bg-background/70 px-3 pr-14 font-mono text-[15px] font-medium tabular-nums outline-none transition-all duration-200 placeholder:text-muted-foreground/40 focus:-translate-y-px focus:border-primary focus:ring-4 focus:ring-primary/10" />
-                    {value !== null && <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground transition-all duration-200" aria-label="Calculated result">{value}</output>}
-                  </div>
-                </label>
-
-                <div className="mt-2.5 grid grid-cols-2 gap-x-2 gap-y-1 border-t border-border pt-2.5 sm:grid-cols-4">
-                  {workload.examples.map((example) => <span key={example} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground transition-colors duration-200 group-hover:text-foreground">{example}</span>)}
-                </div>
+                <div className="flex items-start justify-between gap-3"><div className="flex items-start gap-2.5"><span className="mt-1.5 size-2 shrink-0 rounded-full transition-transform duration-300 group-hover:scale-125" style={{ backgroundColor: workload.accent }} /><div><h3 className="text-sm font-semibold tracking-tight">{workload.label}</h3><p className="mt-0.5 text-[10px] text-muted-foreground">{workload.minutesPerUnit} minutes per {workload.unit.slice(0, -1)}</p></div></div><output aria-live="polite" className="font-mono text-[15px] font-bold tabular-nums transition-all duration-300" style={{ color: workload.accent }}>{formatDuration((value ?? 0) * workload.minutesPerUnit)}</output></div>
+                <label className="mt-3 block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Number of {workload.unit}</span><div className="relative"><input type="text" inputMode="numeric" value={values[workload.id]} onChange={(event) => updateValue(workload.id, event.target.value)} aria-label={`${workload.label} ${workload.unit}`} placeholder="0" className="h-11 w-full rounded-lg border border-input bg-background/70 px-3 pr-14 font-mono text-[15px] font-medium tabular-nums outline-none transition-all duration-200 placeholder:text-muted-foreground/40 focus:-translate-y-px focus:border-primary focus:ring-4 focus:ring-primary/10" />{value !== null && <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground transition-all duration-200" aria-label="Calculated result">{value}</output>}</div></label>
+                <div className="mt-2.5 grid grid-cols-2 gap-x-2 gap-y-1 border-t border-border pt-2.5 sm:grid-cols-4">{workload.examples.map((example) => <span key={example} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground transition-colors duration-200 group-hover:text-foreground">{example}</span>)}</div>
               </article>
             ))}
 
             <section id="workflow" className={`scroll-mt-16 rounded-xl border border-primary/15 bg-primary p-3.5 text-primary-foreground shadow-[0_8px_28px_var(--card-shadow)] transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-lg ${motion}`} style={{ transitionDelay: '520ms' }}>
-              <div className="mx-auto grid w-full max-w-[620px] grid-cols-[minmax(0,1fr)_150px] items-center gap-4">
-                <div className="min-w-0">
-                  <p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p>
-                  <h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3>
-                  <p className="mt-1 text-[10px] leading-4.5 opacity-75">{totalUnits || 0} total units across {workloads.length} workload types.</p>
-                </div>
-                <div className="w-[150px] min-w-[150px] text-right">
-                  <span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Combined total</span>
-                  <strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums transition-transform duration-300 sm:text-3xl">{formatDuration(totalMinutes)}</strong>
-                </div>
-              </div>
+              <div className="mx-auto grid w-full max-w-[620px] grid-cols-[minmax(0,1fr)_150px] items-center gap-4"><div className="min-w-0"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4.5 opacity-75">{totalUnits || 0} total units across {workloads.length} workload types.</p></div><div className="w-[150px] min-w-[150px] text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Combined total</span><strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums transition-transform duration-300 sm:text-3xl">{formatDuration(totalMinutes)}</strong></div></div>
             </section>
           </div>
         </section>
 
         <section id="finish-time" className={`mt-5 rounded-xl border border-border bg-card/70 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition-all duration-500 ease-out hover:border-primary/20 ${motion}`} style={{ transitionDelay: '560ms' }}>
-          <div className="mb-3 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Finish time</p>
-              <h2 className="mt-1 text-base font-semibold tracking-tight">Plan the work window</h2>
-            </div>
-            <span className="font-mono text-[9px] text-muted-foreground">PHT · 24-hour</span>
-          </div>
-
+          <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Finish time</p><h2 className="mt-1 text-base font-semibold tracking-tight">Plan the work window</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · 24-hour</span></div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="block">
-              <span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Start time</span>
-              <input type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Break (minutes)</span>
-              <input type="number" min="0" max="720" step="15" value={breakMinutes} onChange={(event) => setBreakMinutes(event.target.value.replace(/\D/g, '').slice(0, 3))} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" />
-            </label>
-            <div className="rounded-lg border border-border bg-background/60 p-3">
-              <span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Estimated finish</span>
-              <strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hasWorkload ? finishTime : '—'}</strong>
-              <span className="mt-1 block text-[9px] text-muted-foreground">Includes {validBreakMinutes} min break</span>
-            </div>
-            <div className="rounded-lg border border-border bg-background/60 p-3">
-              <span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Time remaining</span>
-              <strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hasWorkload ? formatDuration(remainingMinutes) : '—'}</strong>
-              <span className="mt-1 block text-[9px] text-muted-foreground">From current PHT time</span>
-            </div>
+            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Start time</span><input type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
+            <label className="block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Break (minutes)</span><input type="number" min="0" max="720" step="15" value={breakMinutes} onChange={(event) => setBreakMinutes(event.target.value.replace(/\D/g, '').slice(0, 3))} className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
+            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Estimated finish</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hasWorkload ? finishTime : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">Includes {validBreakMinutes} min break</span></div>
+            <div className="rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Time remaining</span><strong className="mt-1 block font-mono text-xl font-bold tabular-nums">{hasWorkload ? formatDuration(remainingMinutes) : '—'}</strong><span className="mt-1 block text-[9px] text-muted-foreground">From current PHT time</span></div>
           </div>
-
-          <div className="mt-4">
-            <div className="mb-1.5 flex items-center justify-between gap-3">
-              <span className="text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Work-window progress</span>
-              <span className="font-mono text-[9px] font-bold tabular-nums">{Math.round(progress)}%</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-muted" aria-label={`Work-window progress ${Math.round(progress)} percent`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
-              <div className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out" style={{ width: `${progress}%` }} />
-            </div>
-          </div>
+          <div className="mt-4"><div className="mb-1.5 flex items-center justify-between gap-3"><span className="text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Work-window progress</span><span className="font-mono text-[9px] font-bold tabular-nums">{Math.round(progress)}%</span></div><div className="h-2 overflow-hidden rounded-full bg-muted" aria-label={`Work-window progress ${Math.round(progress)} percent`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><div className="h-full rounded-full bg-primary transition-[width] duration-700 ease-out" style={{ width: `${progress}%` }} /></div></div>
         </section>
 
         {history.length > 0 && (
           <section id="history" className={`mt-5 rounded-xl border border-border bg-card/60 p-4 transition-all duration-500 ease-out ${motion}`} style={{ transitionDelay: '640ms' }}>
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Recent</p>
-                <h2 className="mt-1 text-base font-semibold tracking-tight">Recent calculations</h2>
-              </div>
-              <button type="button" onClick={clearHistory} className="text-[9px] font-semibold text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline">Clear</button>
-            </div>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-              {history.map((item) => (
-                <div key={item.id} className="rounded-lg border border-border bg-background/60 px-3 py-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20">
-                  <span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground">{formatHistoryDate(item.createdAt)}</span>
-                  <strong className="mt-1 block font-mono text-sm font-bold tabular-nums">{formatDuration(item.totalMinutes)}</strong>
-                  <span className="mt-0.5 block text-[9px] text-muted-foreground">{item.totalUnits} units</span>
-                </div>
-              ))}
-            </div>
+            <div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Recent</p><h2 className="mt-1 text-base font-semibold tracking-tight">Recent calculations</h2></div><button type="button" onClick={clearHistory} className="text-[9px] font-semibold text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline">Clear</button></div>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">{history.map((item) => <div key={item.id} className="rounded-lg border border-border bg-background/60 px-3 py-2.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/20"><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-muted-foreground">{formatHistoryDate(item.createdAt)}</span><strong className="mt-1 block font-mono text-sm font-bold tabular-nums">{formatDuration(item.totalMinutes)}</strong><span className="mt-0.5 block text-[9px] text-muted-foreground">{item.totalUnits} units</span></div>)}</div>
           </section>
         )}
 
         <section id="about" className={`mt-5 scroll-mt-16 border-y border-border py-4 transition-all duration-500 ease-out hover:border-foreground/20 sm:flex sm:items-center sm:justify-between sm:gap-5 ${motion}`} style={{ transitionDelay: '700ms' }}>
-          <div>
-            <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / About</p>
-            <p className="mt-1 max-w-xl text-[10px] leading-4 text-muted-foreground">
-              <span className="block">Built as a simple internal production planning tool.</span>
-              <span className="block">Type numbers or expressions such as <span className="font-mono text-foreground">4*3</span> directly into any field.</span>
-            </p>
-          </div>
-          <button type="button" onClick={reset} className="mt-3 inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm active:translate-y-0 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:mt-0">
-            <RotateCcw className="size-3" aria-hidden="true" />Reset all<ArrowUpRight className="size-3 opacity-50" aria-hidden="true" />
-          </button>
+          <div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / About</p><p className="mt-1 max-w-xl text-[10px] leading-4 text-muted-foreground"><span className="block">Built as a simple internal production planning tool.</span><span className="block">Type numbers or expressions such as <span className="font-mono text-foreground">4*3</span> directly into any field.</span></p></div>
+          <button type="button" onClick={reset} className="mt-3 inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:bg-accent hover:shadow-sm active:translate-y-0 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:mt-0"><RotateCcw className="size-3" aria-hidden="true" />Reset all<ArrowUpRight className="size-3 opacity-50 transition-transform duration-200" aria-hidden="true" /></button>
         </section>
 
-        <footer className="flex flex-col gap-1 py-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <span>SIF Tracker</span><span>Created by Nicole</span>
-        </footer>
+        <footer className="flex flex-col gap-1 py-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
+      </div>
+
+      <div className="mobile-total-bar" aria-live="polite">
+        <div>
+          <span className="mobile-total-label">TOTAL</span>
+          <strong>{formatDuration(totalMinutes)}</strong>
+        </div>
+        <div className="mobile-total-meta">
+          <span>{hasWorkload ? `${Math.round(progress)}%` : 'Ready'}</span>
+          <span>{hasWorkload ? `Finish ${finishTime}` : 'Enter workload'}</span>
+        </div>
       </div>
     </main>
   )
