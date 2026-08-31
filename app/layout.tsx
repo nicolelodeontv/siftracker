@@ -8,7 +8,6 @@ const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
 })
 import './globals.css'
-import './mobile.css'
 
 export const metadata: Metadata = {
   title: 'SIF Tracker | Production Time Calculator',
