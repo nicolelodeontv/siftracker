@@ -24,9 +24,10 @@ const DEFAULT_WORKLOADS: Workload[] = [
 ]
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
+const DEFAULT_RATES: RateMap = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id, minutesPerUnit }) => [id, minutesPerUnit]))
 const TIME_ZONE = 'Asia/Manila'
-const STORAGE_KEY = 'sif-tracker-state-v7'
-const DEFAULT_BREAK_SECONDS = 60 * 60
+const STORAGE_KEY = 'sif-tracker-state-v8'
+const BREAK_SECONDS = 60 * 60
 
 function formatDuration(totalSeconds: number) {
   const seconds = Math.max(0, Math.round(totalSeconds))
@@ -36,32 +37,9 @@ function formatDuration(totalSeconds: number) {
   return [hours, minutes, remaining].map((value) => String(value).padStart(2, '0')).join(':')
 }
 
-function formatPhilippineDate(date: Date) {
-  return new Intl.DateTimeFormat('en-PH', { timeZone: TIME_ZONE, month: 'short', day: '2-digit', year: 'numeric' }).format(date)
-}
-
-function formatPhilippineTime(date: Date) {
-  return new Intl.DateTimeFormat('en-PH', { timeZone: TIME_ZONE, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, hourCycle: 'h23' }).format(date)
-}
-
-function formatAmPmTime(value: string | null) {
-  if (!value) return '—'
-  const match = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(value)
-  if (!match) return '—'
-  const hours = Number(match[1])
-  const minutes = Number(match[2])
-  const seconds = Number(match[3] ?? '0')
-  const suffix = hours >= 12 ? 'PM' : 'AM'
-  const hour12 = hours % 12 || 12
-  return `${hour12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${suffix}`
-}
-
 function getPhilippineParts(date: Date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: TIME_ZONE,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -70,107 +48,81 @@ function getPhilippineParts(date: Date) {
   return Object.fromEntries(parts.map(({ type, value }) => [type, value])) as Record<string, string>
 }
 
+function formatPhilippineDate(date: Date) {
+  return new Intl.DateTimeFormat('en-PH', {
+    timeZone: TIME_ZONE,
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  }).format(date)
+}
+
+function formatPhilippineTime(date: Date) {
+  return new Intl.DateTimeFormat('en-PH', {
+    timeZone: TIME_ZONE,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    hourCycle: 'h23',
+  }).format(date)
+}
+
+function formatAmPmTime(totalSeconds: number | null) {
+  if (totalSeconds === null) return '—'
+  const daySeconds = ((Math.round(totalSeconds) % 86400) + 86400) % 86400
+  const hours = Math.floor(daySeconds / 3600)
+  const minutes = Math.floor((daySeconds % 3600) / 60)
+  const seconds = daySeconds % 60
+  const suffix = hours >= 12 ? 'PM' : 'AM'
+  const hour12 = hours % 12 || 12
+  return `${hour12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${suffix}`
+}
+
+function parseQuantity(value: string) {
+  const normalized = value.replace(/\s+/g, '')
+  if (!normalized || !/^\d+$/.test(normalized)) return null
+  const result = Number(normalized)
+  return Number.isSafeInteger(result) ? result : null
+}
+
+function getCurrentClockIn() {
+  const parts = getPhilippineParts(new Date())
+  return `${parts.hour}:${parts.minute}:${parts.second}`
+}
+
 function timeToSeconds(value: string) {
-  const match = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(value)
+  const match = /^(\d{2}):(\d{2}):(\d{2})$/.exec(value)
   if (!match) return null
   const hours = Number(match[1])
   const minutes = Number(match[2])
-  const seconds = Number(match[3] ?? '0')
+  const seconds = Number(match[3])
   if (hours > 23 || minutes > 59 || seconds > 59) return null
   return hours * 3600 + minutes * 60 + seconds
 }
 
-function secondsToTime(totalSeconds: number) {
-  const seconds = ((Math.round(totalSeconds) % 86400) + 86400) % 86400
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const remaining = seconds % 60
-  return [hours, minutes, remaining].map((value) => String(value).padStart(2, '0')).join(':')
-}
-
-function durationBetween(startTime: string, endTime: string) {
-  const start = timeToSeconds(startTime)
-  const end = timeToSeconds(endTime)
-  if (start === null || end === null) return null
-  const duration = end - start
-  return duration < 0 ? duration + 86400 : duration
-}
-
-function calculateValue(value: string): number | null {
-  const normalized = value.replace(/\s+/g, '')
-  if (!normalized || normalized.length > 200 || !/^[\d+*/().=-]+$/.test(normalized)) return null
-  const parts = normalized.split('=')
-  if (parts.length > 2 || !parts[0] || normalized.endsWith('=')) return null
-  const [expression, declaredTotal] = parts
-  const tokens = expression.match(/\d+(?:\.\d+)?|[()+*/-]/g) ?? []
-  if (tokens.join('') !== expression) return null
-  try {
-    const index = { value: 0 }
-    const parseExpression = (): number => {
-      let result = parseTerm()
-      while (tokens[index.value] === '+' || tokens[index.value] === '-') {
-        const operator = tokens[index.value++]
-        const next = parseTerm()
-        result = operator === '+' ? result + next : result - next
-      }
-      return result
-    }
-    const parseTerm = (): number => {
-      let result = parseFactor()
-      while (tokens[index.value] === '*' || tokens[index.value] === '/') {
-        const operator = tokens[index.value++]
-        const next = parseFactor()
-        if (operator === '/' && next === 0) throw new Error('Division by zero')
-        result = operator === '*' ? result * next : result / next
-      }
-      return result
-    }
-    const parseFactor = (): number => {
-      const token = tokens[index.value++]
-      if (token === '(') {
-        const result = parseExpression()
-        if (tokens[index.value++] !== ')') throw new Error('Unclosed parenthesis')
-        return result
-      }
-      if (token === '-') return -parseFactor()
-      if (!token || Number.isNaN(Number(token))) throw new Error('Invalid expression')
-      return Number(token)
-    }
-    const result = parseExpression()
-    if (index.value !== tokens.length || !Number.isFinite(result) || Math.abs(result) > 1_000_000) return null
-    const rounded = Number.isInteger(result) ? result : Number(result.toFixed(2))
-    return declaredTotal !== undefined && Number(declaredTotal) !== rounded ? null : rounded
-  } catch {
-    return null
-  }
-}
-
 export default function Page() {
-  const [values, setValues] = useState<Record<string, string>>(() => ({ ...EMPTY_VALUES }))
-  const [rates, setRates] = useState<RateMap>(() => Object.fromEntries(DEFAULT_WORKLOADS.map(({ id, minutesPerUnit }) => [id, minutesPerUnit])))
-  const [savedRates, setSavedRates] = useState<RateMap>(() => Object.fromEntries(DEFAULT_WORKLOADS.map(({ id, minutesPerUnit }) => [id, minutesPerUnit])))
+  const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
+  const [rates, setRates] = useState<RateMap>({ ...DEFAULT_RATES })
+  const [savedRates, setSavedRates] = useState<RateMap>({ ...DEFAULT_RATES })
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [clockInTime, setClockInTime] = useState('09:00:00')
-  const [clockOutTime, setClockOutTime] = useState('')
   const [philippineTime, setPhilippineTime] = useState('00:00:00')
   const [philippineDate, setPhilippineDate] = useState('Jan 01, 1970')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const setCurrentClockIn = () => {
+    const updateClock = () => {
       const now = new Date()
-      const parts = getPhilippineParts(now)
-      setClockInTime(`${parts.hour}:${parts.minute}:${parts.second}`)
       setPhilippineTime(formatPhilippineTime(now))
       setPhilippineDate(formatPhilippineDate(now))
     }
-    setCurrentClockIn()
-    const interval = window.setInterval(() => {
-      const now = new Date()
-      setPhilippineTime(formatPhilippineTime(now))
-      setPhilippineDate(formatPhilippineDate(now))
-    }, 1000)
+
+    setClockInTime(getCurrentClockIn())
+    updateClock()
+    const interval = window.setInterval(updateClock, 1000)
     const frame = window.requestAnimationFrame(() => setMounted(true))
+
     return () => {
       window.clearInterval(interval)
       window.cancelAnimationFrame(frame)
@@ -181,20 +133,23 @@ export default function Page() {
     try {
       const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')
       if (saved?.values) setValues({ ...EMPTY_VALUES, ...saved.values })
-      if (saved?.clockOutTime && typeof saved.clockOutTime === 'string') setClockOutTime(saved.clockOutTime)
       if (saved?.rates) {
-        const merged = { ...savedRates, ...saved.rates }
+        const merged = { ...DEFAULT_RATES, ...saved.rates }
         setRates(merged)
         setSavedRates(merged)
       }
-    } catch {}
+    } catch {
+      // Ignore invalid local storage.
+    }
   }, [])
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, clockInTime, clockOutTime, rates: savedRates }))
-    } catch {}
-  }, [values, clockInTime, clockOutTime, savedRates])
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, rates: savedRates }))
+    } catch {
+      // Ignore unavailable local storage.
+    }
+  }, [values, savedRates])
 
   const workloads = useMemo(
     () => DEFAULT_WORKLOADS.map((workload) => ({ ...workload, minutesPerUnit: rates[workload.id] ?? workload.minutesPerUnit })),
@@ -202,7 +157,7 @@ export default function Page() {
   )
 
   const calculatedValues = useMemo(
-    () => workloads.map((workload) => ({ workload, value: calculateValue(values[workload.id] ?? '') })),
+    () => workloads.map((workload) => ({ workload, value: parseQuantity(values[workload.id] ?? '') })),
     [workloads, values],
   )
 
@@ -212,26 +167,27 @@ export default function Page() {
   )
 
   const totalUnits = useMemo(
-    () => calculatedValues.reduce((total, { value }) => total + Math.max(0, value ?? 0), 0),
+    () => calculatedValues.reduce((total, { value }) => total + (value ?? 0), 0),
     [calculatedValues],
   )
 
-  const shiftDuration = durationBetween(clockInTime, clockOutTime)
-  const workedSeconds = shiftDuration === null ? null : Math.max(0, shiftDuration - DEFAULT_BREAK_SECONDS)
-  const startSeconds = timeToSeconds(clockInTime)
-  const estimatedClockOut = startSeconds === null ? null : secondsToTime(startSeconds + totalSeconds + DEFAULT_BREAK_SECONDS)
+  const clockInSeconds = timeToSeconds(clockInTime)
+  const estimatedClockOutSeconds = clockInSeconds === null || totalUnits === 0
+    ? null
+    : clockInSeconds + totalSeconds + BREAK_SECONDS
+
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
 
   function updateValue(id: string, value: string) {
-    if (/^[\d+*/().=\s-]*$/.test(value)) setValues((current) => ({ ...current, [id]: value }))
+    if (/^\d*$/.test(value)) setValues((current) => ({ ...current, [id]: value }))
   }
 
   function addQuickValue(id: string, amount: number) {
-    setValues((current) => ({ ...current, [id]: String((calculateValue(current[id] ?? '') ?? 0) + amount) }))
+    setValues((current) => ({ ...current, [id]: String((parseQuantity(current[id] ?? '') ?? 0) + amount) }))
   }
 
   function adjustRate(id: string, delta: number) {
-    setRates((current) => ({ ...current, [id]: Math.max(1, Math.min(240, (current[id] ?? 1) + delta)) }))
+    setRates((current) => ({ ...current, [id]: Math.max(1, Math.min(240, (current[id] ?? DEFAULT_RATES[id]) + delta)) }))
   }
 
   function saveRates() {
@@ -240,41 +196,45 @@ export default function Page() {
   }
 
   function resetRates() {
-    const defaults = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id, minutesPerUnit }) => [id, minutesPerUnit]))
+    const defaults = { ...DEFAULT_RATES }
     setRates(defaults)
     setSavedRates(defaults)
   }
 
   function resetAll() {
     setValues({ ...EMPTY_VALUES })
-    setClockOutTime('')
-    const now = new Date()
-    const parts = getPhilippineParts(now)
-    setClockInTime(`${parts.hour}:${parts.minute}:${parts.second}`)
+    setClockInTime(getCurrentClockIn())
   }
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
-      <div className="pointer-events-none fixed inset-0 opacity-[0.25] [background-image:radial-gradient(circle_at_1px_1px,var(--grid-dot)_1px,transparent_0)] [background-size:24px_24px]" />
-      <div className="relative mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6 lg:px-8">
-        <nav className={`flex min-h-14 items-center justify-between gap-4 border-b border-border/80 transition-all duration-500 ${motion}`}>
+      <div className="pointer-events-none fixed inset-0 opacity-[0.22] [background-image:radial-gradient(circle_at_1px_1px,var(--grid-dot)_1px,transparent_0)] [background-size:24px_24px]" />
+
+      <div className="relative mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6 sm:pb-8 lg:px-8">
+        <nav className={`flex min-h-14 items-center justify-between gap-4 border-b border-border/80 ${motion}`}>
           <div className="flex min-w-0 items-center gap-2.5">
             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"><TimerReset className="size-3.5" /></div>
             <div className="min-w-0 leading-none"><span className="block truncate text-sm font-bold tracking-tight">SIF Tracker</span><span className="mt-1 block text-[8px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Operations</span></div>
           </div>
-          <div className="flex shrink-0 items-center gap-3"><div className="text-right font-mono leading-none"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">PHT</span><time className="mt-1 block text-[10px] font-semibold tabular-nums">{philippineDate}</time><time className="mt-0.5 block text-[11px] font-bold tabular-nums sm:text-xs">{philippineTime}</time></div><ThemeToggle /></div>
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="text-right font-mono leading-none" aria-label="Philippine Standard Time"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">PHT</span><time className="mt-1 block text-[10px] font-semibold tabular-nums">{philippineDate}</time><time className="mt-0.5 block text-[11px] font-bold tabular-nums sm:text-xs">{philippineTime}</time></div>
+            <ThemeToggle />
+          </div>
         </nav>
 
-        <section className={`py-7 sm:py-9 transition-all duration-500 ${motion}`}>
+        <section className={`py-7 sm:py-9 ${motion}`}>
           <div className="max-w-3xl">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div>
             <h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Time, tracked simply.</h1>
-            <p className="mt-3 max-w-2xl text-sm leading-5 text-muted-foreground">Calculate workload time, then compare it with your actual clock-in and clock-out.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-5 text-muted-foreground">Enter your workload and the tracker automatically calculates total work time and your clock-out time.</p>
           </div>
         </section>
 
-        <section id="calculator" className={`transition-all duration-500 ${motion}`}>
-          <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">01 / Calculator</p><h2 className="mt-1 text-lg font-semibold tracking-tight">Enter your workload</h2></div><button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm hover:bg-accent" aria-expanded={settingsOpen}><Settings2 className="size-3" />Settings</button></div>
+        <section id="calculator" className={` ${motion}`}>
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+            <div><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">01 / Calculator</p><h2 className="mt-1 text-lg font-semibold tracking-tight">Enter your workload</h2></div>
+            <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm hover:bg-accent" aria-expanded={settingsOpen}><Settings2 className="size-3" />Settings</button>
+          </div>
 
           {settingsOpen && (
             <section id="settings" className="mb-3 rounded-xl border border-border bg-card/90 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur">
@@ -287,40 +247,45 @@ export default function Page() {
                   </div>
                 ))}
               </div>
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2"><span className="text-[8px] text-muted-foreground">Changes are applied to the calculator after Save.</span><div className="flex gap-2"><button type="button" onClick={resetRates} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-[9px] font-bold hover:bg-accent"><RotateCcw className="size-3" />Reset</button><button type="button" onClick={saveRates} className="inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-[9px] font-bold text-primary-foreground hover:opacity-90">Save</button></div></div>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2"><span className="text-[8px] text-muted-foreground">Save applies the rates to the calculator.</span><div className="flex gap-2"><button type="button" onClick={resetRates} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-[9px] font-bold hover:bg-accent"><RotateCcw className="size-3" />Reset</button><button type="button" onClick={saveRates} className="rounded-md bg-primary px-3 py-1.5 text-[9px] font-bold text-primary-foreground hover:opacity-90">Save</button></div></div>
             </section>
           )}
 
           <div className="grid min-w-0 gap-2.5 lg:grid-cols-2">
             {calculatedValues.map(({ workload, value }) => (
-              <article key={workload.id} className="min-w-0 rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30">
-                <div className="flex min-w-0 items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-2.5"><span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} /><div className="min-w-0"><h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3><p className="mt-0.5 text-[10px] text-muted-foreground">{workload.minutesPerUnit} minutes per {workload.unit.slice(0, -1)}</p></div></div><output className="shrink-0 font-mono text-[15px] font-bold tabular-nums" style={{ color: workload.accent }}>{formatDuration((value ?? 0) * workload.minutesPerUnit * 60)}</output></div>
-                <label className="mt-3 block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Number of {workload.unit}</span><div className="relative"><input type="text" inputMode="numeric" value={values[workload.id]} onChange={(event) => updateValue(workload.id, event.target.value)} placeholder="0" className="h-11 w-full min-w-0 rounded-lg border border-input bg-background/70 px-3 pr-14 font-mono text-[15px] font-medium tabular-nums outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10" />{value !== null && <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground">{value}</output>}</div></label>
+              <article key={workload.id} className="min-w-0 rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition-colors hover:border-primary/30">
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-2.5"><span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} /><div className="min-w-0"><h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3><p className="mt-0.5 text-[10px] text-muted-foreground">{workload.minutesPerUnit} minutes per {workload.unit.slice(0, -1)}</p></div></div>
+                  <output className="shrink-0 font-mono text-[15px] font-bold tabular-nums" style={{ color: workload.accent }}>{formatDuration((value ?? 0) * workload.minutesPerUnit * 60)}</output>
+                </div>
+
+                <label className="mt-3 block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Number of {workload.unit}</span><input type="text" inputMode="numeric" pattern="[0-9]*" value={values[workload.id]} onChange={(event) => updateValue(workload.id, event.target.value)} placeholder="0" className="h-11 w-full min-w-0 rounded-lg border border-input bg-background/70 px-3 font-mono text-[15px] font-medium tabular-nums outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5"><span className="mr-auto text-[8px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Quick add</span>{[1, 5, 10].map((amount) => <button key={amount} type="button" onClick={() => addQuickValue(workload.id, amount)} className="rounded-md border border-border bg-background px-2 py-1 font-mono text-[9px] font-semibold hover:bg-accent">+{amount}</button>)}</div>
                 <div className="mt-2.5 grid grid-cols-2 gap-x-2 gap-y-1 border-t border-border pt-2.5 sm:grid-cols-4">{workload.examples.map((example) => <span key={example} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground">{example}</span>)}</div>
               </article>
             ))}
 
-            <section id="workflow" className="min-w-0 rounded-xl border border-primary/15 bg-primary p-3.5 text-primary-foreground shadow-[0_8px_28px_var(--card-shadow)]"><div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px] sm:items-center"><div className="min-w-0"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4 opacity-75">{totalUnits || 0} total units across {workloads.length} workload types.</p></div><div className="min-w-0 text-left sm:text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Combined total</span><strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong></div></div></section>
+            <section id="workflow" className="min-w-0 rounded-xl border border-primary/15 bg-primary p-3.5 text-primary-foreground shadow-[0_8px_28px_var(--card-shadow)]">
+              <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_200px] sm:items-center"><div className="min-w-0"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4 opacity-75">{totalUnits} total units across {workloads.length} workload types.</p></div><div className="min-w-0 text-left sm:text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Total work time</span><strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong></div></div>
+            </section>
           </div>
         </section>
 
         <section id="shift" className="mt-5 rounded-xl border border-border bg-card/80 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur">
-          <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift</p><h2 className="mt-1 text-base font-semibold tracking-tight">Clock in & clock out</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · 24-hour · fixed 1-hour break</span></div>
-          <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <label className="min-w-0"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" step="1" value={clockInTime} onChange={(event) => setClockInTime(event.target.value)} className="h-10 w-full min-w-0 rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <label className="min-w-0"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock out</span><input type="time" step="1" value={clockOutTime} onChange={(event) => setClockOutTime(event.target.value)} className="h-10 w-full min-w-0 rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" /></label>
-            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{workedSeconds === null ? '—' : formatDuration(workedSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">01:00:00 break deducted</span></div>
-            <div className="min-w-0 rounded-lg border border-primary/20 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Estimated Clock Out</span><strong className="mt-1 block whitespace-nowrap font-mono text-lg font-bold tabular-nums">{formatAmPmTime(estimatedClockOut)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload + 1-hour break</span></div>
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift</p><h2 className="mt-1 text-base font-semibold tracking-tight">Automatic clock-out</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · fixed 1-hour break</span></div>
+          <div className="grid min-w-0 gap-3 sm:grid-cols-3">
+            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{clockInTime}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Current PHT when the page opens.</span></div>
+            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{totalSeconds === 0 ? '00:00:00' : formatDuration(totalSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload time, excluding break.</span></div>
+            <div className="min-w-0 rounded-lg border border-primary/20 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock Out</span><strong className="mt-1 block whitespace-nowrap font-mono text-lg font-bold tabular-nums">{formatAmPmTime(estimatedClockOutSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload + 01:00:00 break.</span></div>
           </div>
         </section>
 
-        <section id="about" className="mt-5 flex flex-col gap-3 border-y border-border py-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">Workload values and saved rates stay in this browser. Type expressions such as <span className="font-mono text-foreground">4*3</span> directly in any workload field.</p></div><button type="button" onClick={resetAll} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold hover:bg-accent"><RotateCcw className="size-3" />Reset all</button></section>
+        <section id="tools" className="mt-5 flex flex-col gap-3 border-y border-border py-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">Workload values and saved rates stay in this browser.</p></div><button type="button" onClick={resetAll} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold hover:bg-accent"><RotateCcw className="size-3" />Reset all</button></section>
 
         <footer className="flex flex-col gap-1 py-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
       </div>
 
-      <div className="mobile-total-bar" aria-live="polite"><div className="min-w-0"><span className="mobile-total-label">TOTAL</span><strong>{formatDuration(totalSeconds)}</strong></div><div className="mobile-total-meta"><div><span>{workedSeconds === null ? '—' : formatDuration(workedSeconds)}</span><span>Worked</span></div><div><span>{formatAmPmTime(estimatedClockOut)}</span><span>Out</span></div></div></div>
+      <div className="mobile-total-bar" aria-live="polite"><div><span className="mobile-total-label">WORKED</span><strong>{formatDuration(totalSeconds)}</strong></div><div><span className="mobile-total-label">OUT</span><strong>{formatAmPmTime(estimatedClockOutSeconds)}</strong></div><div><span className="mobile-total-label">BREAK</span><strong>01:00:00</strong></div></div>
     </main>
   )
 }
