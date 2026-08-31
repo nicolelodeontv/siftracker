@@ -26,7 +26,7 @@ const DEFAULT_WORKLOADS: Workload[] = [
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
 const DEFAULT_RATES: RateMap = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id, minutesPerUnit }) => [id, minutesPerUnit]))
 const TIME_ZONE = 'Asia/Manila'
-const STORAGE_KEY = 'sif-tracker-state-v8'
+const STORAGE_KEY = 'sif-tracker-rates-v1'
 const BREAK_SECONDS = 60 * 60
 
 function formatDuration(totalSeconds: number) {
@@ -132,8 +132,7 @@ export default function Page() {
   useEffect(() => {
     try {
       const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')
-      if (saved?.values) setValues({ ...EMPTY_VALUES, ...saved.values })
-      if (saved?.rates) {
+      if (saved?.rates && typeof saved.rates === 'object') {
         const merged = { ...DEFAULT_RATES, ...saved.rates }
         setRates(merged)
         setSavedRates(merged)
@@ -141,15 +140,18 @@ export default function Page() {
     } catch {
       // Ignore invalid local storage.
     }
+
+    // Workload inputs intentionally do not load from storage.
+    setValues({ ...EMPTY_VALUES })
   }, [])
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, rates: savedRates }))
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ rates: savedRates }))
     } catch {
       // Ignore unavailable local storage.
     }
-  }, [values, savedRates])
+  }, [savedRates])
 
   const workloads = useMemo(
     () => DEFAULT_WORKLOADS.map((workload) => ({ ...workload, minutesPerUnit: rates[workload.id] ?? workload.minutesPerUnit })),
@@ -204,6 +206,7 @@ export default function Page() {
   function resetAll() {
     setValues({ ...EMPTY_VALUES })
     setClockInTime(getCurrentClockIn())
+    setSettingsOpen(false)
   }
 
   return (
@@ -274,13 +277,13 @@ export default function Page() {
         <section id="shift" className="mt-5 rounded-xl border border-border bg-card/80 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift</p><h2 className="mt-1 text-base font-semibold tracking-tight">Automatic clock-out</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · fixed 1-hour break</span></div>
           <div className="grid min-w-0 gap-3 sm:grid-cols-3">
-            <label className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" step="1" value={clockInTime} onChange={(event) => setClockInTime(event.target.value)} className="h-10 w-full min-w-0 rounded-lg border border-input bg-background px-3 font-mono text-sm tabular-nums outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" /><span className="mt-1 block text-[8px] text-muted-foreground">Defaults to current PHT when the page opens.</span></label>
-            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{totalSeconds === 0 ? '00:00:00' : formatDuration(totalSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload time, excluding break.</span></div>
+            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" step="1" value={clockInTime} onChange={(event) => setClockInTime(event.target.value)} className="mt-1 h-10 w-full min-w-0 rounded-lg border border-input bg-background px-3 font-mono text-sm font-bold tabular-nums outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" /><span className="mt-1 block text-[8px] text-muted-foreground">Current PHT when the page opens; editable.</span></div>
+            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{totalUnits === 0 ? '00:00:00' : formatDuration(totalSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload time, excluding break.</span></div>
             <div className="min-w-0 rounded-lg border border-primary/20 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock Out</span><strong className="mt-1 block whitespace-nowrap font-mono text-lg font-bold tabular-nums">{formatAmPmTime(estimatedClockOutSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload + 01:00:00 break.</span></div>
           </div>
         </section>
 
-        <section id="tools" className="mt-5 flex flex-col gap-3 border-y border-border py-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">Workload values and saved rates stay in this browser.</p></div><button type="button" onClick={resetAll} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold hover:bg-accent"><RotateCcw className="size-3" />Reset all</button></section>
+        <section id="tools" className="mt-5 flex flex-col gap-3 border-y border-border py-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p><p className="mt-1 text-[10px] leading-4 text-muted-foreground">Workload values reset on refresh. Saved rates stay in this browser.</p></div><button type="button" onClick={resetAll} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold hover:bg-accent"><RotateCcw className="size-3" />Reset all</button></section>
 
         <footer className="flex flex-col gap-1 py-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
       </div>
