@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArrowUpRight, RotateCcw, TimerReset } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -23,8 +23,26 @@ function formatDuration(totalMinutes: number) {
   return `${hours}h ${minutes}m`
 }
 
+function formatPhilippineTime(date: Date) {
+  return new Intl.DateTimeFormat('en-PH', {
+    timeZone: 'Asia/Manila',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(date)
+}
+
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>(Object.fromEntries(workloads.map((workload) => [workload.id, ''])))
+  const [philippineTime, setPhilippineTime] = useState('00:00:00')
+
+  useEffect(() => {
+    const updateClock = () => setPhilippineTime(formatPhilippineTime(new Date()))
+    updateClock()
+    const interval = window.setInterval(updateClock, 1000)
+    return () => window.clearInterval(interval)
+  }, [])
 
   function calculateValue(value: string): number | null {
     const normalized = value.replace(/\s+/g, '')
@@ -57,7 +75,13 @@ export default function Page() {
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-6 sm:px-7 lg:px-8">
         <nav className="flex h-14 items-center justify-between border-b border-border/80">
           <div className="flex items-center gap-2.5"><div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"><TimerReset className="size-3.5" aria-hidden="true" /></div><div className="leading-none"><span className="block text-sm font-bold tracking-tight">SIF Tracker</span><span className="mt-1 block text-[8px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Operations</span></div></div>
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <div className="text-right font-mono leading-none" aria-label="Philippine Standard Time">
+              <span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">PHT</span>
+              <time className="mt-1 block text-[11px] font-semibold tabular-nums sm:text-xs" dateTime={philippineTime}>{philippineTime}</time>
+            </div>
+            <ThemeToggle />
+          </div>
         </nav>
 
         <section className="py-8 sm:py-10">
