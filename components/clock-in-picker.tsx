@@ -1,104 +1,94 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Check, Clock3, X } from 'lucide-react'
 
-function pad(value: number) {
-  return String(value).padStart(2, '0')
+const DEFAULT_TIME = '09:00:00'
+
+function normalizeTime(value: string | undefined) {
+  if (!value) return DEFAULT_TIME
+  const parts = value.split(':').map(Number)
+  if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return DEFAULT_TIME
+  const [hour, minute, second] = parts
+  return `${String(Math.min(23, Math.max(0, hour))).padStart(2, '0')}:${String(Math.min(59, Math.max(0, minute))).padStart(2, '0')}:${String(Math.min(59, Math.max(0, second))).padStart(2, '0')}`
 }
 
-function parseTime(value: string | undefined) {
-  const [hour = '0', minute = '0', second = '0'] = (value ?? '09:00:00').split(':')
-  return {
-    hour: Math.max(0, Math.min(23, Number(hour) || 0)),
-    minute: Math.max(0, Math.min(59, Number(minute) || 0)),
-    second: Math.max(0, Math.min(59, Number(second) || 0)),
-  }
+function getHiddenClockInput() {
+  return document.querySelector<HTMLInputElement>('#shift input[type="time"]')
 }
 
-function normalizeInput(value: string) {
-  const digits = value.replace(/[^0-9]/g, '').slice(0, 6)
-  if (digits.length <= 2) return digits
-  if (digits.length <= 4) return `${digits.slice(0, 2)}:${digits.slice(2)}`
-  return `${digits.slice(0, 2)}:${digits.slice(2, 4)}:${digits.slice(4, 6)}`
+function readClockIn() {
+  return normalizeTime(getHiddenClockInput()?.value)
 }
 
-function validateTime(value: string) {
-  const match = /^(\d{2}):(\d{2}):(\d{2})$/.exec(value)
-  if (!match) return null
-  const hour = Number(match[1])
-  const minute = Number(match[2])
-  const second = Number(match[3])
-  if (hour > 23 || minute > 59 || second > 59) return null
-  return `${pad(hour)}:${pad(minute)}:${pad(second)}`
-}
-
-function setControlledTime(value: string) {
-  const input = document.querySelector<HTMLInputElement>('#shift input[type="time"]')
+function writeClockIn(value: string) {
+  const input = getHiddenClockInput()
   if (!input) return
 
-  const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')
-  descriptor?.set?.call(input, value)
+  const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
+  setter?.call(input, value)
   input.dispatchEvent(new Event('input', { bubbles: true }))
   input.dispatchEvent(new Event('change', { bubbles: true }))
 }
 
 export function ClockInPicker() {
   const [open, setOpen] = useState(false)
-  const [draft, setDraft] = useState('09:00:00')
-  const [error, setError] = useState(false)
-
-  const currentValue = useMemo(() => validateTime(draft) ?? draft, [draft])
+  const [draft, setDraft] = useState(DEFAULT_TIME)
 
   useEffect(() => {
-    const handleClickCapture = (event: MouseEvent) => {
+    const handleTrigger = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null
       const trigger = target?.closest?.('button[aria-label^="Edit Clock In"]')
       if (!trigger) return
 
       event.preventDefault()
       event.stopPropagation()
-      const input = document.querySelector<HTMLInputElement>('#shift input[type="time"]')
-      const parsed = parseTime(input?.value)
-      setDraft(`${pad(parsed.hour)}:${pad(parsed.minute)}:${pad(parsed.second)}`)
-      setError(false)
+      setDraft(readClockIn())
       setOpen(true)
     }
 
-    document.addEventListener('click', handleClickCapture, true)
-    return () => document.removeEventListener('click', handleClickCapture, true)
+    document.addEventListener('click', handleTrigger, true)
+    return () => document.removeEventListener('click', handleTrigger, true)
   }, [])
 
   useEffect(() => {
     if (!open) return
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
-      if (event.key === 'Enter') {
-        const valid = validateTime(draft)
-        if (!valid) {
-          setError(true)
-          return
-        }
+      if (event.key === 'Escape') {
         event.preventDefault()
-        setControlledTime(valid)
+        setOpen(false)
+      }
+
+      if (event.key === 'Enter') {
+        const target = event.target as HTMLElement | null
+        if (target?.tagName === 'INPUT') return
+        event.preventDefault()
+        writeClockIn(normalizeTime(draft))
         setOpen(false)
       }
     }
+
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [open, draft])
 
-  if (!open) return null
+  if (!open || typeof document === 'undefined') return null
 
-  const picker = (
+  const apply = () => {
+    writeClockIn(normalizeTime(draft))
+    setOpen(false)
+  }
+
+  return createPortal(
     <div
       className="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-3 backdrop-blur-[3px] sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="clock-in-picker-title"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) setOpen(false)
+        if (event.currentTarget === event.target) setOpen(false)
       }}
     >
       <div className="w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
@@ -108,82 +98,40 @@ export function ClockInPicker() {
               <Clock3 className="size-3.5" />
             </span>
             <div className="min-w-0">
-              <p className="font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift Summary</p>
-              <h2 id="clock-in-picker-title" className="mt-0.5 truncate font-mono text-sm font-semibold tracking-tight">Set Clock In</h2>
+              <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift Summary</p>
+              <h2 id="clock-in-picker-title" className="mt-0.5 truncate text-sm font-semibold tracking-tight">Set Clock In</h2>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="rounded-lg p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground"
-            aria-label="Close Clock In picker"
-          >
+          <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-2 text-muted-foreground transition hover:bg-accent hover:text-foreground" aria-label="Close Clock In picker">
             <X className="size-4" />
           </button>
         </div>
 
-        <div className="px-4 py-4 sm:px-5 sm:py-5">
-          <label htmlFor="clock-in-time-entry" className="block rounded-xl border border-border bg-background/60 px-4 py-5 text-center shadow-sm focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10">
-            <span className="block font-mono text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Clock In time</span>
-            <input
-              id="clock-in-time-entry"
-              type="text"
-              inputMode="numeric"
-              autoComplete="off"
-              autoFocus
-              value={draft}
-              onChange={(event) => {
-                setDraft(normalizeInput(event.target.value))
-                setError(false)
-              }}
-              onBlur={() => {
-                const valid = validateTime(draft)
-                if (valid) setDraft(valid)
-                else setError(true)
-              }}
-              onFocus={() => setError(false)}
-              maxLength={8}
-              placeholder="HH:MM:SS"
-              aria-invalid={error}
-              aria-describedby={error ? 'clock-in-time-error' : undefined}
-              className="mt-2 block w-full bg-transparent text-center font-mono text-4xl font-bold tracking-[-0.06em] tabular-nums text-primary outline-none sm:text-5xl"
-            />
-            <span className="mt-2 block font-mono text-[8px] font-medium text-muted-foreground">24-hour format · PHT</span>
+        <div className="p-4 sm:p-5">
+          <label htmlFor="clock-in-time-picker" className="block text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            Clock In time
           </label>
+          <input
+            id="clock-in-time-picker"
+            type="time"
+            step="1"
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            className="mt-2 h-14 w-full rounded-xl border border-input bg-background px-4 text-center font-mono text-2xl font-bold tabular-nums outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+            aria-label="Clock In time"
+            autoFocus
+          />
+          <p className="mt-2 text-center text-[8px] font-medium text-muted-foreground">24-hour format · PHT</p>
 
-          {error && (
-            <p id="clock-in-time-error" className="mt-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-center font-mono text-[9px] font-semibold text-destructive">
-              Enter a valid time from 00:00:00 to 23:59:59.
-            </p>
-          )}
-
-          <div className="mt-3 rounded-xl border border-border bg-background/45 px-3 py-2.5">
-            <p className="font-mono text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Example</p>
-            <p className="mt-1 font-mono text-[9px] leading-4 text-muted-foreground">09:00:00 · 13:30:00 · 18:45:30</p>
-          </div>
-
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => setOpen(false)} className="rounded-xl border border-border bg-background px-3 py-2.5 font-mono text-[10px] font-bold transition hover:bg-accent">Cancel</button>
-            <button
-              type="button"
-              onClick={() => {
-                const valid = validateTime(draft)
-                if (!valid) {
-                  setError(true)
-                  return
-                }
-                setControlledTime(valid)
-                setOpen(false)
-              }}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2.5 font-mono text-[10px] font-bold text-primary-foreground transition hover:opacity-90"
-            >
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => setOpen(false)} className="rounded-xl border border-border bg-background px-3 py-2.5 text-[10px] font-bold transition hover:bg-accent">Cancel</button>
+            <button type="button" onClick={apply} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2.5 text-[10px] font-bold text-primary-foreground transition hover:opacity-90">
               <Check className="size-3.5" />Apply time
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
-
-  return typeof document === 'undefined' ? null : createPortal(picker, document.body)
 }
