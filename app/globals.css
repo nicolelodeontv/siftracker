@@ -15,6 +15,26 @@ body { min-height:100%; margin:0; overflow-x:hidden; overflow-y:auto; background
 ::selection { background:var(--foreground); color:var(--background); }
 @layer base { * { @apply border-border outline-ring/50; } body { @apply bg-background text-foreground; } }
 
+/* Focus Mode: when Calculator is the first visible section, center it while preserving the site's normal spacing and card rhythm. */
+main > div.relative > section#calculator:first-child {
+  width:100%;
+  max-width:960px;
+  margin-inline:auto;
+}
+
+main > div.relative > section#calculator:first-child > .mb-3 {
+  justify-content:center;
+  text-align:center;
+}
+
+main > div.relative > section#calculator:first-child > .mb-3 > div:first-child {
+  min-width:0;
+}
+
+main > div.relative > section#calculator:first-child > .mb-3 > div:last-child {
+  justify-content:center;
+}
+
 @media (min-width:768px) {
   main { min-height:100dvh; height:auto; overflow:visible!important; }
   main > div.relative { display:flex!important; flex-direction:column!important; min-height:100dvh; height:auto; max-height:none; padding-bottom:24px!important; box-sizing:border-box!important; }
@@ -59,6 +79,9 @@ body { min-height:100%; margin:0; overflow-x:hidden; overflow-y:auto; background
   body { overscroll-behavior-y:auto; }
   main { height:auto !important; min-height:100dvh !important; max-height:none !important; overflow:visible !important; }
   main > div.relative { min-height:100dvh !important; height:auto !important; max-height:none !important; }
+  main > div.relative > section#calculator:first-child { max-width:720px; }
+  main > div.relative > section#calculator:first-child > .mb-3 { align-items:center; }
+  main > div.relative > section#calculator:first-child > .mb-3 > div:last-child { width:100%; }
 }
 
 /* Responsive safety net: no fixed-height clipping and predictable overflow on every viewport. */
