@@ -1,4 +1,4 @@
-name: Build check
+name: Verify
 
 on:
   push:
@@ -12,6 +12,8 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +24,7 @@ jobs:
           version: 10
           run_install: false
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -31,11 +33,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Calculator tests
-        run: pnpm run test
-
-      - name: Production build
-        run: pnpm run build
+      - name: Run full verification
+        run: pnpm check
