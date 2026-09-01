@@ -1,0 +1,77 @@
+/* Keep Time Until Clock Out visually contained inside the Clock Out card. */
+
+#shift > .mt-3 {
+  position: relative;
+  z-index: 3;
+  margin-top: -74px !important;
+  margin-left: calc(75% + 9px) !important;
+  width: calc(25% - 9px) !important;
+  padding: 0 12px 10px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#shift > .mt-3 > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 20px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+#shift > .mt-3 > div:first-child > span {
+  color: var(--muted-foreground);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+#shift > .mt-3 > div:first-child > strong {
+  flex-shrink: 0;
+  color: var(--primary);
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Remove the former progress meter and percentage entirely from the rendered UI. */
+#shift > .mt-3 > div:nth-child(2),
+#shift > .mt-3 > div:nth-child(3) {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  #shift > .mt-3 {
+    margin-top: -58px !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 0 12px 10px !important;
+  }
+
+  #shift > .mt-3 > div:first-child {
+    padding-top: 7px;
+  }
+
+  #shift > .mt-3 > div:first-child > span {
+    font-size: 7px;
+  }
+
+  #shift > .mt-3 > div:first-child > strong {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  #shift > .mt-3 {
+    margin-top: -52px !important;
+    padding-inline: 11px !important;
+  }
+}
