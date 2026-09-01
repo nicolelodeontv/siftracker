@@ -1,88 +1,15 @@
 /* Interaction and entrance motion only. Layout lives in Tailwind + ui-overrides.css. */
-
-:root {
-  --motion-fast: 140ms;
-  --motion-base: 220ms;
-  --motion-ease: cubic-bezier(.22, 1, .36, 1);
-}
-
-@keyframes sif-page-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes sif-card-in {
-  from { opacity: 0; transform: translateY(7px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes sif-toast-in {
-  from { opacity: 0; transform: translate(-50%, 6px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
-}
-
-@keyframes sif-dialog-in {
-  from { opacity: 0; transform: translateY(6px) scale(.99); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-main nav,
-main > div.relative > section:first-of-type {
-  animation: sif-page-in 260ms var(--motion-ease) both;
-}
-
-#calculator > .grid > article,
-#workflow,
-#shift,
-#tools,
-#settings {
-  animation: sif-card-in 260ms var(--motion-ease) both;
-}
-
-#calculator > .grid > article:nth-child(1) { animation-delay: 20ms; }
-#calculator > .grid > article:nth-child(2) { animation-delay: 40ms; }
-#calculator > .grid > article:nth-child(3) { animation-delay: 60ms; }
-#calculator > .grid > article:nth-child(4) { animation-delay: 80ms; }
-#calculator > .grid > article:nth-child(5) { animation-delay: 100ms; }
-#workflow { animation-delay: 120ms; }
-#shift { animation-delay: 140ms; }
-#tools { animation-delay: 160ms; }
-
-button {
-  transition:
-    transform var(--motion-fast) var(--motion-ease),
-    background-color var(--motion-fast) ease,
-    border-color var(--motion-fast) ease,
-    color var(--motion-fast) ease,
-    box-shadow var(--motion-fast) ease,
-    opacity var(--motion-fast) ease;
-}
-
-button:hover { transform: translateY(-1px); }
-button:active { transform: translateY(0) scale(.98); }
-
-input,
-textarea,
-select {
-  transition:
-    border-color var(--motion-fast) ease,
-    box-shadow var(--motion-fast) ease,
-    background-color var(--motion-fast) ease;
-}
-
-[role="status"] { animation: sif-toast-in var(--motion-base) var(--motion-ease) both; }
-[role="dialog"] > div { animation: sif-dialog-in var(--motion-base) var(--motion-ease) both; }
-
-@media (max-width: 767px) {
-  button:hover { transform: none; }
-  button:active { transform: scale(.98); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-delay: 0ms !important;
-    transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
+:root { --motion-fast:140ms; --motion-base:220ms; --motion-ease:cubic-bezier(.22,1,.36,1); }
+@keyframes sif-page-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+@keyframes sif-card-in { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:none; } }
+@keyframes sif-toast-in { from { opacity:0; transform:translate(-50%,6px); } to { opacity:1; transform:translate(-50%,0); } }
+@keyframes sif-dialog-in { from { opacity:0; transform:translateY(6px) scale(.99); } to { opacity:1; transform:none; } }
+main nav, main > div.relative > section:first-of-type { animation:sif-page-in 260ms var(--motion-ease) both; }
+#calculator > .grid > article, #workflow, #shift, #tools, #settings { animation:sif-card-in 260ms var(--motion-ease) both; }
+#calculator > .grid > article:nth-child(1){animation-delay:20ms;} #calculator > .grid > article:nth-child(2){animation-delay:40ms;} #calculator > .grid > article:nth-child(3){animation-delay:60ms;} #calculator > .grid > article:nth-child(4){animation-delay:80ms;} #calculator > .grid > article:nth-child(5){animation-delay:100ms;} #workflow{animation-delay:120ms;} #shift{animation-delay:140ms;} #tools{animation-delay:160ms;}
+button { transition:transform var(--motion-fast) var(--motion-ease),background-color var(--motion-fast) ease,border-color var(--motion-fast) ease,color var(--motion-fast) ease,box-shadow var(--motion-fast) ease,opacity var(--motion-fast) ease; }
+button:hover { transform:translateY(-1px); } button:active { transform:scale(.98); }
+input,textarea,select { transition:border-color var(--motion-fast) ease,box-shadow var(--motion-fast) ease,background-color var(--motion-fast) ease; }
+[role="status"]{animation:sif-toast-in var(--motion-base) var(--motion-ease) both;} [role="dialog"] > div{animation:sif-dialog-in var(--motion-base) var(--motion-ease) both;}
+@media (max-width:767px){button:hover{transform:none;}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
