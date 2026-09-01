@@ -1,62 +1,33 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Copy, Minus, Plus, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
-
-type Workload = {
-  id: string
-  label: string
-  unit: string
-  minutesPerUnit: number
-  accent: string
-}
+import {
+  calculateValue,
+  formatCompactDuration,
+  formatDuration,
+  formatMilitaryTime,
+  getElapsedSeconds,
+  isIncompleteExpression,
+  timeToSeconds,
+  DAY_SECONDS,
+} from '@/lib/calculator'
+import {
+  DEFAULT_RATES,
+  DEFAULT_WORKLOADS,
+  getExampleAmounts,
+  getUnitLabel,
+  type Workload,
+} from '@/lib/workloads'
 
 type RateMap = Record<string, number>
 type Feedback = 'saved' | 'reset' | 'copied' | null
 
-const DEFAULT_WORKLOADS: Workload[] = [
-  { id: 'teamEdit', label: 'Team edit', unit: 'teams', minutesPerUnit: 15, accent: 'var(--chart-1)' },
-  { id: 'indiClip', label: 'Indi clip', unit: 'indis', minutesPerUnit: 5, accent: 'var(--chart-2)' },
-  { id: 'indiEdit', label: 'Indi edit', unit: 'indis', minutesPerUnit: 5, accent: 'var(--chart-3)' },
-  { id: 'indiBuild', label: 'Indi build', unit: 'orders', minutesPerUnit: 4, accent: 'var(--chart-4)' },
-  { id: 'lateOrders', label: 'Late orders', unit: 'orders', minutesPerUnit: 15, accent: 'var(--chart-5)' },
-]
-
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
-const DEFAULT_RATES: RateMap = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id, minutesPerUnit }) => [id, minutesPerUnit]))
 const TIME_ZONE = 'Asia/Manila'
-const STORAGE_KEY = 'sif-tracker-rates-v1'
+const RATE_STORAGE_KEY = 'sif-tracker-rates-v1'
 const BREAK_SECONDS = 60 * 60
-const DAY_SECONDS = 24 * 60 * 60
-
-function formatDuration(totalSeconds: number) {
-  const seconds = Math.max(0, Math.round(totalSeconds))
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  const remaining = seconds % 60
-  return [hours, minutes, remaining].map((value) => String(value).padStart(2, '0')).join(':')
-}
-
-function formatCompactDuration(totalMinutes: number) {
-  const minutes = Math.max(0, Math.round(totalMinutes))
-  const hours = Math.floor(minutes / 60)
-  const remaining = minutes % 60
-  if (hours === 0) return `${remaining}m`
-  if (remaining === 0) return `${hours}h`
-  return `${hours}h ${remaining}m`
-}
-
-function getExampleAmounts(workload: Workload) {
-  if (workload.unit === 'teams') return [1, 4, 16, 32]
-  if (workload.unit === 'indis') return [1, 12, 48, 96]
-  return [1, 15, 60, 120]
-}
-
-function getUnitLabel(unit: string, amount: number) {
-  const singular = unit.slice(0, -1)
-  return `${amount} ${amount === 1 ? singular : unit}`
-}
 
 function getPhilippineParts(date: Date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -78,107 +49,9 @@ function formatPhilippineDate(date: Date) {
   }).format(date)
 }
 
-function formatPhilippineTime(date: Date) {
-  return new Intl.DateTimeFormat('en-PH', {
-    timeZone: TIME_ZONE,
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    hourCycle: 'h23',
-  }).format(date)
-}
-
-function formatMilitaryTime(totalSeconds: number | null) {
-  if (totalSeconds === null) return '—'
-  const daySeconds = ((Math.round(totalSeconds) % DAY_SECONDS) + DAY_SECONDS) % DAY_SECONDS
-  const hours = Math.floor(daySeconds / 3600)
-  const minutes = Math.floor((daySeconds % 3600) / 60)
-  const seconds = daySeconds % 60
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-}
-
-function calculateValue(value: string): number | null {
-  const normalized = value.replace(/\s+/g, '')
-  if (!normalized || normalized.length > 200 || !/^[\d+*/().=-]+$/.test(normalized)) return null
-
-  const parts = normalized.split('=')
-  if (parts.length > 2 || !parts[0] || normalized.endsWith('=')) return null
-
-  const [expression, declaredTotal] = parts
-  const tokens = expression.match(/\d+(?:\.\d+)?|[()+*/-]/g) ?? []
-  if (tokens.join('') !== expression) return null
-
-  try {
-    const index = { value: 0 }
-
-    const parseExpression = (): number => {
-      let result = parseTerm()
-      while (tokens[index.value] === '+' || tokens[index.value] === '-') {
-        const operator = tokens[index.value++]
-        const next = parseTerm()
-        result = operator === '+' ? result + next : result - next
-      }
-      return result
-    }
-
-    const parseTerm = (): number => {
-      let result = parseFactor()
-      while (tokens[index.value] === '*' || tokens[index.value] === '/') {
-        const operator = tokens[index.value++]
-        const next = parseFactor()
-        if (operator === '/' && next === 0) throw new Error('Division by zero')
-        result = operator === '*' ? result * next : result / next
-      }
-      return result
-    }
-
-    const parseFactor = (): number => {
-      const token = tokens[index.value++]
-      if (token === '(') {
-        const result = parseExpression()
-        if (tokens[index.value++] !== ')') throw new Error('Unclosed parenthesis')
-        return result
-      }
-      if (token === '-') return -parseFactor()
-      if (!token || Number.isNaN(Number(token))) throw new Error('Invalid expression')
-      return Number(token)
-    }
-
-    const result = parseExpression()
-    if (index.value !== tokens.length || !Number.isFinite(result) || Math.abs(result) > 1_000_000) return null
-
-    const rounded = Number.isInteger(result) ? result : Number(result.toFixed(2))
-    return declaredTotal !== undefined && Number(declaredTotal) !== rounded ? null : rounded
-  } catch {
-    return null
-  }
-}
-
-function isIncompleteExpression(value: string) {
-  const normalized = value.trim()
-  if (!normalized) return false
-  return /(?:[+*/.=(-]|\s)$/.test(normalized) || /^(?:[-+]|\()$/.test(normalized)
-}
-
 function getCurrentClockIn() {
   const parts = getPhilippineParts(new Date())
   return `${parts.hour}:${parts.minute}:${parts.second}`
-}
-
-function timeToSeconds(value: string) {
-  const match = /^(\d{2}):(\d{2}):(\d{2})$/.exec(value)
-  if (!match) return null
-
-  const hours = Number(match[1])
-  const minutes = Number(match[2])
-  const seconds = Number(match[3])
-  if (hours > 23 || minutes > 59 || seconds > 59) return null
-  return hours * 3600 + minutes * 60 + seconds
-}
-
-function getElapsedSeconds(clockInSeconds: number, nowSeconds: number) {
-  return ((nowSeconds - clockInSeconds) + DAY_SECONDS) % DAY_SECONDS
 }
 
 export default function Page() {
@@ -195,19 +68,20 @@ export default function Page() {
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
   const [mounted, setMounted] = useState(false)
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([])
+  const shiftRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const updateClock = () => {
       const now = new Date()
       const parts = getPhilippineParts(now)
-      setPhilippineTime(formatPhilippineTime(now))
+      setPhilippineTime(`${parts.hour}:${parts.minute}:${parts.second}`)
       setPhilippineDate(formatPhilippineDate(now))
       setPhilippineSeconds(Number(parts.hour) * 3600 + Number(parts.minute) * 60 + Number(parts.second))
     }
 
     updateClock()
     setClockInTime(getCurrentClockIn())
-
     const interval = window.setInterval(updateClock, 1000)
     const frame = window.requestAnimationFrame(() => setMounted(true))
 
@@ -219,8 +93,8 @@ export default function Page() {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? 'null')
-      if (saved?.rates) {
+      const saved = JSON.parse(window.localStorage.getItem(RATE_STORAGE_KEY) ?? 'null')
+      if (saved?.rates && typeof saved.rates === 'object') {
         const merged = { ...DEFAULT_RATES, ...saved.rates }
         setRates(merged)
         setSavedRates(merged)
@@ -232,7 +106,7 @@ export default function Page() {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ rates: savedRates }))
+      window.localStorage.setItem(RATE_STORAGE_KEY, JSON.stringify({ rates: savedRates }))
     } catch {
       // Ignore unavailable local storage.
     }
@@ -253,33 +127,44 @@ export default function Page() {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [confirmReset])
 
+  function clearWorkload(id: string) {
+    setValues((current) => ({ ...current, [id]: '' }))
+  }
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      const active = document.activeElement as HTMLInputElement | null
+      const active = document.activeElement
+      const index = inputRefs.current.findIndex((input) => input === active)
+      const isWorkloadInput = index >= 0
+
       if (event.key === 'Escape') {
-        if (active?.matches('#calculator article input')) {
-          const id = active.closest('article')?.getAttribute('data-workload-id')
-          if (id) clearWorkload(id)
+        if (isWorkloadInput) {
+          clearWorkload(DEFAULT_WORKLOADS[index].id)
+          return
         }
         setSettingsOpen(false)
         setConfirmReset(false)
         return
       }
-      if (!active || !active.matches('#calculator article input')) return
+
+      if (!isWorkloadInput) return
 
       if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
         event.preventDefault()
-        document.querySelector('#shift')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      } else if (event.key === 'Enter') {
+        shiftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        return
+      }
+
+      if (event.key === 'Enter') {
         event.preventDefault()
-        const inputs = Array.from(document.querySelectorAll<HTMLInputElement>('#calculator article input'))
-        const index = inputs.indexOf(active)
-        inputs[index + 1]?.focus()
-      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        inputRefs.current[index + 1]?.focus()
+        return
+      }
+
+      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault()
         const delta = event.key === 'ArrowUp' ? 1 : -1
-        const button = active.closest('article')?.querySelector<HTMLButtonElement>(`button[aria-label*="${delta > 0 ? 'Increase' : 'Decrease'}"]`)
-        button?.click()
+        adjustQuantity(DEFAULT_WORKLOADS[index].id, delta)
       }
     }
 
@@ -288,17 +173,27 @@ export default function Page() {
   }, [])
 
   const workloads = useMemo(
-    () => DEFAULT_WORKLOADS.map((workload) => ({ ...workload, minutesPerUnit: rates[workload.id] ?? workload.minutesPerUnit })),
+    () => DEFAULT_WORKLOADS.map((workload) => ({
+      ...workload,
+      minutesPerUnit: rates[workload.id] ?? workload.minutesPerUnit,
+    })),
     [rates],
   )
 
   const calculatedValues = useMemo(
-    () => workloads.map((workload) => ({ workload, value: calculateValue(values[workload.id] ?? '') })),
-    [workloads, values],
+    () => workloads.map((workload) => ({
+      workload,
+      input: values[workload.id] ?? '',
+      value: calculateValue(values[workload.id] ?? ''),
+    })),
+    [values, workloads],
   )
 
   const totalSeconds = useMemo(
-    () => calculatedValues.reduce((total, { workload, value }) => total + Math.max(0, value ?? 0) * workload.minutesPerUnit * 60, 0),
+    () => calculatedValues.reduce(
+      (total, { workload, value }) => total + Math.max(0, value ?? 0) * workload.minutesPerUnit * 60,
+      0,
+    ),
     [calculatedValues],
   )
 
@@ -308,12 +203,20 @@ export default function Page() {
   )
 
   const clockInSeconds = timeToSeconds(clockInTime)
-  const estimatedClockOutSeconds = clockInSeconds === null || totalUnits === 0 ? null : clockInSeconds + totalSeconds + BREAK_SECONDS
-  const shiftSeconds = totalUnits === 0 ? 0 : totalSeconds + BREAK_SECONDS
-  const elapsedShiftSeconds = clockInSeconds === null ? 0 : getElapsedSeconds(clockInSeconds, philippineSeconds)
+  const estimatedClockOutSeconds = clockInSeconds === null || totalUnits === 0
+    ? null
+    : clockInSeconds + totalSeconds + BREAK_SECONDS
+  const shiftSeconds = totalUnits > 0 ? totalSeconds + BREAK_SECONDS : 0
+  const elapsedShiftSeconds = clockInSeconds === null
+    ? 0
+    : getElapsedSeconds(clockInSeconds, philippineSeconds)
   const shiftComplete = estimatedClockOutSeconds !== null && elapsedShiftSeconds >= shiftSeconds
-  const timeLeftSeconds = estimatedClockOutSeconds === null || shiftComplete ? 0 : Math.max(0, shiftSeconds - elapsedShiftSeconds)
-  const progressPercent = shiftSeconds > 0 ? Math.min(100, Math.max(0, Math.round((elapsedShiftSeconds / shiftSeconds) * 100))) : 0
+  const timeLeftSeconds = estimatedClockOutSeconds === null || shiftComplete
+    ? 0
+    : Math.max(0, shiftSeconds - elapsedShiftSeconds)
+  const progressPercent = shiftSeconds > 0
+    ? Math.min(100, Math.max(0, Math.round((elapsedShiftSeconds / shiftSeconds) * 100)))
+    : 0
 
   const unsavedRates = useMemo(
     () => DEFAULT_WORKLOADS.some(({ id }) => rates[id] !== savedRates[id]),
@@ -321,19 +224,18 @@ export default function Page() {
   )
 
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+  const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition'
 
   function updateValue(id: string, value: string) {
-    if (/^[\d+*/().=\s-]*$/.test(value)) setValues((current) => ({ ...current, [id]: value }))
+    if (/^[\d+*/().=\s-]*$/.test(value)) {
+      setValues((current) => ({ ...current, [id]: value }))
+    }
   }
 
   function adjustQuantity(id: string, delta: number) {
     const current = calculateValue(values[id] ?? '') ?? 0
     const next = Math.max(0, Math.round((current + delta) * 100) / 100)
     setValues((currentValues) => ({ ...currentValues, [id]: String(next) }))
-  }
-
-  function clearWorkload(id: string) {
-    setValues((currentValues) => ({ ...currentValues, [id]: '' }))
   }
 
   function adjustRate(id: string, delta: number) {
@@ -351,13 +253,25 @@ export default function Page() {
   function commitRateEdit(id: string) {
     const parsed = Number(rateDraft.replace(/m/gi, '').trim())
     if (Number.isFinite(parsed)) {
-      setRates((current) => ({ ...current, [id]: Math.max(1, Math.min(240, Math.round(parsed))) }))
+      setRates((current) => ({
+        ...current,
+        [id]: Math.max(1, Math.min(240, Math.round(parsed))),
+      }))
     }
     setEditingRate(null)
     setRateDraft('')
   }
 
-  function saveRates() {
+  async function saveRates() {
+    try {
+      await fetch('/api/workloads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rates }),
+      })
+    } catch {
+      // Local persistence remains the fallback.
+    }
     setSavedRates({ ...rates })
     setSettingsOpen(false)
     setFeedback('saved')
@@ -384,7 +298,6 @@ export default function Page() {
   async function copyClockOut() {
     const value = formatMilitaryTime(estimatedClockOutSeconds)
     if (value === '—') return
-
     try {
       await navigator.clipboard.writeText(value)
       setFeedback('copied')
@@ -393,19 +306,23 @@ export default function Page() {
     }
   }
 
-  const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition hover:border-primary/30'
-
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
-      <div className="pointer-events-none fixed inset-0 opacity-[0.22] [background-image:radial-gradient(circle_at_1px_1px,var(--grid-dot)_1px,transparent_0)] [background-size:24px_24px]" />
+      <div className="pointer-events-none fixed inset-0 opacity-[0.20] [background-image:radial-gradient(circle_at_1px_1px,var(--grid-dot)_1px,transparent_0)] [background-size:24px_24px]" />
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6 sm:pb-8 lg:px-8">
-        <nav className={`flex min-h-14 items-center justify-between gap-4 border-b border-border/80 ${motion}`}>
+        <nav className={`flex min-h-14 items-center justify-between gap-4 border-b border-border/70 ${motion}`}>
           <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"><TimerReset className="size-3.5" /></div>
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+              <TimerReset className="size-3.5" />
+            </div>
             <span className="truncate text-sm font-bold tracking-tight">SIF Tracker</span>
           </div>
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <time className="block whitespace-nowrap font-mono text-[9px] font-semibold tabular-nums sm:text-[10px]">{philippineDate} · {philippineTime} PHT</time>
+            <div className="hidden text-right sm:block">
+              <span className="block text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">PHT Now</span>
+              <time className="block font-mono text-[10px] font-bold tabular-nums">{philippineTime}</time>
+            </div>
+            <time className="whitespace-nowrap font-mono text-[9px] font-semibold tabular-nums sm:hidden">{philippineTime} PHT</time>
             <ThemeToggle />
           </div>
         </nav>
@@ -426,7 +343,7 @@ export default function Page() {
               <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">01 / Calculator</p>
               <h2 className="mt-1 text-lg font-semibold tracking-tight">Enter your workload</h2>
             </div>
-            <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:bg-accent">
+            <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/40 hover:bg-accent">
               <Settings2 className="size-3" />Settings{unsavedRates && <span className="size-1.5 rounded-full bg-primary" />}
             </button>
           </div>
@@ -461,20 +378,15 @@ export default function Page() {
                 ))}
               </div>
 
-              <div className="mt-3 rounded-lg border border-border bg-background/60 p-3">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Example</span>
-                  <span className="text-[8px] text-muted-foreground">Updates with your rates</span>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
+              <div className="mt-3 rounded-lg bg-background/50 px-3 py-2.5">
+                <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Example</p>
+                <div className="mt-1.5 grid gap-1 sm:grid-cols-2">
                   {workloads.map((workload) => (
-                    <div key={workload.id} className="min-w-0">
-                      <span className="block text-[9px] font-semibold">{workload.label}</span>
-                      <span className="mt-0.5 block font-mono text-[8px] leading-4 text-muted-foreground">
-                        {getExampleAmounts(workload).map((amount, index) => (
-                          <span key={amount}>{index > 0 && ' · '}{getUnitLabel(workload.unit, amount)} = {formatCompactDuration(amount * workload.minutesPerUnit)}</span>
-                        ))}
-                      </span>
+                    <div key={workload.id} className="min-w-0 font-mono text-[8px] leading-3.5 text-muted-foreground">
+                      <span className="font-semibold text-foreground">{workload.label}:</span>{' '}
+                      {getExampleAmounts(workload).map((amount, index) => (
+                        <span key={amount}>{index > 0 ? ' · ' : ''}{amount} = {formatCompactDuration(amount * workload.minutesPerUnit)}</span>
+                      ))}
                     </div>
                   ))}
                 </div>
@@ -491,13 +403,14 @@ export default function Page() {
           )}
 
           <div className="grid min-w-0 gap-2.5 lg:grid-cols-2">
-            {calculatedValues.map(({ workload, value }) => {
-              const hasInput = values[workload.id] !== ''
-              const invalid = hasInput && value === null && !isIncompleteExpression(values[workload.id])
-              const waiting = hasInput && value === null && isIncompleteExpression(values[workload.id])
+            {calculatedValues.map(({ workload, input, value }, index) => {
+              const hasInput = input.trim() !== ''
+              const incomplete = hasInput && isIncompleteExpression(input)
+              const invalid = hasInput && value === null && !incomplete
+              const duration = value === null ? 0 : Math.max(0, value) * workload.minutesPerUnit * 60
 
               return (
-                <article key={workload.id} data-workload-id={workload.id} className={`${cardClass} flex min-w-0 flex-col p-3.5`}>
+                <article key={workload.id} data-workload-id={workload.id} className={`${cardClass} flex min-w-0 flex-col p-3.5 hover:border-primary/25`}>
                   <div className="flex min-w-0 items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-2.5">
                       <span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} />
@@ -507,7 +420,7 @@ export default function Page() {
                       </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-1.5">
-                      <output className="font-mono text-[15px] font-bold tabular-nums" style={{ color: workload.accent }}>{formatDuration((value ?? 0) * workload.minutesPerUnit * 60)}</output>
+                      <output className="font-mono text-[15px] font-bold tabular-nums" style={{ color: workload.accent }}>{formatDuration(duration)}</output>
                       {hasInput && <button type="button" onClick={() => clearWorkload(workload.id)} className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground" aria-label={`Clear ${workload.label}`} title="Clear"><X className="size-3" /></button>}
                     </div>
                   </div>
@@ -517,7 +430,7 @@ export default function Page() {
                     <div className="flex items-center gap-1.5">
                       <button type="button" onClick={() => adjustQuantity(workload.id, -1)} className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-input bg-background/70 hover:bg-accent" aria-label={`Decrease ${workload.label} quantity`}><Minus className="size-3.5" /></button>
                       <div className="relative min-w-0 flex-1">
-                        <input type="text" inputMode="text" autoComplete="off" value={values[workload.id]} onChange={(event) => updateValue(workload.id, event.target.value)} className={`h-11 w-full min-w-0 rounded-lg border bg-background/70 px-3 pr-16 font-mono text-[15px] font-medium tabular-nums outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`} aria-invalid={invalid} aria-label={`Number of ${workload.unit} for ${workload.label}`} />
+                        <input ref={(element) => { inputRefs.current[index] = element }} type="text" inputMode="text" autoComplete="off" value={input} onChange={(event) => updateValue(workload.id, event.target.value)} className={`h-11 w-full min-w-0 rounded-lg border bg-background/70 px-3 pr-16 font-mono text-[15px] font-medium tabular-nums outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`} aria-invalid={invalid} aria-label={`Number of ${workload.unit} for ${workload.label}`} placeholder="" />
                         {value !== null && hasInput && <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground opacity-60">{value}</output>}
                       </div>
                       <button type="button" onClick={() => adjustQuantity(workload.id, 1)} className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-input bg-background/70 hover:bg-accent" aria-label={`Increase ${workload.label} quantity`}><Plus className="size-3.5" /></button>
@@ -525,12 +438,12 @@ export default function Page() {
 
                     {invalid ? (
                       <p className="mt-1.5 text-[9px] font-medium text-destructive">Invalid expression</p>
-                    ) : waiting ? (
+                    ) : incomplete ? (
                       <p className="mt-1.5 text-[9px] font-medium text-muted-foreground">Waiting for expression…</p>
                     ) : hasInput ? (
-                      <p className="mt-1.5 rounded-md bg-background/40 px-2.5 py-1.5 font-mono text-[9px] font-semibold text-muted-foreground">{values[workload.id]} = {value} {workload.unit} → {formatDuration((value ?? 0) * workload.minutesPerUnit * 60)}</p>
+                      <p className="mt-1.5 rounded-md bg-background/40 px-2.5 py-1.5 font-mono text-[9px] font-semibold text-muted-foreground">{input} = {value} {getUnitLabel(workload.unit, value ?? 0)} → {formatDuration(duration)}</p>
                     ) : (
-                      <p className="mt-1.5 text-[8px] text-muted-foreground/70">Use numbers or expressions like 5+5, 10*3, or (5+5)*2.</p>
+                      <p className="mt-1.5 text-[8px] text-muted-foreground/70">Enter a quantity or expression: 5+5 · 10*3 · (5+5)*2</p>
                     )}
                   </div>
 
@@ -543,7 +456,7 @@ export default function Page() {
               )
             })}
 
-            <section id="workflow" className={`${cardClass} mt-0 border-primary/20 bg-primary p-4 text-primary-foreground`}>
+            <section id="workflow" className="mt-0 rounded-xl border border-primary/20 bg-primary p-4 text-primary-foreground shadow-[0_12px_36px_var(--card-shadow)]">
               <div className="flex h-full flex-col justify-between gap-3 sm:flex-row sm:items-center">
                 <div className="min-w-0">
                   <p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p>
@@ -559,25 +472,15 @@ export default function Page() {
           </div>
         </section>
 
-        <section id="shift" className={`${cardClass} mt-4 p-4`}>
+        <section ref={shiftRef} id="shift" className={`${cardClass} mt-4 p-4`}>
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift Summary</p>
               <h2 className="mt-1 text-base font-semibold tracking-tight">Know when you’re done.</h2>
             </div>
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <span className="rounded-full border border-border bg-background/60 px-2.5 py-1 font-mono text-[8px] font-semibold text-muted-foreground">PHT · fixed 01:00:00 break</span>
-              <span className="rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-[8px] font-semibold text-primary">TODAY · {philippineDate}</span>
-            </div>
-          </div>
-
-          <div className="mb-3 rounded-lg border border-border bg-background/50 p-3">
-            <div className="mb-1.5 flex items-center justify-between gap-2">
-              <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Shift progress</span>
-              <span className="font-mono text-[9px] font-bold tabular-nums text-muted-foreground">{progressPercent}%</span>
-            </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-              <div className={`h-full rounded-full bg-primary transition-[width] duration-500 ${shiftComplete ? 'bg-[var(--sif-green)]' : ''}`} style={{ width: `${progressPercent}%` }} />
+            <div className="text-right">
+              <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Today · {philippineDate}</p>
+              <p className="mt-0.5 text-[8px] text-muted-foreground">Fixed 01:00:00 break</p>
             </div>
           </div>
 
@@ -585,8 +488,9 @@ export default function Page() {
             <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3">
               <span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span>
               <div className="mt-1.5 rounded-md border border-input bg-background px-2 py-2 text-center font-mono text-sm font-bold tabular-nums">{clockInTime}</div>
-              <div className="mt-2 flex justify-center"><button type="button" onClick={handleClockNow} className="rounded-full border border-border bg-card px-5 py-2 text-[10px] font-bold shadow-sm hover:bg-accent">NOW · {philippineTime}</button></div>
-              <span className="mt-1.5 block text-center text-[8px] text-muted-foreground">PHT is the live clock.</span>
+              <div className="mt-2 flex justify-center">
+                <button type="button" onClick={handleClockNow} className="rounded-full border border-border bg-card px-5 py-2 text-[10px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent">NOW · {philippineTime}</button>
+              </div>
             </div>
 
             <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3">
@@ -598,19 +502,32 @@ export default function Page() {
             <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3">
               <span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Break</span>
               <strong className="mt-1 block font-mono text-lg font-bold tabular-nums">01:00:00</strong>
-              <span className="mt-1 block text-[8px] text-muted-foreground">Fixed break.</span>
+              <span className="mt-1 block text-[8px] text-muted-foreground">Fixed 1-hour break.</span>
             </div>
 
-            <div className={`min-w-0 rounded-xl border p-3 transition-colors ${shiftComplete ? 'border-[var(--sif-green)]/40 bg-[var(--sif-green)]/10' : 'border-primary/40 bg-primary/10'}`}>
+            <div className={`min-w-0 rounded-xl border p-3 transition ${shiftComplete ? 'border-[var(--sif-green)]/50 bg-[var(--sif-green)]/10' : 'border-primary/45 bg-primary/10'}`}>
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <span className={`block text-[8px] font-bold uppercase tracking-[0.15em] ${shiftComplete ? 'text-[var(--sif-green)]' : 'text-primary'}`}>Clock Out</span>
-                  <strong className={`mt-1 block whitespace-nowrap font-mono text-3xl font-bold tracking-[-0.05em] tabular-nums sm:text-4xl ${shiftComplete ? 'text-[var(--sif-green)]' : 'text-primary'}`}>{formatMilitaryTime(estimatedClockOutSeconds)}</strong>
+                  <strong className={`mt-1 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl ${shiftComplete ? 'text-[var(--sif-green)]' : 'text-primary'}`}>{formatMilitaryTime(estimatedClockOutSeconds)}</strong>
                 </div>
-                {estimatedClockOutSeconds !== null && <button type="button" onClick={copyClockOut} className={`rounded-md p-1.5 ${shiftComplete ? 'text-[var(--sif-green)] hover:bg-[var(--sif-green)]/10' : 'text-primary hover:bg-primary/10'}`} aria-label="Copy Clock Out time" title="Copy Clock Out time"><Copy className="size-3.5" /></button>}
+                {estimatedClockOutSeconds !== null && <button type="button" onClick={copyClockOut} className="rounded-md p-1.5 text-primary transition hover:bg-primary/10" aria-label="Copy Clock Out time" title="Copy Clock Out time"><Copy className="size-3.5" /></button>}
               </div>
-              <span className={`mt-1 block text-[8px] ${shiftComplete ? 'font-semibold text-[var(--sif-green)]' : 'text-muted-foreground'}`}>{estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shiftComplete ? '✓ SHIFT COMPLETE' : '● ESTIMATED'}</span>
-              <span className="mt-1.5 block font-mono text-[9px] font-semibold tabular-nums text-muted-foreground">{estimatedClockOutSeconds === null ? 'TIME LEFT · —' : shiftComplete ? 'TIME LEFT · 00:00:00' : `TIME LEFT · ${formatDuration(timeLeftSeconds)}`}</span>
+              <span className="mt-1 block text-[8px] text-muted-foreground">{estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shiftComplete ? '✓ SHIFT COMPLETE' : '● ESTIMATED'}</span>
+            </div>
+          </div>
+
+          <div className="mt-3 rounded-lg border border-border bg-background/50 px-3 py-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Time until clock out</span>
+              <strong className="font-mono text-[10px] font-bold tabular-nums text-foreground">{estimatedClockOutSeconds === null ? '—' : shiftComplete ? '00:00:00' : formatDuration(timeLeftSeconds)}</strong>
+            </div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+              <div className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out" style={{ width: `${progressPercent}%` }} />
+            </div>
+            <div className="mt-1.5 flex justify-between text-[8px] font-semibold text-muted-foreground">
+              <span>SHIFT PROGRESS</span>
+              <span>{estimatedClockOutSeconds === null ? '0%' : `${progressPercent}%`}</span>
             </div>
           </div>
         </section>
@@ -620,7 +537,7 @@ export default function Page() {
             <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p>
             <p className="mt-1 text-[10px] leading-4 text-muted-foreground">Reset today’s workload without changing your saved rates.</p>
           </div>
-          <button type="button" onClick={() => setConfirmReset(true)} className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-2 text-[10px] font-semibold hover:bg-accent sm:mt-0 sm:w-auto"><RotateCcw className="size-3" />Reset workload</button>
+          <button type="button" onClick={() => setConfirmReset(true)} className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-2 text-[10px] font-semibold transition hover:border-primary/30 hover:bg-accent sm:mt-0 sm:w-auto"><RotateCcw className="size-3" />Reset workload</button>
         </section>
 
         <footer className="flex flex-col gap-1 py-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
