@@ -112,131 +112,114 @@ body {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 
-/* Focus Mode: match the main site's spacing rhythm and center the workspace evenly. */
+/* Focus Mode: center the complete workspace and keep equal viewport breathing room. */
 @media (min-width: 768px) {
-  main:not(:has(nav)) > div.relative {
+  main > div.relative:not(:has(nav)) {
     min-height: 100dvh !important;
     height: 100dvh !important;
-    padding: 32px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    overflow: auto !important;
-  }
-
-  main:not(:has(nav)) #calculator {
-    width: min(100%, 1120px) !important;
-    max-width: 1120px !important;
-    margin-inline: auto !important;
-  }
-
-  main:not(:has(nav)) #calculator > .mb-3 {
-    width: 100% !important;
-    max-width: 1120px !important;
-    margin-inline: auto !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-  }
-
-  main:not(:has(nav)) #calculator > .grid {
-    width: 100% !important;
-    max-width: 1120px !important;
-    margin-inline: auto !important;
-    gap: 12px !important;
-  }
-
-  main:not(:has(nav)) #calculator article,
-  main:not(:has(nav)) #workflow {
-    min-height: 176px !important;
-  }
-
-  main:not(:has(nav)) #workflow {
-    margin-top: 0 !important;
-  }
-}
-
-@media (max-width: 767px) {
-  /* Focus Mode uses the same horizontal gutter as the normal mobile layout. */
-  main:not(:has(nav)) {
-    padding-bottom: 16px !important;
-  }
-
-  main:not(:has(nav)) > div.relative {
-    min-height: 100dvh !important;
-    padding: 16px 12px 16px !important;
+    max-height: 100dvh !important;
+    padding: 28px 32px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: stretch !important;
   }
 
-  main:not(:has(nav)) #calculator {
-    width: 100% !important;
-    max-width: 100% !important;
+  main > div.relative:not(:has(nav)) #calculator {
+    width: min(100%, 1080px) !important;
+    max-width: 1080px !important;
     margin-inline: auto !important;
   }
 
-  main:not(:has(nav)) #calculator > .mb-3 {
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 {
+    width: 100%;
+    max-width: 1080px;
+    margin-inline: auto !important;
+    align-items: center !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child {
+    text-align: center !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:last-child {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 767px) {
+  main > div.relative:not(:has(nav)) {
+    min-height: 100dvh !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 20px 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator {
     width: 100% !important;
+    max-width: 680px !important;
+    margin-inline: auto !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 {
+    width: 100%;
     margin-bottom: 12px !important;
     align-items: center !important;
   }
 
-  main:not(:has(nav)) #calculator > .mb-3 > div:first-child {
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child {
     min-width: 0 !important;
-    flex: 1 1 auto !important;
+    width: 100% !important;
+    text-align: center !important;
   }
 
-  main:not(:has(nav)) #calculator > .mb-3 h2,
-  main:not(:has(nav)) #calculator > .mb-3 p {
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child h2,
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child p {
     overflow-wrap: anywhere !important;
+    word-break: normal !important;
     white-space: normal !important;
   }
 
-  main:not(:has(nav)) #calculator > .mb-3 .flex {
-    flex-shrink: 0 !important;
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:last-child {
+    width: 100% !important;
+    justify-content: center !important;
   }
 
-  main:not(:has(nav)) #calculator > .grid {
+  main > div.relative:not(:has(nav)) #calculator > .grid {
     width: 100% !important;
+    max-width: 680px !important;
+    margin-inline: auto !important;
     gap: 10px !important;
   }
 
-  main:not(:has(nav)) #calculator article,
-  main:not(:has(nav)) #workflow {
+  main > div.relative:not(:has(nav)) #calculator article {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator article h3,
+  main > div.relative:not(:has(nav)) #calculator article p,
+  main > div.relative:not(:has(nav)) #calculator article span,
+  main > div.relative:not(:has(nav)) #calculator article output {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator article input {
+    min-width: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
   }
 
-  main:not(:has(nav)) #calculator article {
-    padding: 13px !important;
-  }
-
-  main:not(:has(nav)) #calculator article h3,
-  main:not(:has(nav)) #calculator article p,
-  main:not(:has(nav)) #workflow h3,
-  main:not(:has(nav)) #workflow p {
-    overflow-wrap: anywhere !important;
-  }
-
-  main:not(:has(nav)) #calculator article input {
-    min-width: 0 !important;
-  }
-
-  main:not(:has(nav)) #workflow {
-    margin-top: 0 !important;
-    padding: 13px !important;
-  }
-}
-
-@media (max-height: 760px) and (min-width: 768px) {
-  main:not(:has(nav)) > div.relative {
-    padding: 20px !important;
-  }
-
-  main:not(:has(nav)) #calculator article,
-  main:not(:has(nav)) #workflow {
-    min-height: 150px !important;
+  main > div.relative:not(:has(nav)) #workflow {
+    width: 100% !important;
+    max-width: 680px !important;
+    margin-inline: auto !important;
   }
 }
