@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,11 +25,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Calculator tests
+        run: pnpm run test
+
+      - name: Production build
         run: pnpm run build
