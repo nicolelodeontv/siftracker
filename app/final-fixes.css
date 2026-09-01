@@ -9,26 +9,6 @@ main h1 {
   max-width: 100%;
 }
 
-main section.py-7 > div > p.mt-3,
-main section.py-8 > div > p.mt-3,
-main section.py-10 > div > p.mt-3 {
-  white-space: nowrap !important;
-  max-width: none !important;
-  font-size: 0 !important;
-}
-
-main section.py-7 > div > p.mt-3::after,
-main section.py-8 > div > p.mt-3::after,
-main section.py-10 > div > p.mt-3::after {
-  content: "Enter your workload. Get your total time and clock-out instantly.";
-  display: block;
-  font-size: clamp(10px, 1.7vw, 14px);
-  line-height: 1.25;
-  color: var(--muted-foreground);
-  white-space: nowrap;
-}
-
-/* Keep the calculator row visually unified and let the Workflow panel stretch with its row. */
 @media (min-width: 768px) {
   main #calculator > .grid {
     align-items: stretch !important;
@@ -61,7 +41,6 @@ main section.py-10 > div > p.mt-3::after {
     height: 100% !important;
   }
 
-  /* Make the final Clock Out result the strongest visual anchor in the Shift section. */
   main #shift {
     margin-top: 16px !important;
     padding: 16px !important;
@@ -89,14 +68,12 @@ main section.py-10 > div > p.mt-3::after {
     letter-spacing: -0.05em !important;
   }
 
-  /* Make the entered expression/result pairing easier to scan. */
   main #calculator article > div:first-child output {
     min-width: 72px !important;
     text-align: right !important;
   }
 }
 
-/* Small-screen cleanup and comfortable one-thumb interaction. */
 @media (max-width: 767px) {
   main { width: 100%; max-width: 100%; overflow-x: hidden !important; }
   main > div.relative { width: 100%; max-width: 100%; }
@@ -158,23 +135,8 @@ main section.py-10 > div > p.mt-3::after {
   main #shift > div:last-child > div:last-child strong {
     font-size: 1.55rem !important;
   }
-
-  .mobile-total-bar {
-    max-width: calc(100vw - 14px);
-    overflow: hidden;
-  }
-
-  .mobile-total-bar strong {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
 @media (max-width: 380px) {
   main > div.relative { padding-left: 10px !important; padding-right: 10px !important; }
-  main section.py-7 h1, main section.py-8 h1, main section.py-10 h1 { font-size: 1.8rem !important; }
-  main section.py-7 > div > p.mt-3::after,
-  main section.py-8 > div > p.mt-3::after,
-  main section.py-10 > div > p.mt-3::after { font-size: 10px; }
 }
