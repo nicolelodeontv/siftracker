@@ -1,7 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import './mobile.css';
 @import './motion.css';
 @import './ui-overrides.css';
 
@@ -14,14 +13,9 @@
 :root { color-scheme:light; --background:#f7f8fa; --foreground:#111318; --card:#ffffff; --card-foreground:#111318; --popover:#ffffff; --popover-foreground:#111318; --primary:#4f46e5; --primary-foreground:#ffffff; --secondary:#eef0f4; --secondary-foreground:#24262d; --muted:#eef0f4; --accent:#e8eaff; --accent-foreground:#27236f; --destructive:#c85c5c; --border:#e0e3e8; --input:#d5dae1; --ring:#4f46e5; --chart-1:#d6a72c; --chart-2:#45a675; --chart-3:#5b84d7; --chart-4:#9567c8; --chart-5:#d66a4a; --sif-yellow:#b78f22; --sif-red:#b85f5f; --sif-green:#3f936b; --sif-white:#1a1c20; --grid-dot:#cfd4da; --card-shadow:rgba(16,24,40,.06); --primary-shadow:rgba(79,70,229,.16); --radius:.75rem; --sidebar:#ffffff; --sidebar-foreground:#111318; --sidebar-primary:#4f46e5; --sidebar-primary-foreground:#ffffff; --sidebar-accent:#eef0f4; --sidebar-accent-foreground:#27236f; --sidebar-border:#e0e3e8; --sidebar-ring:#4f46e5; }
 .dark { color-scheme:dark; --background:#0b0d10; --foreground:#f4f5f7; --card:#12151a; --card-foreground:#f4f5f7; --popover:#12151a; --popover-foreground:#f4f5f7; --primary:#818cf8; --primary-foreground:#0b0d10; --secondary:#171a20; --secondary-foreground:#f4f5f7; --muted:#171a20; --accent:#20253a; --accent-foreground:#dfe2ff; --destructive:#df7575; --border:#272c35; --input:#343a46; --ring:#818cf8; --chart-1:#e0bb46; --chart-2:#69c293; --chart-3:#79a5e6; --chart-4:#b081dc; --chart-5:#e28462; --sif-yellow:#e0bb46; --sif-red:#df7575; --sif-green:#69c293; --sif-white:#f4f5f7; --grid-dot:#2b3038; --card-shadow:rgba(0,0,0,.25); --primary-shadow:rgba(129,140,248,.14); --sidebar:#12151a; --sidebar-foreground:#f4f5f7; --sidebar-primary:#818cf8; --sidebar-primary-foreground:#0b0d10; --sidebar-accent:#171a20; --sidebar-accent-foreground:#dfe2ff; --sidebar-border:#272c35; --sidebar-ring:#818cf8; }
 
-html, body { min-height:100%; margin:0; overflow-x:hidden; overflow-y:auto; background:var(--background); }
+html,
+body { min-height:100%; margin:0; overflow-x:hidden; overflow-y:auto; background:var(--background); }
 html { scroll-behavior:smooth; }
 * { box-sizing:border-box; }
 ::selection { background:var(--foreground); color:var(--background); }
 @layer base { * { @apply border-border outline-ring/50; } body { @apply bg-background text-foreground; } }
-
-#shift .grid > div:first-child > div:last-child { display:flex; justify-content:center; width:100%; }
-#shift .grid > div:first-child > div:last-child > button { min-width:104px; min-height:40px; padding:0.65rem 1.1rem; border-radius:9999px; font-size:0.7rem; line-height:1; font-weight:700; touch-action:manipulation; }
-@media (max-width:767px) {
-  #shift .grid > div:first-child > div:last-child > button { min-width:120px; min-height:44px; padding-inline:1.25rem; font-size:0.75rem; }
-}
