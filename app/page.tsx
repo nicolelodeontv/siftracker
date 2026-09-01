@@ -293,17 +293,17 @@ export default function Page() {
             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"><TimerReset className="size-3.5" /></div>
             <div className="min-w-0 leading-none"><span className="block truncate text-sm font-bold tracking-tight">SIF Tracker</span><span className="mt-1 block text-[8px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">Operations</span></div>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <div className="text-right font-mono leading-none" aria-label="Philippine Standard Time"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">PHT</span><time className="mt-1 block text-[10px] font-semibold tabular-nums">{philippineDate}</time><time className="mt-0.5 block text-[11px] font-bold tabular-nums sm:text-xs">{philippineTime}</time></div>
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="min-w-0 text-right font-mono leading-none" aria-label="Philippine Standard Time"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">PHT</span><time className="mt-1 block whitespace-nowrap text-[10px] font-semibold tabular-nums sm:text-[11px]">{philippineDate} · {philippineTime}</time></div>
             <ThemeToggle />
           </div>
         </nav>
 
-        <section className={`py-7 sm:py-9 ${motion}`}>
+        <section className={`py-5 sm:py-6 ${motion}`}>
           <div className="max-w-4xl">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div>
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div>
             <h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Work smart. Clock out smarter.</h1>
-            <p className="mt-3 text-sm leading-5 text-muted-foreground sm:whitespace-nowrap">Enter your workload. Get your total time and clock-out instantly.</p>
+            <p className="mt-1.5 text-sm leading-5 text-muted-foreground sm:whitespace-nowrap">Enter your workload. Get your total time and clock-out instantly.</p>
           </div>
         </section>
 
