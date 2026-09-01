@@ -64,11 +64,11 @@ main > div.relative > section:first-of-type p {
 #calculator > .grid > article {
   display: flex;
   flex-direction: column;
-  height: auto;
+  height: 190px;
   min-height: 190px;
 }
 
-#calculator > .grid > article > div:last-child { margin-top: 12px; }
+#calculator > .grid > article > div:last-child { margin-top: auto; }
 #calculator article input { width: 100%; }
 
 #workflow {
@@ -155,11 +155,11 @@ button { touch-action: manipulation; }
   #calculator > .mb-3 { align-items: flex-start; }
   #calculator > .grid { grid-template-columns: 1fr; gap: 10px; }
   #calculator > .grid > article {
-    height: auto;
-    min-height: 0;
+    height: 190px;
+    min-height: 190px;
     padding: 13px;
   }
-  #calculator > .grid > article > div:last-child { margin-top: 12px; }
+  #calculator > .grid > article > div:last-child { margin-top: auto; }
   #calculator article input { height: 44px; font-size: 16px; }
   #calculator article button[aria-label*="quantity"] { width: 44px; min-width: 44px; height: 44px; }
 
@@ -202,7 +202,7 @@ button { touch-action: manipulation; }
   #workflow,
   #shift,
   #tools { padding-inline: 11px; }
-  #calculator > .grid > article { height: auto; min-height: 0; }
+  #calculator > .grid > article { height: 190px; min-height: 190px; }
   #workflow { padding-block: 13px; }
   #calculator article button[aria-label*="quantity"] { width: 42px; min-width: 42px; }
   #shift .grid > div:first-child button[aria-label^="Edit Clock In"] { font-size: 15px; }
