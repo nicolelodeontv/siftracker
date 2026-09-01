@@ -70,7 +70,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   main > div.relative:not(:has(nav)) #calculator {
@@ -357,19 +357,18 @@ body {
     padding-bottom: 6px;
   }
 
-  /* Focus Mode: same centered workspace, but allowed to scroll and grow naturally. */
+  /* Focus Mode: lock the entire page to the viewport with no document scrolling. */
   main > div.relative:not(:has(nav)) {
     width: 100%;
     min-height: 100dvh !important;
-    height: auto !important;
-    max-height: none !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
     padding: 18px 14px 24px !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
+    overflow: hidden !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator {
@@ -453,6 +452,22 @@ body {
     padding-left: 11px;
     padding-right: 11px;
   }
+}
+
+/* Lock the document itself while Focus Mode is active. */
+html:has(main > div.relative:not(:has(nav))),
+body:has(main > div.relative:not(:has(nav))) {
+  height: 100%;
+  max-height: 100dvh;
+  overflow: hidden !important;
+}
+
+main:has(> div.relative:not(:has(nav))) {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  min-height: 100dvh !important;
+  overflow: hidden !important;
+  padding-bottom: 0 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
