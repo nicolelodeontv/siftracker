@@ -1,4 +1,4 @@
-/* SIF Tracker responsive system: fluid layout first, small targeted adjustments second. */
+/* SIF Tracker responsive system: fluid layout first, stable component sizing second. */
 
 :root { --ui-max-width: 1360px; }
 
@@ -56,19 +56,23 @@ main > div.relative > section:first-of-type p {
 }
 
 #calculator > .grid > article,
-#workflow { width: 100%; min-width: 0; }
+#workflow {
+  width: 100%;
+  min-width: 0;
+}
 
 #calculator > .grid > article {
   display: flex;
   flex-direction: column;
-  min-height: clamp(170px, 18vw, 220px);
+  height: clamp(226px, 19vw, 244px);
+  min-height: clamp(226px, 19vw, 244px);
 }
 
 #calculator > .grid > article > div:last-child { margin-top: auto; }
 #calculator article input { width: 100%; }
 
 #workflow {
-  min-height: clamp(120px, 12vw, 180px);
+  min-height: clamp(132px, 12vw, 160px);
 }
 
 #workflow > div { width: 100%; min-width: 0; }
@@ -96,9 +100,10 @@ main > div.relative > section:first-of-type p {
   box-shadow: 0 8px 24px var(--primary-shadow);
 }
 
-#shift .grid > div:last-child strong {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: .95;
+/* Keep the secondary countdown compact; only the main Clock Out value gets the large emphasis. */
+#shift .grid > div:last-child > strong {
+  font-size: clamp(.75rem, 1.4vw, 1rem);
+  line-height: 1;
 }
 
 #tools { padding: clamp(12px, 1.4vw, 16px); }
@@ -149,11 +154,15 @@ button { touch-action: manipulation; }
 
   #calculator > .mb-3 { align-items: flex-start; }
   #calculator > .grid { grid-template-columns: 1fr; gap: 10px; }
-  #calculator > .grid > article { min-height: 0; padding: 13px; }
+  #calculator > .grid > article {
+    height: 226px;
+    min-height: 226px;
+    padding: 13px;
+  }
   #calculator article input { height: 44px; font-size: 16px; }
   #calculator article button[aria-label*="quantity"] { width: 44px; min-width: 44px; height: 44px; }
 
-  #workflow { min-height: 0; padding: 13px; }
+  #workflow { min-height: 0; height: 132px; padding: 13px; }
   #workflow > div { display: flex; flex-direction: column; gap: 10px; }
   #workflow > div > div { width: 100%; text-align: left; }
   #workflow > div > div:last-child { padding-top: 9px; border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent); }
@@ -164,7 +173,7 @@ button { touch-action: manipulation; }
   #shift .grid { grid-template-columns: 1fr; gap: 8px; }
   #shift .grid > div { padding: 12px; }
   #shift .grid > div:last-child { padding: 14px; }
-  #shift .grid > div:last-child strong { font-size: clamp(2.2rem, 12vw, 3rem); }
+  #shift .grid > div:last-child > strong { font-size: .85rem; }
   #shift .grid > div:first-child button[aria-label^="Edit Clock In"] { min-height: 44px; font-size: 16px; }
 
   #tools > button { width: 100%; min-height: 44px; }
@@ -179,6 +188,7 @@ button { touch-action: manipulation; }
   #workflow,
   #shift,
   #tools { padding-inline: 11px; }
+  #calculator > .grid > article { height: 226px; min-height: 226px; }
   #calculator article button[aria-label*="quantity"] { width: 42px; min-width: 42px; }
   #shift .grid > div:first-child button[aria-label^="Edit Clock In"] { font-size: 15px; }
 }
