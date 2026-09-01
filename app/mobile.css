@@ -1,101 +1,35 @@
-* { box-sizing: border-box; }
-html,
-body {
-  min-width: 0;
-  overflow-x: hidden;
-}
-
-@media (min-width: 768px) {
-  main,
-  main > div.relative {
-    width: 100%;
-    min-height: 100dvh;
-    height: auto;
-    max-height: none;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  main > div.relative {
-    padding-bottom: 24px;
-  }
-
-  main nav {
-    min-height: 48px;
-    height: 48px;
-  }
-
-  main #calculator > .grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    align-items: stretch;
-  }
-
-  main #calculator > .grid > article,
-  main #calculator > .grid > #workflow {
-    min-width: 0;
-    align-self: stretch;
-  }
-
-  main #calculator > .grid > article {
-    display: flex;
-    flex-direction: column;
-    min-height: 172px;
-  }
-
-  main #calculator > .grid > article > div:last-child {
-    margin-top: auto;
-  }
-
-  main #workflow {
-    display: flex;
-    min-height: 172px;
-    overflow: visible;
-  }
-
-  main #workflow > div {
-    width: 100%;
-    min-width: 0;
-  }
-}
+/* Mobile-only layout rules. Base layout and component styling remain in page.tsx/Tailwind. */
 
 @media (max-width: 767px) {
   html,
   body {
+    min-width: 0;
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-text-size-adjust: 100%;
   }
 
-  body { overscroll-behavior-y: auto; }
+  body {
+    overscroll-behavior-y: auto;
+  }
 
   main {
     width: 100%;
     min-height: 100dvh;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    padding-bottom: 24px !important;
+    overflow: visible;
   }
 
   main > div.relative {
     width: 100%;
     max-width: 100%;
-    min-height: 100dvh;
-    height: auto !important;
-    max-height: none !important;
-    padding: 0 14px 16px !important;
-    overflow: visible !important;
+    padding-inline: 14px;
+    padding-bottom: 16px;
   }
 
   main nav {
-    width: 100%;
     min-width: 0;
     min-height: 52px;
-    height: 52px;
-    gap: 10px;
   }
 
   main nav > div,
@@ -103,236 +37,209 @@ body {
     min-width: 0;
   }
 
+  main nav .sm\:hidden,
   main nav time {
     min-width: 0;
-    max-width: min(62vw, 240px);
+    max-width: 58vw;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 8px !important;
   }
 
-  main section,
-  main h1,
-  main h2,
-  main h3,
-  main p,
-  main span,
-  main output,
-  main time {
+  main nav button {
+    min-height: 38px;
+    height: 38px;
+    padding-inline: 10px;
+  }
+
+  main > div.relative > section:first-of-type {
+    padding-block: 18px 16px;
+  }
+
+  main > div.relative > section:first-of-type h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
+    line-height: .98;
+  }
+
+  #calculator > .mb-3 {
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+
+  #calculator > .mb-3 > div:first-child {
     min-width: 0;
   }
 
-  main h1,
-  main h2,
-  main h3,
-  main p,
-  main #workflow h3,
-  main #workflow p,
-  main #workflow span {
-    overflow-wrap: anywhere;
-    word-break: normal;
+  #calculator > .mb-3 > div:last-child {
+    flex: 0 0 auto;
   }
 
-  main #calculator,
-  main #settings,
-  main #workflow,
-  main #shift,
-  main #tools,
-  main footer {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  main #calculator > .mb-3 {
-    width: 100%;
-    margin-bottom: 12px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  main #calculator > .mb-3 > div:first-child,
-  main #calculator > .mb-3 > div:last-child {
-    width: 100%;
-    min-width: 0;
-    text-align: center;
-    justify-content: center;
-  }
-
-  main #calculator > .mb-3 h2,
-  main #calculator > .mb-3 p {
-    width: 100%;
-    max-width: 100%;
-    white-space: normal !important;
-  }
-
-  main #calculator > .grid {
-    width: 100%;
-    display: grid;
+  #calculator > .grid {
     grid-template-columns: 1fr;
     gap: 10px;
-    align-items: stretch;
   }
 
-  main #calculator > .grid > article {
-    width: 100%;
+  #calculator > .grid > article {
     min-width: 0;
     min-height: 0;
-    height: auto;
-    padding: 14px;
-    overflow: visible;
+    padding: 13px;
   }
 
-  main #calculator article > div,
-  main #calculator article > div > div {
+  #calculator article input {
     min-width: 0;
-    max-width: 100%;
-  }
-
-  main #calculator article h3,
-  main #calculator article p,
-  main #calculator article span,
-  main #calculator article output {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    word-break: normal;
-  }
-
-  main #calculator article output {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  main #calculator article input {
     width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    height: 46px;
+    height: 44px;
     font-size: 16px;
   }
 
-  main #calculator article button,
-  main #settings button,
-  main #shift button,
-  main #tools button {
-    touch-action: manipulation;
+  #calculator article button[aria-label*="quantity"] {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
   }
 
-  main #workflow {
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-    height: auto;
-    margin-top: 0;
-    padding: 14px;
-    overflow: visible;
-  }
-
-  main #workflow > div {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-width: 0;
-    gap: 10px;
-  }
-
-  main #workflow > div > div {
-    width: 100%;
+  #calculator article > div,
+  #calculator article > div > div,
+  #calculator article p,
+  #calculator article h3,
+  #calculator article span,
+  #calculator article output {
     min-width: 0;
     max-width: 100%;
-    text-align: left;
   }
 
-  main #workflow > div > div:last-child {
-    padding-top: 9px;
-    border-top: 1px solid color-mix(in srgb, currentColor 25%, transparent);
-  }
-
-  main #workflow h3,
-  main #workflow p,
-  main #workflow span,
-  main #workflow strong {
-    max-width: 100%;
-    white-space: normal;
+  #calculator article p,
+  #calculator article span,
+  #calculator article h3 {
     overflow-wrap: anywhere;
   }
 
-  main #workflow strong {
-    font-size: clamp(1.45rem, 7vw, 1.85rem);
-    line-height: 1.05;
+  #workflow {
+    width: 100%;
+    margin-top: 0;
+    padding: 13px;
   }
 
-  main #settings,
-  main #shift,
-  main #tools {
+  #workflow > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #workflow > div > div {
+    min-width: 0;
+    width: 100%;
+    text-align: left;
+  }
+
+  #workflow > div > div:last-child {
+    padding-top: 9px;
+    border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  }
+
+  #workflow h3,
+  #workflow p,
+  #workflow span,
+  #workflow strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  #workflow strong {
+    font-size: clamp(1.55rem, 8vw, 2rem);
+  }
+
+  #settings,
+  #shift,
+  #tools {
     margin-top: 12px;
+    padding: 13px;
   }
 
-  main #settings { padding: 14px; }
-
-  main #settings .grid {
+  #settings .grid {
     grid-template-columns: 1fr;
     gap: 8px;
   }
 
-  main #settings .grid > div { min-width: 0; }
-  main #settings button { min-height: 36px; }
-
-  main #shift { padding: 14px; }
-
-  main #shift .grid {
+  #shift .grid {
     grid-template-columns: 1fr;
-    gap: 9px;
+    gap: 8px;
   }
 
-  main #shift .grid,
-  main #shift .grid > div,
-  main #shift input {
-    width: 100%;
+  #shift .grid > div {
     min-width: 0;
-    max-width: 100%;
+    padding: 12px;
   }
 
-  main #shift strong {
+  #shift .grid > div:last-child {
+    padding: 14px;
+  }
+
+  #shift strong {
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  main #tools {
-    padding-top: 14px;
-    padding-bottom: 14px;
+  #shift .grid > div:not(:last-child) {
+    position: relative;
   }
 
-  main #tools > button {
+  #shift .grid > div:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -9px;
+    width: 1px;
+    height: 9px;
+    background: color-mix(in srgb, var(--border) 80%, transparent);
+  }
+
+  #tools > button {
     width: 100%;
-    min-height: 44px;
+    min-height: 42px;
   }
 
   main footer {
-    margin-top: 4px;
-    padding-top: 8px;
-    padding-bottom: 4px;
+    margin-top: 2px;
+    padding-block: 8px 2px;
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 420px) {
   main > div.relative {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    padding-inline: 12px;
   }
 
-  main nav { gap: 7px; }
-  main nav time { max-width: 56vw; font-size: 7px !important; }
+  main nav {
+    gap: 8px;
+  }
 
-  main #calculator article,
-  main #settings,
-  main #shift,
-  main #workflow {
-    padding-left: 11px;
-    padding-right: 11px;
+  main nav button {
+    padding-inline: 9px;
+  }
+
+  #calculator > .grid,
+  #shift .grid {
+    gap: 8px;
+  }
+
+  #calculator > .grid > article,
+  #workflow,
+  #settings,
+  #shift,
+  #tools {
+    padding-inline: 12px;
+  }
+
+  #calculator article button[aria-label*="quantity"] {
+    width: 42px;
+    min-width: 42px;
+  }
+
+  #shift .grid > div:last-child strong {
+    font-size: 2.15rem;
   }
 }
 
