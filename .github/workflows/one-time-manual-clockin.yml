@@ -6,8 +6,6 @@ on:
     paths:
       - '.github/workflows/one-time-manual-clockin.yml'
 
-authors: permissions
-
 permissions:
   contents: write
 
