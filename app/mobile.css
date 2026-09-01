@@ -20,8 +20,6 @@ body {
     padding-bottom: 24px;
   }
 
-  .mobile-total-bar { display: none !important; }
-
   main nav {
     min-height: 48px;
     height: 48px;
@@ -59,40 +57,6 @@ body {
   main #workflow > div {
     width: 100%;
     min-width: 0;
-  }
-
-  /* Focus Mode: center the same calculator workspace without changing normal layout. */
-  main > div.relative:not(:has(nav)) {
-    min-height: 100dvh;
-    height: 100dvh;
-    padding: clamp(24px, 4vh, 48px) clamp(24px, 4vw, 56px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator {
-    width: min(100%, 1080px);
-    max-width: 1080px;
-    margin-inline: auto;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 {
-    width: 100%;
-    margin-bottom: 14px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child {
-    min-width: 0;
-    text-align: center;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:last-child {
-    justify-content: center;
   }
 }
 
@@ -170,7 +134,6 @@ body {
     word-break: normal;
   }
 
-  /* Desktop keeps the subtitle on one line; mobile is allowed to wrap. */
   main section p.whitespace-nowrap {
     white-space: normal !important;
   }
@@ -356,84 +319,6 @@ body {
     padding-top: 10px;
     padding-bottom: 6px;
   }
-
-  /* Focus Mode: lock the entire page to the viewport with no document scrolling. */
-  main > div.relative:not(:has(nav)) {
-    width: 100%;
-    min-height: 100dvh !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    padding: 18px 14px 24px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    overflow: hidden !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator {
-    width: 100% !important;
-    max-width: 720px !important;
-    margin-inline: auto !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 {
-    width: 100% !important;
-    margin-bottom: 14px !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child,
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:last-child {
-    width: 100% !important;
-    min-width: 0 !important;
-    text-align: center !important;
-    justify-content: center !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 h2,
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 p {
-    width: 100% !important;
-    max-width: 100% !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .grid {
-    width: 100% !important;
-    max-width: 720px !important;
-    margin-inline: auto !important;
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .grid > article,
-  main > div.relative:not(:has(nav)) #workflow {
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator article h3,
-  main > div.relative:not(:has(nav)) #calculator article p,
-  main > div.relative:not(:has(nav)) #calculator article span,
-  main > div.relative:not(:has(nav)) #calculator article output,
-  main > div.relative:not(:has(nav)) #workflow h3,
-  main > div.relative:not(:has(nav)) #workflow p,
-  main > div.relative:not(:has(nav)) #workflow span,
-  main > div.relative:not(:has(nav)) #workflow strong {
-    max-width: 100% !important;
-    overflow-wrap: anywhere !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator article input {
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 button {
-    min-height: 40px;
-  }
 }
 
 @media (max-width: 380px) {
@@ -452,22 +337,6 @@ body {
     padding-left: 11px;
     padding-right: 11px;
   }
-}
-
-/* Lock the document itself while Focus Mode is active. */
-html:has(main > div.relative:not(:has(nav))),
-body:has(main > div.relative:not(:has(nav))) {
-  height: 100%;
-  max-height: 100dvh;
-  overflow: hidden !important;
-}
-
-main:has(> div.relative:not(:has(nav))) {
-  height: 100dvh !important;
-  max-height: 100dvh !important;
-  min-height: 100dvh !important;
-  overflow: hidden !important;
-  padding-bottom: 0 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
