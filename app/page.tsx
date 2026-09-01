@@ -256,9 +256,8 @@ export default function Page() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const active = document.activeElement as HTMLInputElement | null
-      const isWorkloadInput = active?.matches('#calculator article input')
       if (event.key === 'Escape') {
-        if (isWorkloadInput) {
+        if (active?.matches('#calculator article input')) {
           const id = active.closest('article')?.getAttribute('data-workload-id')
           if (id) clearWorkload(id)
         }
@@ -266,7 +265,7 @@ export default function Page() {
         setConfirmReset(false)
         return
       }
-      if (!isWorkloadInput) return
+      if (!active || !active.matches('#calculator article input')) return
 
       if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
         event.preventDefault()
@@ -286,7 +285,7 @@ export default function Page() {
 
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  })
+  }, [])
 
   const workloads = useMemo(
     () => DEFAULT_WORKLOADS.map((workload) => ({ ...workload, minutesPerUnit: rates[workload.id] ?? workload.minutesPerUnit })),
@@ -471,7 +470,7 @@ export default function Page() {
                   {workloads.map((workload) => (
                     <div key={workload.id} className="min-w-0">
                       <span className="block text-[9px] font-semibold">{workload.label}</span>
-                      <span className="block mt-0.5 font-mono text-[8px] leading-4 text-muted-foreground">
+                      <span className="mt-0.5 block font-mono text-[8px] leading-4 text-muted-foreground">
                         {getExampleAmounts(workload).map((amount, index) => (
                           <span key={amount}>{index > 0 && ' · '}{getUnitLabel(workload.unit, amount)} = {formatCompactDuration(amount * workload.minutesPerUnit)}</span>
                         ))}
