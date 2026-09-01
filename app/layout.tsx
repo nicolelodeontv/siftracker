@@ -2,10 +2,6 @@ import { Analytics } from '@vercel/analytics/next'
 import { JetBrains_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import './mobile.css'
-import './final-fixes.css'
-import './ui-polish.css'
-import './motion.css'
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -16,7 +12,7 @@ const jetBrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'SIF Tracker | Production Time Calculator',
   description: 'Estimate production time for edits, clips, builds, and late orders.',
-  generator: 'v0.app',
+  generator: 'SIF Tracker',
   icons: {
     icon: [
       { url: '/icon-light-32x32.png', media: '(prefers-color-scheme: light)' },
