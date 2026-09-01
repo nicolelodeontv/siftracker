@@ -49,6 +49,18 @@ function setupTrackerEnhancements() {
     return parseClock(first)
   }
 
+  const formatTodayText = () => {
+    const date = new Intl.DateTimeFormat('en-PH', {
+      timeZone: 'Asia/Manila',
+      month: 'short',
+      day: '2-digit',
+    }).format(new Date())
+    const workflowText = document.querySelector<HTMLElement>('#workflow p')?.textContent ?? ''
+    const totalText = document.querySelector<HTMLElement>('#workflow strong')?.textContent ?? '00:00:00'
+    const units = parseUnits(workflowText)
+    return `TODAY · ${date.toUpperCase()}  ·  ${units} total units  ·  ${totalText}`
+  }
+
   const ensureLiveUi = () => {
     const clockOutCard = shift.querySelector<HTMLElement>('.grid > div:last-child')
     if (!clockOutCard) return
@@ -87,6 +99,13 @@ function setupTrackerEnhancements() {
       heading?.appendChild(today)
     }
 
+    const nowButton = shift.querySelector<HTMLButtonElement>('.grid > div:first-child button')
+    if (nowButton) {
+      const phtLive = document.querySelector<HTMLElement>('main nav time')?.textContent?.match(/(\d{2}:\d{2}:\d{2})\s*PHT/i)?.[1]
+      nowButton.textContent = phtLive ? `NOW · ${phtLive}` : 'Now'
+      nowButton.setAttribute('aria-label', phtLive ? `Set Clock In to ${phtLive} Philippine time` : 'Set Clock In to current Philippine time')
+    }
+
     const phtSeconds = getPhtSeconds()
     const clockOut = getClockOut()
     const clockIn = getClockIn()
@@ -115,18 +134,6 @@ function setupTrackerEnhancements() {
     progress.querySelector<HTMLElement>('[data-sif-progress-value]')!.textContent = `${percent}%`
     progress.querySelector<HTMLElement>('[data-sif-progress-bar]')!.style.width = `${percent}%`
     today.textContent = formatTodayText()
-  }
-
-  const formatTodayText = () => {
-    const date = new Intl.DateTimeFormat('en-PH', {
-      timeZone: 'Asia/Manila',
-      month: 'short',
-      day: '2-digit',
-    }).format(new Date())
-    const workflowText = document.querySelector<HTMLElement>('#workflow p')?.textContent ?? ''
-    const totalText = document.querySelector<HTMLElement>('#workflow strong')?.textContent ?? '00:00:00'
-    const units = parseUnits(workflowText)
-    return `TODAY · ${date.toUpperCase()}  ·  ${units} total units  ·  ${totalText}`
   }
 
   const refreshExpressionState = () => {
@@ -195,9 +202,13 @@ function setupTrackerEnhancements() {
       document.querySelector<HTMLButtonElement>('#settings button[aria-label="Close settings"]')?.click()
       return
     }
+
     if (!active?.matches('#calculator article input')) return
 
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      event.preventDefault()
+      document.querySelector('#shift')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    } else if (event.key === 'Enter') {
       event.preventDefault()
       nextInput(active)
     } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
@@ -205,9 +216,6 @@ function setupTrackerEnhancements() {
       const delta = event.key === 'ArrowUp' ? 1 : -1
       const button = active.parentElement?.parentElement?.querySelector<HTMLButtonElement>(`button[aria-label*="${delta > 0 ? 'Increase' : 'Decrease'}"]`)
       button?.click()
-    } else if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-      event.preventDefault()
-      document.querySelector('#shift')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }
 
@@ -217,7 +225,7 @@ function setupTrackerEnhancements() {
     refreshExpressionState()
     enhanceSettings()
   })
-  observer.observe(document.body, { subtree: true, childList: true, characterData: true })
+  observer.observe(document.body, { subtree: true, childList: true })
 
   const inputListener = () => window.setTimeout(refreshExpressionState, 0)
   document.addEventListener('input', inputListener, true)
