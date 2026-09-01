@@ -1,65 +1,38 @@
-/* Consistent spacing and themed controls across desktop and mobile. */
+/* Emphasize Clock Out; keep Time Until Clock Out clearly secondary. */
 
-#calculator > .mb-3,
-#shift > .mb-3 {
-  margin-bottom: 12px !important;
+#shift [data-clock-out-card] .clock-out-time {
+  font-size: 3.5rem !important;
+  line-height: .95 !important;
+  letter-spacing: -0.065em !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 20px var(--primary-shadow);
 }
 
-#calculator > .grid {
-  gap: 12px !important;
+#shift [data-clock-out-card] .clock-out-support {
+  margin-top: 6px !important;
+  font-size: 7px !important;
+  opacity: .65 !important;
 }
 
-#shift,
-#tools {
-  margin-top: 16px !important;
+#shift [data-clock-out-card] .clock-out-copy {
+  align-self: flex-start !important;
 }
 
-#settings {
-  margin-bottom: 12px !important;
+#shift .clockout-countdown {
+  font-size: 8px !important;
+  line-height: 1.1 !important;
+  opacity: .6 !important;
 }
 
-@media (min-width: 768px) {
-  main > div.relative {
-    padding-left: 24px !important;
-    padding-right: 24px !important;
-  }
-
-  #calculator > .grid > article,
-  #calculator > .grid > #workflow {
-    min-height: 0 !important;
-    height: 100% !important;
-  }
-
-  #calculator > .grid > article {
-    min-height: 176px !important;
-  }
-
-  #calculator > .grid > #workflow {
-    min-height: 176px !important;
-  }
-
-  #shift,
-  #tools {
-    padding: 14px !important;
-  }
-
-  #shift .grid {
-    gap: 12px !important;
-  }
+#shift .clockout-countdown-label {
+  font-size: 6px !important;
+  line-height: 1.1 !important;
+  letter-spacing: .12em !important;
+  opacity: .55 !important;
 }
 
 @media (max-width: 767px) {
-  #calculator > .mb-3,
-  #shift > .mb-3 {
-    margin-bottom: 10px !important;
-  }
-
-  #calculator > .grid {
-    gap: 10px !important;
-  }
-
-  #shift,
-  #tools {
-    margin-top: 14px !important;
+  #shift [data-clock-out-card] .clock-out-time {
+    font-size: 2.75rem !important;
   }
 }
