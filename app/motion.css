@@ -259,6 +259,133 @@ select {
   animation: sif-dialog-in var(--motion-base) var(--motion-ease) both;
 }
 
+/* Live shift enhancements injected by the tracker client helper. */
+.sif-clockout-status,
+.sif-time-left,
+.sif-today,
+.sif-rate-preview {
+  font-family: var(--font-mono), monospace;
+}
+
+.sif-clockout-status {
+  display: block;
+  margin-top: 8px;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.sif-clockout-status.is-empty {
+  color: var(--muted-foreground);
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: none;
+}
+
+.sif-clockout-status.is-complete {
+  color: var(--sif-green);
+  animation: sif-live-pulse 1.8s ease-in-out infinite;
+}
+
+.sif-time-left {
+  display: block;
+  margin-top: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .06em;
+  color: var(--foreground);
+}
+
+.sif-time-left.is-empty { color: var(--muted-foreground); }
+.sif-time-left.is-complete { color: var(--sif-green); }
+
+.sif-progress {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--card) 72%, var(--background));
+}
+
+.sif-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.sif-progress-head strong {
+  color: var(--primary);
+  font-size: 9px;
+  letter-spacing: .04em;
+}
+
+.sif-progress-track {
+  height: 5px;
+  margin-top: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 78%, transparent);
+}
+
+.sif-progress-bar {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width var(--motion-base) var(--motion-ease);
+}
+
+.sif-today {
+  margin-top: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: var(--muted-foreground);
+}
+
+.sif-rate-preview {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.sif-rate-preview > p {
+  margin: 0 0 7px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.sif-rate-preview > div {
+  display: grid;
+  gap: 2px;
+  padding: 5px 0;
+}
+
+.sif-rate-preview strong {
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sif-rate-preview span {
+  font-size: 8px;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
 @media (min-width: 768px) {
   /* Desktop shift flow: a single timeline rather than four equal boxes. */
   #shift .grid {
@@ -323,6 +450,14 @@ select {
     background: color-mix(in srgb, var(--border) 80%, transparent);
   }
 
+  .sif-progress {
+    margin-top: 10px;
+  }
+
+  .sif-rate-preview span {
+    overflow-wrap: anywhere;
+  }
+
   button:hover { transform: none; }
   button:active { transform: scale(.97); }
 }
@@ -336,6 +471,10 @@ select {
   #workflow strong,
   #shift .grid > div:last-child strong {
     font-size: 1.85rem;
+  }
+
+  .sif-progress {
+    padding-inline: 10px;
   }
 }
 
