@@ -17,9 +17,12 @@ body {
     -webkit-text-size-adjust: 100%;
   }
 
-  body { overscroll-behavior-y: auto; }
+  body {
+    overscroll-behavior-y: auto;
+  }
 
   main {
+    width: 100%;
     min-height: 100dvh;
     height: auto !important;
     max-height: none !important;
@@ -33,16 +36,56 @@ body {
     min-height: 100dvh;
     height: auto !important;
     max-height: none !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    padding-bottom: 12px !important;
+    padding: 0 12px 12px !important;
     overflow: visible !important;
   }
 
-  main nav { min-width: 0; min-height: 52px; height: 52px; }
-  main nav > div { min-width: 0; }
-  main section { min-width: 0; }
-  main h1 { overflow-wrap: anywhere; }
+  main nav {
+    min-width: 0;
+    min-height: 52px;
+    height: 52px;
+    gap: 10px;
+  }
+
+  main nav > div,
+  main nav > div > div {
+    min-width: 0;
+  }
+
+  main nav time {
+    min-width: 0;
+    max-width: 62vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 8px !important;
+  }
+
+  main section {
+    min-width: 0;
+    width: 100%;
+  }
+
+  main h1,
+  main h2,
+  main h3,
+  main p,
+  main span,
+  main output {
+    min-width: 0;
+  }
+
+  /* Never clip the hero copy on narrow screens. */
+  main h1 {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  main section p {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
 
   main #calculator,
   main #settings,
@@ -55,65 +98,379 @@ body {
     max-width: 100%;
   }
 
-  main #calculator > .grid { grid-template-columns: 1fr !important; gap: 10px !important; }
-  main #calculator article { width: 100%; min-width: 0; height: auto !important; min-height: 0 !important; padding: 13px !important; overflow: visible !important; }
-  main #calculator article input { width: 100%; min-width: 0; max-width: 100%; height: 46px !important; font-size: 16px !important; }
-  main #workflow { height: auto !important; padding: 14px !important; }
-  main #workflow > div { display: flex !important; flex-direction: column; width: 100% !important; gap: 10px !important; }
-  main #workflow > div > div { width: 100% !important; min-width: 0 !important; text-align: left !important; }
-  main #workflow > div > div:last-child { padding-top: 9px; border-top: 1px solid currentColor; }
-  main #workflow strong { font-size: 1.65rem !important; overflow-wrap: anywhere; }
-  main #settings, main #shift, main #tools { margin-top: 12px !important; }
-  main #settings { padding: 13px !important; }
-  main #settings .grid { grid-template-columns: 1fr !important; gap: 8px !important; }
-  main #settings .grid > div { min-width: 0; }
-  main #settings button { min-height: 36px; touch-action: manipulation; }
-  main #shift { padding: 13px !important; }
-  main #shift > div:last-child { min-width: 0; }
-  main #shift .grid { grid-template-columns: 1fr !important; gap: 9px !important; }
-  main #shift > div > div { min-width: 0; width: 100%; }
-  main #shift strong { overflow-wrap: anywhere; line-height: 1.15; }
-  main #tools { padding-top: 13px !important; padding-bottom: 13px !important; }
-  main #tools > button { width: 100%; min-height: 44px; touch-action: manipulation; }
-  main footer { padding-top: 9px !important; padding-bottom: 5px !important; }
+  main #calculator > .mb-3 {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 12px !important;
+    align-items: center !important;
+  }
 
-  .mobile-total-bar { position: fixed; z-index: 50; left: 7px; right: 7px; bottom: calc(7px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: center; gap: 0; padding: 9px 8px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); color: var(--foreground); box-shadow: 0 12px 32px var(--card-shadow); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
-  .mobile-total-bar > div { min-width: 0; padding: 0 7px; }
-  .mobile-total-bar > div + div { border-left: 1px solid var(--border); }
-  .mobile-total-label { display: block; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 7px; font-weight: 700; letter-spacing: .12em; color: var(--muted-foreground); }
-  .mobile-total-bar strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-jetbrains-mono), monospace; font-size: clamp(10px, 3.1vw, 13px); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  main #calculator > .mb-3 > div:first-child {
+    min-width: 0;
+    width: 100%;
+  }
+
+  main #calculator > .mb-3 > div:last-child {
+    width: 100%;
+    justify-content: center !important;
+  }
+
+  main #calculator > .mb-3 h2,
+  main #calculator > .mb-3 p {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  main #calculator > .grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100%;
+  }
+
+  main #calculator article {
+    width: 100%;
+    min-width: 0;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 13px !important;
+    overflow: visible !important;
+  }
+
+  main #calculator article > div:first-child {
+    min-width: 0;
+  }
+
+  main #calculator article h3,
+  main #calculator article p,
+  main #calculator article span,
+  main #calculator article output {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  main #calculator article input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 46px !important;
+    font-size: 16px !important;
+  }
+
+  main #calculator article button {
+    touch-action: manipulation;
+  }
+
+  main #workflow {
+    width: 100%;
+    min-width: 0;
+    height: auto !important;
+    min-height: 0 !important;
+    margin-top: 0 !important;
+    padding: 14px !important;
+    overflow: visible !important;
+  }
+
+  main #workflow > div {
+    display: flex !important;
+    flex-direction: column;
+    width: 100% !important;
+    min-width: 0 !important;
+    gap: 10px !important;
+  }
+
+  main #workflow > div > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    text-align: left !important;
+  }
+
+  main #workflow > div > div:last-child {
+    padding-top: 9px;
+    border-top: 1px solid currentColor;
+  }
+
+  main #workflow h3,
+  main #workflow p,
+  main #workflow span,
+  main #workflow strong {
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  main #workflow strong {
+    font-size: 1.65rem !important;
+    line-height: 1.05 !important;
+  }
+
+  main #settings,
+  main #shift,
+  main #tools {
+    margin-top: 12px !important;
+  }
+
+  main #settings {
+    width: 100%;
+    padding: 13px !important;
+  }
+
+  main #settings .grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  main #settings .grid > div {
+    min-width: 0;
+  }
+
+  main #settings button {
+    min-height: 36px;
+    touch-action: manipulation;
+  }
+
+  main #shift {
+    width: 100%;
+    min-width: 0;
+    padding: 13px !important;
+  }
+
+  main #shift > div:last-child,
+  main #shift .grid,
+  main #shift .grid > div {
+    min-width: 0;
+    width: 100%;
+  }
+
+  main #shift .grid {
+    grid-template-columns: 1fr !important;
+    gap: 9px !important;
+  }
+
+  main #shift strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: nowrap;
+    line-height: 1.15;
+  }
+
+  main #shift input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  main #tools {
+    width: 100%;
+    padding-top: 13px !important;
+    padding-bottom: 13px !important;
+  }
+
+  main #tools > button {
+    width: 100%;
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  main footer {
+    padding-top: 9px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .mobile-total-bar {
+    position: fixed;
+    z-index: 50;
+    left: 7px;
+    right: 7px;
+    bottom: calc(7px + env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: 0;
+    padding: 9px 8px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: 0 12px 32px var(--card-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .mobile-total-bar > div {
+    min-width: 0;
+    padding: 0 7px;
+  }
+
+  .mobile-total-bar > div + div {
+    border-left: 1px solid var(--border);
+  }
+
+  .mobile-total-label {
+    display: block;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--muted-foreground);
+  }
+
+  .mobile-total-bar strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-jetbrains-mono), monospace;
+    font-size: clamp(10px, 3.1vw, 13px);
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Focus Mode on mobile: same proportions as desktop, but allowed to grow vertically. */
+  main > div.relative:not(:has(nav)) {
+    width: 100%;
+    min-height: 100dvh !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 18px 12px 24px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator {
+    width: 100% !important;
+    max-width: 720px !important;
+    margin-inline: auto !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 {
+    width: 100% !important;
+    margin-bottom: 14px !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child {
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child p,
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child h2 {
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:last-child {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator > .grid {
+    width: 100% !important;
+    max-width: 720px !important;
+    margin-inline: auto !important;
+    gap: 10px !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator article {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator article h3,
+  main > div.relative:not(:has(nav)) #calculator article p,
+  main > div.relative:not(:has(nav)) #calculator article span,
+  main > div.relative:not(:has(nav)) #calculator article output {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    white-space: normal !important;
+  }
+
+  main > div.relative:not(:has(nav)) #calculator article input {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Keep Focus Mode's exit control comfortably tappable and centered. */
+  main > div.relative:not(:has(nav)) #calculator > .mb-3 button {
+    min-height: 40px;
+    touch-action: manipulation;
+  }
 }
 
 @media (min-width: 768px) {
-  .mobile-total-bar { display: none; }
-  html, body, main { max-width: 100%; overflow-x: hidden; overflow-y: auto; }
-  main, main > div.relative { height: auto !important; max-height: none !important; overflow: visible !important; }
-  main #calculator, main #workflow, main #settings, main #shift, main #tools { box-sizing: border-box; }
+  .mobile-total-bar {
+    display: none;
+  }
 
-  /* Keep every calculator item in a desktop grid row stretched to the same height. */
-  main #calculator > .grid { align-items: stretch !important; }
+  html,
+  body,
+  main {
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  main,
+  main > div.relative {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  main #calculator,
+  main #workflow,
+  main #settings,
+  main #shift,
+  main #tools {
+    box-sizing: border-box;
+  }
+
+  main #calculator > .grid {
+    align-items: stretch !important;
+  }
+
   main #calculator > .grid > article,
-  main #calculator > .grid > #workflow { align-self: stretch !important; height: auto !important; min-height: 0 !important; }
-  main #calculator > .grid > article { display: flex; flex-direction: column; }
-  main #calculator > .grid > article > div:last-child { margin-top: auto; }
-  main #workflow { display: flex; }
-  main #workflow > div { width: 100%; min-height: 0; }
-}
+  main #calculator > .grid > #workflow {
+    align-self: stretch !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
 
-@media (max-width: 380px) {
-  main > div.relative { padding-left: 9px !important; padding-right: 9px !important; }
-  main #calculator article, main #settings, main #shift { padding-left: 11px !important; padding-right: 11px !important; }
-  .mobile-total-bar { left: 5px; right: 5px; padding-left: 5px; padding-right: 5px; }
-  .mobile-total-bar > div { padding-left: 5px; padding-right: 5px; }
-  .mobile-total-bar strong { font-size: 9px; }
-}
+  main #calculator > .grid > article {
+    display: flex;
+    flex-direction: column;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-}
+  main #calculator > .grid > article > div:last-child {
+    margin-top: auto;
+  }
 
-/* Focus Mode: center the complete workspace and keep equal viewport breathing room. */
-@media (min-width: 768px) {
+  main #workflow {
+    display: flex;
+  }
+
+  main #workflow > div {
+    width: 100%;
+    min-height: 0;
+  }
+
+  /* Center Focus Mode on larger screens without changing the normal site layout. */
   main > div.relative:not(:has(nav)) {
     min-height: 100dvh !important;
     height: 100dvh !important;
@@ -122,7 +479,7 @@ body {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    align-items: stretch !important;
+    align-items: center !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator {
@@ -147,79 +504,57 @@ body {
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 380px) {
+  main > div.relative {
+    padding-left: 9px !important;
+    padding-right: 9px !important;
+  }
+
+  main nav {
+    gap: 8px;
+  }
+
+  main nav time {
+    max-width: 58vw;
+    font-size: 7px !important;
+  }
+
   main > div.relative:not(:has(nav)) {
-    min-height: 100dvh !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 20px 14px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: stretch !important;
+    padding-left: 9px !important;
+    padding-right: 9px !important;
   }
 
-  main > div.relative:not(:has(nav)) #calculator {
-    width: 100% !important;
-    max-width: 680px !important;
-    margin-inline: auto !important;
+  main #calculator article,
+  main #settings,
+  main #shift {
+    padding-left: 11px !important;
+    padding-right: 11px !important;
   }
 
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 {
-    width: 100%;
-    margin-bottom: 12px !important;
-    align-items: center !important;
+  .mobile-total-bar {
+    left: 5px;
+    right: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child {
-    min-width: 0 !important;
-    width: 100% !important;
-    text-align: center !important;
+  .mobile-total-bar > div {
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child h2,
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child p {
-    overflow-wrap: anywhere !important;
-    word-break: normal !important;
-    white-space: normal !important;
+  .mobile-total-bar strong {
+    font-size: 9px;
   }
+}
 
-  main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:last-child {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator > .grid {
-    width: 100% !important;
-    max-width: 680px !important;
-    margin-inline: auto !important;
-    gap: 10px !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator article {
-    width: 100% !important;
-    min-width: 0 !important;
-    overflow: visible !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator article h3,
-  main > div.relative:not(:has(nav)) #calculator article p,
-  main > div.relative:not(:has(nav)) #calculator article span,
-  main > div.relative:not(:has(nav)) #calculator article output {
-    max-width: 100% !important;
-    overflow-wrap: anywhere !important;
-    word-break: normal !important;
-  }
-
-  main > div.relative:not(:has(nav)) #calculator article input {
-    min-width: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  main > div.relative:not(:has(nav)) #workflow {
-    width: 100% !important;
-    max-width: 680px !important;
-    margin-inline: auto !important;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
   }
 }
