@@ -1,34 +1,26 @@
+* { box-sizing: border-box; }
 html,
 body {
   min-width: 0;
   overflow-x: hidden;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-/* Shared responsive behavior. Keep this file as the only responsive override layer. */
 @media (min-width: 768px) {
-  main {
+  main,
+  main > div.relative {
     width: 100%;
     min-height: 100dvh;
+    height: auto;
+    max-height: none;
     overflow-x: hidden;
     overflow-y: auto;
   }
 
   main > div.relative {
-    width: 100%;
-    max-width: 100%;
-    min-height: 100dvh;
-    height: auto;
-    overflow: visible;
     padding-bottom: 24px;
   }
 
-  .mobile-total-bar {
-    display: none !important;
-  }
+  .mobile-total-bar { display: none !important; }
 
   main nav {
     min-height: 48px;
@@ -69,19 +61,16 @@ body {
     min-width: 0;
   }
 
-  /* Normal desktop Focus Mode. */
+  /* Focus Mode: center the same calculator workspace without changing normal layout. */
   main > div.relative:not(:has(nav)) {
-    width: 100%;
     min-height: 100dvh;
     height: 100dvh;
-    max-height: none;
     padding: clamp(24px, 4vh, 48px) clamp(24px, 4vw, 56px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     overflow-y: auto;
-    overflow-x: hidden;
   }
 
   main > div.relative:not(:has(nav)) #calculator {
@@ -116,9 +105,7 @@ body {
     -webkit-text-size-adjust: 100%;
   }
 
-  body {
-    overscroll-behavior-y: auto;
-  }
+  body { overscroll-behavior-y: auto; }
 
   main {
     width: 100%;
@@ -175,13 +162,15 @@ body {
   main h1,
   main h2,
   main h3,
-  main p {
-    overflow-wrap: break-word;
+  main p,
+  main #workflow h3,
+  main #workflow p,
+  main #workflow span {
+    overflow-wrap: anywhere;
     word-break: normal;
   }
 
-  /* The normal page may use a one-line subtitle on desktop, but mobile must be allowed to wrap. */
-  main section p,
+  /* Desktop keeps the subtitle on one line; mobile is allowed to wrap. */
   main section p.whitespace-nowrap {
     white-space: normal !important;
   }
@@ -199,29 +188,24 @@ body {
 
   main #calculator > .mb-3 {
     width: 100%;
-    min-width: 0;
     margin-bottom: 12px;
     align-items: center;
     justify-content: center;
   }
 
-  main #calculator > .mb-3 > div:first-child {
+  main #calculator > .mb-3 > div:first-child,
+  main #calculator > .mb-3 > div:last-child {
     width: 100%;
     min-width: 0;
     text-align: center;
-  }
-
-  main #calculator > .mb-3 > div:last-child {
-    width: 100%;
     justify-content: center;
   }
 
-  main #calculator > .mb-3 p,
-  main #calculator > .mb-3 h2 {
+  main #calculator > .mb-3 h2,
+  main #calculator > .mb-3 p {
     width: 100%;
     max-width: 100%;
     white-space: normal !important;
-    overflow-wrap: break-word;
   }
 
   main #calculator > .grid {
@@ -252,9 +236,8 @@ body {
   main #calculator article span,
   main #calculator article output {
     max-width: 100%;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     word-break: normal;
-    white-space: normal;
   }
 
   main #calculator article output {
@@ -282,8 +265,8 @@ body {
     min-width: 0;
     min-height: 0;
     height: auto;
-    padding: 14px;
     margin-top: 0;
+    padding: 14px;
     overflow: visible;
   }
 
@@ -292,7 +275,7 @@ body {
     flex-direction: column;
     width: 100%;
     min-width: 0;
-    gap: 12px;
+    gap: 10px;
   }
 
   main #workflow > div > div {
@@ -303,10 +286,8 @@ body {
   }
 
   main #workflow > div > div:last-child {
-    width: 100%;
-    padding-top: 10px;
+    padding-top: 9px;
     border-top: 1px solid color-mix(in srgb, currentColor 25%, transparent);
-    text-align: left;
   }
 
   main #workflow h3,
@@ -314,9 +295,8 @@ body {
   main #workflow span,
   main #workflow strong {
     max-width: 100%;
-    overflow-wrap: break-word;
-    word-break: normal;
     white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   main #workflow strong {
@@ -330,38 +310,29 @@ body {
     margin-top: 12px;
   }
 
-  main #settings {
-    padding: 14px;
-  }
+  main #settings { padding: 14px; }
 
   main #settings .grid {
     grid-template-columns: 1fr;
     gap: 8px;
   }
 
-  main #settings .grid > div {
-    min-width: 0;
-  }
+  main #settings .grid > div { min-width: 0; }
+  main #settings button { min-height: 36px; }
 
-  main #settings button {
-    min-height: 36px;
-  }
-
-  main #shift {
-    padding: 14px;
-  }
-
-  main #shift > div,
-  main #shift .grid,
-  main #shift .grid > div {
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-  }
+  main #shift { padding: 14px; }
 
   main #shift .grid {
     grid-template-columns: 1fr;
     gap: 9px;
+  }
+
+  main #shift .grid,
+  main #shift .grid > div,
+  main #shift input {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
 
   main #shift strong {
@@ -369,13 +340,6 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.15;
-  }
-
-  main #shift input {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
   }
 
   main #tools {
@@ -393,19 +357,19 @@ body {
     padding-bottom: 6px;
   }
 
-  /* Focus Mode: same card language as desktop, but always scrollable and never clipped. */
+  /* Focus Mode: same centered workspace, but allowed to scroll and grow naturally. */
   main > div.relative:not(:has(nav)) {
     width: 100%;
     min-height: 100dvh !important;
     height: auto !important;
     max-height: none !important;
-    padding: 16px 14px 24px !important;
+    padding: 18px 14px 24px !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;
     align-items: center !important;
     overflow-x: hidden !important;
-    overflow-y: visible !important;
+    overflow-y: auto !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator {
@@ -417,8 +381,6 @@ body {
   main > div.relative:not(:has(nav)) #calculator > .mb-3 {
     width: 100% !important;
     margin-bottom: 14px !important;
-    align-items: center !important;
-    justify-content: center !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator > .mb-3 > div:first-child,
@@ -434,7 +396,7 @@ body {
     width: 100% !important;
     max-width: 100% !important;
     white-space: normal !important;
-    overflow-wrap: break-word !important;
+    overflow-wrap: anywhere !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator > .grid {
@@ -445,12 +407,11 @@ body {
     gap: 10px !important;
   }
 
-  main > div.relative:not(:has(nav)) #calculator article,
+  main > div.relative:not(:has(nav)) #calculator > .grid > article,
   main > div.relative:not(:has(nav)) #workflow {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
-    overflow: visible !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator article h3,
@@ -462,18 +423,13 @@ body {
   main > div.relative:not(:has(nav)) #workflow span,
   main > div.relative:not(:has(nav)) #workflow strong {
     max-width: 100% !important;
-    overflow-wrap: break-word !important;
-    white-space: normal !important;
+    overflow-wrap: anywhere !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator article input {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
-  }
-
-  main > div.relative:not(:has(nav)) #workflow {
-    margin-top: 0 !important;
   }
 
   main > div.relative:not(:has(nav)) #calculator > .mb-3 button {
@@ -487,14 +443,8 @@ body {
     padding-right: 10px !important;
   }
 
-  main nav {
-    gap: 7px;
-  }
-
-  main nav time {
-    max-width: 56vw;
-    font-size: 7px !important;
-  }
+  main nav { gap: 7px; }
+  main nav time { max-width: 56vw; font-size: 7px !important; }
 
   main #calculator article,
   main #settings,
@@ -502,15 +452,6 @@ body {
   main #workflow {
     padding-left: 11px;
     padding-right: 11px;
-  }
-
-  main > div.relative:not(:has(nav)) {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
-  main #calculator article input {
-    height: 44px;
   }
 }
 
