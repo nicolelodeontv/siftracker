@@ -1,0 +1,156 @@
+/* Subtle UX motion: fast enough for a work tool, clear enough to communicate state. */
+
+:root {
+  --motion-fast: 140ms;
+  --motion-base: 220ms;
+  --motion-slow: 360ms;
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+@keyframes sif-page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sif-card-in {
+  from { opacity: 0; transform: translateY(10px) scale(.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes sif-pop {
+  0% { opacity: .35; transform: scale(.96); }
+  70% { opacity: 1; transform: scale(1.015); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sif-toast-in {
+  from { opacity: 0; transform: translate(-50%, 8px) scale(.98); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes sif-dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+main nav,
+main > div.relative > section:first-of-type {
+  animation: sif-page-in var(--motion-slow) var(--motion-ease) both;
+}
+
+#calculator > .grid > article,
+#workflow,
+#shift,
+#tools,
+#settings {
+  animation: sif-card-in var(--motion-slow) var(--motion-ease) both;
+}
+
+#calculator > .grid > article:nth-child(1) { animation-delay: 40ms; }
+#calculator > .grid > article:nth-child(2) { animation-delay: 70ms; }
+#calculator > .grid > article:nth-child(3) { animation-delay: 100ms; }
+#calculator > .grid > article:nth-child(4) { animation-delay: 130ms; }
+#calculator > .grid > article:nth-child(5) { animation-delay: 160ms; }
+#workflow { animation-delay: 190ms; }
+#shift { animation-delay: 220ms; }
+#tools { animation-delay: 250ms; }
+
+#calculator > .grid > article,
+#workflow,
+#shift,
+#tools,
+#settings {
+  transition:
+    transform var(--motion-base) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease),
+    border-color var(--motion-fast) ease;
+  will-change: transform;
+}
+
+#calculator > .grid > article:hover,
+#settings:hover,
+#tools:hover {
+  transform: translateY(-2px);
+}
+
+#workflow:hover,
+#shift:hover {
+  transform: translateY(-1px);
+}
+
+button {
+  transition:
+    transform var(--motion-fast) var(--motion-ease),
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    opacity var(--motion-fast) ease;
+}
+
+button:hover { transform: translateY(-1px); }
+button:active { transform: translateY(0) scale(.97); }
+button:focus-visible {
+  transition-duration: var(--motion-fast);
+}
+
+input,
+textarea,
+select {
+  transition:
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    background-color var(--motion-fast) ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  transform: translateY(-1px);
+}
+
+#calculator article output {
+  transition: color var(--motion-base) var(--motion-ease), opacity var(--motion-base) ease;
+}
+
+#calculator article:focus-within output {
+  animation: sif-pop var(--motion-base) var(--motion-ease);
+}
+
+[role="status"] {
+  animation: sif-toast-in var(--motion-base) var(--motion-ease) both;
+}
+
+[role="dialog"] > div {
+  animation: sif-dialog-in var(--motion-base) var(--motion-ease) both;
+}
+
+@media (max-width: 767px) {
+  #calculator > .grid > article:hover,
+  #workflow:hover,
+  #shift:hover,
+  #tools:hover,
+  #settings:hover {
+    transform: none;
+  }
+
+  button:hover { transform: none; }
+  button:active { transform: scale(.97); }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
