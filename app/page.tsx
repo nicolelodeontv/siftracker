@@ -350,7 +350,7 @@ export default function Page() {
 
         {!focusMode && (
           <section className={`py-5 sm:py-6 ${motion}`}>
-            <div className="max-w-4xl"><div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div><h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Work smart. Clock out smarter.</h1><p className="mt-1.5 whitespace-nowrap text-sm leading-5 text-muted-foreground">Enter your workload. Get your total time and clock-out instantly.</p></div>
+            <div className="max-w-4xl"><div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div><h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">SIF Tracker</h1><p className="mt-1.5 whitespace-nowrap text-sm leading-5 text-muted-foreground">Enter your workload. Get your total time and clock-out instantly.</p></div>
           </section>
         )}
 
