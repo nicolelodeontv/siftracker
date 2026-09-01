@@ -62,46 +62,21 @@ main > div.relative > section:first-of-type p {
 }
 
 #calculator > .grid > article {
-  display: grid;
-  grid-template-rows: 31px 78px minmax(32px, 1fr);
+  display: flex;
+  flex-direction: column;
   height: 190px;
   min-height: 190px;
-  overflow: hidden;
 }
 
-#calculator > .grid > article > div:first-child {
-  min-width: 0;
-  min-height: 31px;
-  overflow: hidden;
-}
+#calculator > .grid > article > div:last-child { margin-top: auto; }
+#calculator article input { width: 100%; }
 
-#calculator > .grid > article > div:nth-child(2) {
-  min-width: 0;
-  min-height: 78px;
-}
-
-#calculator > .grid > article > div:last-child {
-  min-width: 0;
-  min-height: 32px;
-  margin-top: 8px;
-  align-self: end;
-}
-
-#calculator article output {
-  display: block;
-  flex-shrink: 0;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-#calculator article input {
-  width: 100%;
-  min-width: 0;
-}
-
-#calculator article > div:nth-child(2) > p {
-  min-height: 11px;
-  max-width: 100%;
+/* Reserve one stable line for the helper copy so its vertical position never changes. */
+#calculator > .grid > article > div:nth-child(2) > p:last-child {
+  height: 12px;
+  min-height: 12px;
+  line-height: 12px;
+  margin-top: 6px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -191,12 +166,11 @@ button { touch-action: manipulation; }
   #calculator > .mb-3 { align-items: flex-start; }
   #calculator > .grid { grid-template-columns: 1fr; gap: 10px; }
   #calculator > .grid > article {
-    grid-template-rows: 31px 78px minmax(32px, 1fr);
     height: 190px;
     min-height: 190px;
     padding: 13px;
   }
-  #calculator > .grid > article > div:last-child { margin-top: 8px; }
+  #calculator > .grid > article > div:last-child { margin-top: auto; }
   #calculator article input { height: 44px; font-size: 16px; }
   #calculator article button[aria-label*="quantity"] { width: 44px; min-width: 44px; height: 44px; }
 
