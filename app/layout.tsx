@@ -5,6 +5,7 @@ import './globals.css'
 import './mobile.css'
 import './final-fixes.css'
 import './ui-polish.css'
+import './motion.css'
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -18,18 +19,9 @@ export const metadata: Metadata = {
   generator: 'v0.app',
   icons: {
     icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/icon-light-32x32.png', media: '(prefers-color-scheme: light)' },
+      { url: '/icon-dark-32x32.png', media: '(prefers-color-scheme: dark)' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
     ],
     apple: '/apple-icon.png',
   },
@@ -43,11 +35,7 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="bg-background">
       <body className={`${jetBrainsMono.variable} font-mono antialiased`}>
