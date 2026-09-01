@@ -66,9 +66,15 @@ export function ClockInPicker() {
 
   if (!open) return null
 
-  const adjust = (setter: (value: number) => void, value: number, delta: number, max: number) => {
+  const adjust = (setter: React.Dispatch<React.SetStateAction<number>>, value: number, delta: number, max: number) => {
     setter((value + delta + max + 1) % (max + 1))
   }
+
+  const fields = [
+    { label: 'Hour', value: hour, set: setHour, max: 23 },
+    { label: 'Minute', value: minute, set: setMinute, max: 59 },
+    { label: 'Second', value: second, set: setSecond, max: 59 },
+  ]
 
   const picker = (
     <div
@@ -80,7 +86,7 @@ export function ClockInPicker() {
         if (event.target === event.currentTarget) setOpen(false)
       }}
     >
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card text-foreground shadow-2xl">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card font-mono text-foreground shadow-2xl">
         <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3.5">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -101,7 +107,7 @@ export function ClockInPicker() {
           </button>
         </div>
 
-        <div className="px-4 py-4 sm:px-5">
+        <div className="px-4 py-4 sm:px-5 sm:py-5">
           <div className="rounded-xl border border-border bg-background/60 px-4 py-5 text-center shadow-sm">
             <span className="block text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Selected time</span>
             <output className="mt-2 block font-mono text-4xl font-bold tracking-[-0.06em] tabular-nums text-primary sm:text-5xl">{currentValue}</output>
@@ -109,16 +115,12 @@ export function ClockInPicker() {
           </div>
 
           <div className="mt-4 grid grid-cols-3 gap-2">
-            {[
-              { label: 'Hour', value: hour, set: setHour, max: 23 },
-              { label: 'Minute', value: minute, set: setMinute, max: 59 },
-              { label: 'Second', value: second, set: setSecond, max: 59 },
-            ].map((item) => (
-              <div key={item.label} className="min-w-0 rounded-xl border border-border bg-background/45 p-2.5">
-                <span className="block text-center text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{item.label}</span>
-                <button type="button" onClick={() => adjust(item.set, item.value, 1, item.max)} className="mt-2 flex h-9 w-full items-center justify-center rounded-lg border border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground" aria-label={`Increase ${item.label}`}><Plus className="size-3.5" /></button>
-                <button type="button" onClick={() => item.set( item.value )} className="mt-1.5 flex h-14 w-full items-center justify-center rounded-lg bg-primary/10 font-mono text-2xl font-bold tabular-nums text-primary">{pad(item.value)}</button>
-                <button type="button" onClick={() => adjust(item.set, item.value, -1, item.max)} className="mt-1.5 flex h-9 w-full items-center justify-center rounded-lg border border-border bg-card text-muted-foreground hover:bg-accent hover:text-foreground" aria-label={`Decrease ${item.label}`}><Minus className="size-3.5" /></button>
+            {fields.map((field) => (
+              <div key={field.label} className="min-w-0 rounded-xl border border-border bg-background/45 p-2.5">
+                <span className="block text-center text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{field.label}</span>
+                <button type="button" onClick={() => adjust(field.set, field.value, 1, field.max)} className="mt-2 flex h-9 w-full items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition hover:bg-accent hover:text-foreground" aria-label={`Increase ${field.label}`}><Plus className="size-3.5" /></button>
+                <div className="mt-1.5 flex h-14 w-full items-center justify-center rounded-lg bg-primary/10 font-mono text-2xl font-bold tabular-nums text-primary">{pad(field.value)}</div>
+                <button type="button" onClick={() => adjust(field.set, field.value, -1, field.max)} className="mt-1.5 flex h-9 w-full items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition hover:bg-accent hover:text-foreground" aria-label={`Decrease ${field.label}`}><Minus className="size-3.5" /></button>
               </div>
             ))}
           </div>
