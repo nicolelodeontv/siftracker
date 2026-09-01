@@ -17,10 +17,11 @@ https://sif-tracker-omega.vercel.app/
 - Combined **One total, all workloads** result
 - Estimated **Clock Out** calculation with the fixed 1-hour break
 - Live Philippine Time (PHT) clock in `HH:MM:SS`
-- Clock In starts at the current Philippine time when the page opens
+- Manually editable **Clock In** time in military format
 - **NOW · HH:MM:SS** button to sync Clock In with live PHT
-- Live **Time Until Clock Out** and shift progress
-- `● ESTIMATED` and `✓ SHIFT COMPLETE` status states
+- Live **Time Until Clock Out** directly under the Clock Out result
+- `✓ SHIFT COMPLETE` state when the calculated shift has reached Clock Out
+- Worked and Break summaries in the Shift section
 - Clock Out copy button copies only the clock-out time
 - Editable workload rates from Settings
 - Save and Reset controls for workload rates
@@ -69,17 +70,20 @@ Clock In
 = Estimated Clock Out
 ```
 
-The live PHT clock is the source of truth for the page. The Clock In value starts from the current Philippine time, and the **NOW** button re-syncs it at any point.
+The live PHT clock is the source of truth for the page. The Clock In field can also be edited manually in `HH:MM:SS` format, and the **NOW** button re-syncs it to the current PHT time.
 
-When workload is present, the Shift section also shows:
+When workload is present, the Shift section shows:
 
+- Clock In
+- Worked — workload time only
+- Break — fixed 1-hour break
+- Clock Out
 - Time until clock out
-- Shift progress percentage
-- Estimated/completed state
+- Shift-complete state when the current PHT time reaches the calculated Clock Out
 
 ## 🛠️ Backend Foundation
 
-The app now includes a lightweight API foundation without requiring a database:
+The app includes a lightweight API foundation without requiring a database:
 
 ```text
 GET  /api/workloads
