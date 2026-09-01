@@ -1,0 +1,44 @@
+/* Stable Clock Out hierarchy only. No layout repositioning. */
+#shift .grid > div:last-child {
+  box-shadow: 0 10px 30px var(--primary-shadow) !important;
+}
+
+#shift .grid > div:last-child > div:first-child strong {
+  font-size: 3rem !important;
+  line-height: 1 !important;
+  letter-spacing: -0.06em !important;
+}
+
+#shift > .mt-3 {
+  margin-top: 10px !important;
+}
+
+#shift > .mt-3 > .flex.items-center.justify-between > span {
+  font-size: 7px !important;
+  letter-spacing: .11em !important;
+}
+
+#shift > .mt-3 > .flex.items-center.justify-between > strong {
+  font-size: 9px !important;
+  opacity: .72 !important;
+}
+
+/* Remove the old progress meter/percentage while keeping the live countdown. */
+#shift > .mt-3 > div:nth-child(2),
+#shift > .mt-3 > div:nth-child(3) {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  #shift .grid > div:last-child > div:first-child strong {
+    font-size: 2.5rem !important;
+  }
+
+  #shift > .mt-3 {
+    margin-top: 8px !important;
+  }
+
+  #shift > .mt-3 > .flex.items-center.justify-between > strong {
+    font-size: 8px !important;
+  }
+}
