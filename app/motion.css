@@ -1,4 +1,4 @@
-/* Small interaction layer. Layout lives in page.tsx/Tailwind + mobile.css. */
+/* Interaction and entrance motion only. Layout lives in Tailwind + ui-overrides.css. */
 
 :root {
   --motion-fast: 140ms;
@@ -70,13 +70,8 @@ select {
     background-color var(--motion-fast) ease;
 }
 
-[role="status"] {
-  animation: sif-toast-in var(--motion-base) var(--motion-ease) both;
-}
-
-[role="dialog"] > div {
-  animation: sif-dialog-in var(--motion-base) var(--motion-ease) both;
-}
+[role="status"] { animation: sif-toast-in var(--motion-base) var(--motion-ease) both; }
+[role="dialog"] > div { animation: sif-dialog-in var(--motion-base) var(--motion-ease) both; }
 
 @media (max-width: 767px) {
   button:hover { transform: none; }
@@ -84,9 +79,7 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-delay: 0ms !important;
     transition-duration: .01ms !important;
