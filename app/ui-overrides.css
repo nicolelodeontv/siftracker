@@ -1,241 +1,70 @@
-/* Shared UI rules only. Layout stays in page.tsx/Tailwind and responsive rules stay in mobile.css. */
+/* Final responsive layer: fluid sizing, no layout hacks. */
 
-:root {
-  --ui-card-radius: 14px;
-  --ui-border: color-mix(in srgb, var(--border) 78%, transparent);
-  --ui-surface: color-mix(in srgb, var(--card) 92%, var(--background));
-  --ui-soft-surface: color-mix(in srgb, var(--background) 72%, var(--card));
+:root { --ui-max-width: 1360px; }
+html, body, main { width: 100%; min-width: 0; }
+main { min-height: 100dvh; overflow-x: clip; }
+main > div.relative { width:min(100%,var(--ui-max-width)); max-width:var(--ui-max-width); margin-inline:auto; padding-inline:clamp(12px,3vw,32px); padding-bottom:clamp(12px,2vw,24px); }
+main nav, main section, main footer, main article, main button, main input { min-width:0; }
+main nav { min-height:clamp(48px,5vw,60px); gap:clamp(8px,1.5vw,18px); }
+main > div.relative > section:first-of-type { padding-block:clamp(16px,2.5vw,30px) clamp(14px,2vw,22px); }
+main > div.relative > section:first-of-type h1 { font-size:clamp(2.15rem,6vw,4.75rem); line-height:.98; }
+main > div.relative > section:first-of-type p { max-width:48rem; font-size:clamp(.78rem,1.4vw,.95rem); }
+#calculator > .mb-3, #shift > div:first-child { margin-bottom:clamp(10px,1.2vw,14px); }
+#calculator > .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(10px,1.25vw,16px); align-items:stretch; }
+#calculator > .grid > article, #workflow { min-width:0; width:100%; }
+#calculator > .grid > article { display:flex; flex-direction:column; min-height:clamp(170px,18vw,220px); }
+#calculator > .grid > article > div:last-child { margin-top:auto; }
+#calculator article input { min-width:0; width:100%; }
+#workflow { min-height:clamp(120px,12vw,180px); }
+#workflow > div { width:100%; min-width:0; }
+#shift, #tools { margin-top:clamp(12px,1.5vw,18px); }
+#shift { padding:clamp(12px,1.6vw,18px); }
+#shift .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(8px,1.2vw,14px); align-items:stretch; }
+#shift .grid > div { min-width:0; border-radius:clamp(10px,1vw,14px); }
+#shift .grid > div:last-child { border-color:color-mix(in srgb,var(--primary) 32%,var(--border)); background:color-mix(in srgb,var(--primary) 9%,var(--card)); box-shadow:0 8px 24px var(--primary-shadow); }
+#shift .grid > div:last-child strong { font-size:clamp(2rem,4vw,3.5rem); line-height:.95; }
+#shift .grid > div:first-child > div:last-child { width:100%; }
+#shift .grid > div:first-child > div:last-child > button { min-height:42px; }
+#settings { border-radius:clamp(12px,1vw,16px); }
+#settings .grid { gap:clamp(8px,1vw,12px); }
+#settings .grid > div { min-width:0; }
+#tools { padding:clamp(12px,1.4vw,16px); }
+#tools > button { flex-shrink:0; }
+main footer { min-height:34px; margin-top:6px; padding-block:10px 4px; }
+button, input { border-radius:clamp(8px,.8vw,12px); }
+button { touch-action:manipulation; }
+
+@media (max-width:1100px) { #shift .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:767px) {
+  main > div.relative { width:100%; padding-inline:clamp(12px,4vw,16px); padding-bottom:12px; }
+  main nav { min-height:52px; }
+  main nav .hidden + time { font-size:8px !important; }
+  main nav button { min-height:38px; height:38px; padding-inline:10px; }
+  main > div.relative > section:first-of-type { padding-block:18px 16px; }
+  #calculator > .mb-3 { align-items:flex-start; }
+  #calculator > .grid { grid-template-columns:1fr; gap:10px; }
+  #calculator > .grid > article { min-height:0; padding:13px; }
+  #calculator article input { height:44px; font-size:16px; }
+  #calculator article button[aria-label*="quantity"] { width:44px; min-width:44px; height:44px; }
+  #workflow { min-height:0; padding:13px; }
+  #workflow > div { display:flex; flex-direction:column; gap:10px; }
+  #workflow > div > div { width:100%; text-align:left; }
+  #workflow > div > div:last-child { padding-top:9px; border-top:1px solid color-mix(in srgb,currentColor 24%,transparent); }
+  #workflow strong { font-size:clamp(1.55rem,8vw,2.2rem); }
+  #shift, #tools { padding:13px; }
+  #shift .grid { grid-template-columns:1fr; gap:8px; }
+  #shift .grid > div { padding:12px; }
+  #shift .grid > div:last-child { padding:14px; }
+  #shift .grid > div:last-child strong { font-size:clamp(2.2rem,12vw,3rem); }
+  #tools > button { width:100%; min-height:44px; }
+  main footer { margin-top:2px; padding-block:8px 2px; }
 }
-
-html,
-body,
-main {
-  width: 100%;
-  min-width: 0;
+@media (max-width:390px) {
+  main > div.relative { padding-inline:10px; }
+  main nav { gap:6px; }
+  main nav .hidden + time { max-width:56vw; }
+  #calculator > .grid > article, #workflow, #shift, #tools { padding-inline:11px; }
+  #calculator article button[aria-label*="quantity"] { width:42px; min-width:42px; }
 }
-
-html,
-body {
-  min-height: 100%;
-  margin: 0;
-  overflow-x: hidden;
-}
-
-main > div.relative {
-  width: min(100%, 1160px);
-  margin-inline: auto;
-}
-
-button,
-input,
-textarea,
-select {
-  min-width: 0;
-}
-
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
-}
-
-/* Keep surfaces visually consistent across the app. */
-#settings,
-#shift,
-#tools,
-#calculator > .grid > article {
-  border-radius: var(--ui-card-radius);
-  border-color: var(--ui-border);
-  background: var(--ui-surface);
-}
-
-#calculator > .grid > article {
-  box-shadow: 0 6px 22px var(--card-shadow);
-}
-
-#calculator > .grid > article > div:first-child output {
-  white-space: nowrap;
-  line-height: 1;
-}
-
-#calculator article input,
-#shift input {
-  min-width: 0;
-  max-width: 100%;
-}
-
-#calculator article button[aria-label*="quantity"] {
-  flex: 0 0 auto;
-}
-
-#workflow {
-  border-radius: var(--ui-card-radius);
-  border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
-  box-shadow: 0 10px 28px var(--primary-shadow);
-}
-
-#workflow strong {
-  white-space: nowrap;
-  line-height: 1;
-}
-
-#shift {
-  box-shadow: 0 7px 24px var(--card-shadow);
-}
-
-#shift .grid > div {
-  min-width: 0;
-  border-color: var(--ui-border);
-  background: var(--ui-soft-surface);
-}
-
-#shift .grid > div:last-child {
-  border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
-  background: color-mix(in srgb, var(--primary) 9%, var(--card));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 8%, transparent);
-}
-
-#shift .grid > div:last-child strong {
-  color: var(--primary);
-  letter-spacing: -.055em;
-  line-height: .95;
-}
-
-#tools {
-  box-shadow: none;
-  background: color-mix(in srgb, var(--card) 78%, var(--background));
-}
-
-#settings {
-  box-shadow: 0 6px 22px var(--card-shadow);
-}
-
-#settings .grid > div {
-  min-width: 0;
-  border-color: var(--ui-border);
-  background: var(--ui-soft-surface);
-}
-
-main footer {
-  color: var(--muted-foreground);
-}
-
-/* Lightweight semantic helpers used by the shift/settings UI. */
-.sif-clockout-status,
-.sif-time-left,
-.sif-today,
-.sif-rate-preview {
-  font-family: var(--font-mono), monospace;
-}
-
-.sif-clockout-status {
-  display: block;
-  margin-top: 8px;
-  font-size: 8px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-
-.sif-clockout-status.is-empty {
-  color: var(--muted-foreground);
-  font-weight: 600;
-  letter-spacing: .05em;
-  text-transform: none;
-}
-
-.sif-clockout-status.is-complete,
-.sif-time-left.is-complete {
-  color: var(--sif-green);
-}
-
-.sif-time-left {
-  display: block;
-  margin-top: 6px;
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: .06em;
-  color: var(--foreground);
-}
-
-.sif-time-left.is-empty {
-  color: var(--muted-foreground);
-}
-
-.sif-today {
-  margin-top: 3px;
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: .04em;
-  color: var(--muted-foreground);
-}
-
-.sif-rate-preview {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--ui-border);
-}
-
-.sif-rate-preview > p {
-  margin: 0 0 7px;
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-}
-
-.sif-rate-preview > div {
-  display: grid;
-  gap: 2px;
-  padding-block: 5px;
-}
-
-.sif-rate-preview strong,
-.sif-rate-preview span {
-  font-size: 8px;
-}
-
-.sif-rate-preview strong {
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.sif-rate-preview span {
-  line-height: 1.45;
-  color: var(--muted-foreground);
-}
-
-@media (min-width: 768px) {
-  #calculator > .grid > article {
-    min-height: 172px;
-  }
-
-  #workflow > div {
-    min-width: 0;
-  }
-
-  #shift .grid > div:not(:last-child) {
-    position: relative;
-  }
-
-  #shift .grid > div:not(:last-child)::after {
-    content: "→";
-    position: absolute;
-    top: 50%;
-    right: -9px;
-    z-index: 2;
-    transform: translateY(-50%);
-    padding: 2px;
-    font-family: var(--font-mono), monospace;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted-foreground);
-    background: var(--card);
-  }
-}
+@media (min-width:1600px) { main > div.relative { padding-inline:40px; } }
+@media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
