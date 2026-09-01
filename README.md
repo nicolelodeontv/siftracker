@@ -9,31 +9,29 @@ https://sif-tracker-omega.vercel.app/
 ## ✨ Features
 
 - Instant workload time calculation
-- Supports expressions such as `5+5`, `10*3`, and `(5+5)*2`
+- Expressions such as `5+5`, `10*3`, and `(5+5)*2`
 - Optional checked totals such as `4+8+12=24`
 - Per-workload `−` / `+` quantity controls
 - Per-workload clear (`×`) control
-- Clear invalid-expression feedback
+- Clear incomplete and invalid-expression feedback
 - Combined **One total, all workloads** result
-- Estimated **Clock Out** calculation
-- Fixed 1-hour break included in clock-out calculation
-- Live Philippine Time (PHT) clock
-- Clock In defaults to the current Philippine time when the page opens
-- **Now** button to sync Clock In with the current PHT clock
+- Estimated **Clock Out** calculation with the fixed 1-hour break
+- Live Philippine Time (PHT) clock in `HH:MM:SS`
+- Clock In starts at the current Philippine time when the page opens
+- **NOW · HH:MM:SS** button to sync Clock In with live PHT
+- Live **Time Until Clock Out** and shift progress
+- `● ESTIMATED` and `✓ SHIFT COMPLETE` status states
 - Clock Out copy button copies only the clock-out time
 - Editable workload rates from Settings
 - Save and Reset controls for workload rates
-- Rate changes automatically update calculator examples and time calculations
+- Settings example preview updates with the active rates
 - Light and dark mode support
 - Responsive desktop and mobile layouts
-- Touch-friendly controls and inputs
-- Accessible labels and status feedback
-- Subtle UX motion with reduced-motion support
-- Page inputs reset on refresh while saved workload rates persist
+- Touch-friendly controls and accessible labels
+- Subtle motion with reduced-motion support
+- Workload inputs reset on refresh while saved rates persist locally
 
 ## ⏱️ Default Workload Rates
-
-The default production estimates are:
 
 | Activity | Time per Unit |
 | --- | ---: |
@@ -43,35 +41,26 @@ The default production estimates are:
 | Indi Build | 4 minutes / order |
 | Late Orders | 15 minutes / order |
 
-Rates can be changed from **Settings** without editing the source code. Changes take effect in the calculator after saving.
+Rates can be changed from **Settings** without editing source code. Saving a rate immediately changes the calculator and example conversions.
 
-## 🧮 Example
+## 🧮 Expression Engine
 
-Entering:
+The calculator engine is separated from the UI in `lib/calculator.ts` and is responsible for expression parsing, duration formatting, clock math, and edge-case handling.
 
-```text
-Team Edit: 5+5
-```
-
-produces:
+Supported examples:
 
 ```text
-10 teams
-```
-
-and the corresponding work duration based on the current Team Edit rate.
-
-The calculator also supports checked expressions:
-
-```text
+5+5
+10*3
+(5+5)*2
 4+8+12=24
 ```
 
-The expression is accepted only when the declared total matches the calculated result.
+Expressions with incomplete operators show **Waiting for expression…**. Invalid expressions show **Invalid expression** instead of silently failing.
 
 ## 🕒 Clock Out Calculation
 
-SIF Tracker combines:
+The shift calculation follows:
 
 ```text
 Clock In
@@ -80,47 +69,96 @@ Clock In
 = Estimated Clock Out
 ```
 
-The Clock In field starts with the current Philippine time when the page opens. The **Now** button can re-sync it to the live PHT clock at any time.
+The live PHT clock is the source of truth for the page. The Clock In value starts from the current Philippine time, and the **NOW** button re-syncs it at any point.
 
-The live header clock displays the current Philippine date and time in `HH:MM:SS` format.
+When workload is present, the Shift section also shows:
 
-## 🛠️ Tech Stack
+- Time until clock out
+- Shift progress percentage
+- Estimated/completed state
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- Lucide React
-- shadcn/ui tooling
-- pnpm
-- Vercel
+## 🛠️ Backend Foundation
 
-## 📁 Project Structure
+The app now includes a lightweight API foundation without requiring a database:
 
 ```text
-siftracker/
-├── app/
-│   ├── page.tsx          # Main tracker UI and calculator logic
-│   ├── globals.css       # Global theme and shared styles
-│   ├── mobile.css        # Responsive desktop/mobile layout rules
-│   └── motion.css        # UX motion and interaction styles
-├── components/           # Reusable UI components
-├── public/               # Static assets
-├── package.json          # Project scripts and dependencies
-├── pnpm-lock.yaml        # Locked dependency versions
-├── next.config.mjs       # Next.js configuration
-├── tsconfig.json         # TypeScript configuration
-└── README.md             # Project documentation
+GET  /api/workloads
+POST /api/workloads
+GET  /api/health
 ```
+
+`/api/workloads` exposes the centralized workload configuration and validates rate payloads. The API is intentionally stateless so the application stays simple and compatible with serverless deployment.
+
+Saved workload rates remain in browser storage, which preserves the existing no-database behavior. A database can be added later for multi-device synchronization or shared user profiles without moving the calculator engine back into the page component.
+
+## 🧪 Reliability and Tests
+
+The calculator engine has a dedicated test suite covering:
+
+- Basic arithmetic
+- Multiplication and parentheses
+- Checked totals
+- Division by zero
+- Invalid and incomplete expressions
+- Duration formatting
+- Military clock formatting
+- Clock parsing
+- Midnight elapsed-time handling
+
+Run tests with:
+
+```bash
+pnpm test
+```
+
+Run the complete verification pipeline with:
+
+```bash
+pnpm check
+```
+
+`pnpm check` runs linting, calculator tests, and the production build.
+
+## 🏗️ Architecture
+
+The main UI is intentionally kept as a client component, while calculation rules and workload definitions are independent modules:
+
+```text
+app/
+├── page.tsx                 # UI, React state, interactions
+├── api/
+│   ├── health/route.ts     # Health endpoint
+│   └── workloads/route.ts  # Workload configuration/validation API
+├── globals.css
+├── mobile.css
+└── motion.css
+
+lib/
+├── calculator.ts            # Pure calculator and clock engine
+└── workloads.ts             # Central workload/rate definitions
+
+tests/
+└── calculator.test.mjs      # Calculator engine tests
+```
+
+## 📱 Mobile Support
+
+The interface is designed for phones, tablets, and desktop screens.
+
+On smaller screens:
+
+- Workload cards switch to a single-column layout.
+- Inputs and quantity controls remain touch-friendly.
+- Text wraps naturally to avoid clipping.
+- Workflow and Shift content stack vertically.
+- Footer spacing remains compact and consistent.
+- The full tracker remains vertically scrollable.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-Install:
-
-- Node.js
-- pnpm
+Install Node.js and pnpm.
 
 ### Install dependencies
 
@@ -128,62 +166,52 @@ Install:
 pnpm install
 ```
 
-### Start the development server
+### Development
 
 ```bash
 pnpm dev
 ```
 
-Open `http://localhost:3000` in your browser.
+Open `http://localhost:3000`.
 
-### Create a production build
+### Production build
 
 ```bash
 pnpm build
 pnpm start
 ```
 
-### Run linting
+### Lint
 
 ```bash
 pnpm lint
 ```
 
-## 🔧 How It Works
-
-Each workload has a configurable time-per-unit rate. The app evaluates the entered expression, multiplies the resulting quantity by the active rate, and combines all workload durations into one total.
-
-When workload is present, the Shift section uses the selected Clock In time plus the total workload time and the fixed 1-hour break to calculate the estimated Clock Out time.
-
-Changing a workload rate in Settings also updates the calculator results and the example conversions shown on the workload cards.
-
-## 📱 Mobile Support
-
-The interface is designed to work across phones, tablets, and desktop screens.
-
-On smaller screens:
-
-- Workload cards switch to a single-column layout.
-- Inputs and quantity controls use touch-friendly sizing.
-- Text wraps naturally to avoid clipping.
-- Workflow and Shift sections stack vertically.
-- Footer spacing is kept compact and consistent with the rest of the page.
-- The full tracker remains vertically scrollable.
-
-## ✅ Build Verification
-
-The production app is continuously deployed from the `main` branch. A production build can be checked locally with:
+### Tests
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm run build
+pnpm test
 ```
+
+### Full check
+
+```bash
+pnpm check
+```
+
+## 🔐 Persistence
+
+The tracker intentionally keeps daily workload inputs session-only. Refreshing the page clears the entered workload values and resets Clock In to the current PHT time.
+
+Saved workload rates persist locally in the browser. Theme preferences are handled by the theme component.
+
+Shift history is not stored because the current product direction is a fast daily calculator rather than a history dashboard.
 
 ## 🚢 Deployment
 
 SIF Tracker is a Next.js application deployed through Vercel.
 
-The `main` branch is the source of truth for production deployments.
+The `main` branch is the source of truth for production deployments. GitHub Actions runs linting, calculator tests, and a production build on pushes and pull requests to `main`.
 
 Live deployment:
 
@@ -191,9 +219,9 @@ https://sif-tracker-omega.vercel.app/
 
 ## 📌 Notes
 
-SIF Tracker is intended as a production planning and time-estimation utility. Workload rates are configurable and should be updated when production requirements change.
+The calculator engine is deliberately independent from the UI. This makes future layout, mobile, or interaction changes less likely to alter calculation behavior.
 
-Entered workload values are intentionally session-only and are cleared when the page is refreshed. Saved workload rates remain stored locally in the browser.
+The backend API is currently a stateless foundation for centralized workload configuration and validation. Persistent multi-user data can be added later with a database/authentication layer when needed.
 
 ## 👤 Author
 
