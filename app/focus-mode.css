@@ -1,0 +1,39 @@
+/* Focus Mode viewport lock */
+body:has(main > div.relative > #calculator):not(:has(main nav)),
+html:has(main > div.relative > #calculator):not(:has(main nav)) {
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+body:has(main > div.relative > #calculator):not(:has(main nav)) main,
+body:has(main > div.relative > #calculator):not(:has(main nav)) main > div.relative {
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+body:has(main > div.relative > #calculator):not(:has(main nav)) main > div.relative {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  body:has(main > div.relative > #calculator):not(:has(main nav)) main > div.relative {
+    padding: 12px !important;
+  }
+
+  body:has(main > div.relative > #calculator):not(:has(main nav)) #calculator {
+    max-height: calc(100dvh - 24px);
+    overflow: hidden;
+  }
+
+  body:has(main > div.relative > #calculator):not(:has(main nav)) #calculator > .grid {
+    min-height: 0;
+  }
+}
