@@ -7,20 +7,21 @@ const STORAGE_KEY = 'sif-theme'
 
 type Theme = 'light' | 'dark'
 
+function getPreferredTheme(): Theme {
+  if (typeof window === 'undefined') return 'light'
+  const saved = window.localStorage.getItem(STORAGE_KEY)
+  if (saved === 'dark' || saved === 'light') return saved
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('light')
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY)
-    const preferred: Theme = saved === 'dark' || saved === 'light'
-      ? saved
-      : window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light'
-
+    const preferred = getPreferredTheme()
+    window.setTimeout(() => setTheme(preferred), 0)
     document.documentElement.classList.toggle('dark', preferred === 'dark')
     document.documentElement.style.colorScheme = preferred
-    setTheme(preferred)
   }, [])
 
   function toggleTheme() {
