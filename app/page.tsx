@@ -169,11 +169,6 @@ function normalizeClockValue(value: string) {
   return `${digits.slice(0, 2)}:${digits.slice(2, 4)}:${digits.slice(4)}`
 }
 
-function setSecondsIntoTime(seconds: number) {
-  const daySeconds = ((seconds % 86400) + 86400) % 86400
-  return formatMilitaryTime(daySeconds)
-}
-
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
   const [rates, setRates] = useState<RateMap>({ ...DEFAULT_RATES })
@@ -399,11 +394,11 @@ export default function Page() {
                 </article>
               )
             })}
-          </div>
-        </section>
 
-        <section id="workflow" className={`${cardClass} mt-4 border-primary/20 bg-primary p-4 text-primary-foreground`}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4 opacity-75">{totalUnits} total units across {workloads.length} workload types.</p></div><div className="min-w-0 text-left sm:text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Total work time</span><strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong></div></div>
+            <section id="workflow" className={`${cardClass} mt-0 border-primary/20 bg-primary p-4 text-primary-foreground`}>
+              <div className="flex h-full flex-col justify-between gap-3 sm:flex-row sm:items-center"><div className="min-w-0"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4 opacity-75">{totalUnits} total units across {workloads.length} workload types.</p></div><div className="min-w-0 text-left sm:text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Total work time</span><strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong></div></div>
+            </section>
+          </div>
         </section>
 
         {!focusMode && (
