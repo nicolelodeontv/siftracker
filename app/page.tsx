@@ -301,6 +301,11 @@ export default function Page() {
     setClockInTime(philippineTime)
   }
 
+  function handleClockInChange(value: string) {
+    const cleaned = value.replace(/[^0-9:]/g, '').slice(0, 8)
+    setClockInTime(cleaned)
+  }
+
   async function copyClockOut() {
     const value = formatMilitaryTime(estimatedClockOutSeconds)
     if (value === '—') return
@@ -493,7 +498,18 @@ export default function Page() {
           <div className="grid min-w-0 gap-2.5 sm:grid-cols-4">
             <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3">
               <span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span>
-              <div className="mt-1.5 rounded-md border border-input bg-background px-2 py-2 text-center font-mono text-sm font-bold tabular-nums">{clockInTime}</div>
+              <div className="mt-1.5 rounded-md border border-input bg-background px-2 py-1.5">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={clockInTime}
+                  onChange={(event) => handleClockInChange(event.target.value)}
+                  placeholder="HH:MM:SS"
+                  aria-label="Manual Clock In time"
+                  className="w-full bg-transparent text-center font-mono text-sm font-bold tabular-nums outline-none"
+                />
+              </div>
               <div className="mt-2 flex justify-center">
                 <button type="button" onClick={handleClockNow} className="rounded-full border border-border bg-card px-5 py-2 text-[10px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent">NOW · {philippineTime}</button>
               </div>
@@ -519,21 +535,8 @@ export default function Page() {
                 </div>
                 {estimatedClockOutSeconds !== null && <button type="button" onClick={copyClockOut} className="rounded-md p-1.5 text-primary transition hover:bg-primary/10" aria-label="Copy Clock Out time" title="Copy Clock Out time"><Copy className="size-3.5" /></button>}
               </div>
-              <span className="mt-1 block text-[8px] text-muted-foreground">{estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shiftComplete ? '✓ SHIFT COMPLETE' : '● ESTIMATED'}</span>
-            </div>
-          </div>
-
-          <div className="mt-3 rounded-lg border border-border bg-background/50 px-3 py-2.5">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Time until clock out</span>
-              <strong className="font-mono text-[10px] font-bold tabular-nums text-foreground">{estimatedClockOutSeconds === null ? '—' : shiftComplete ? '00:00:00' : formatDuration(timeLeftSeconds)}</strong>
-            </div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out" style={{ width: `${progressPercent}%` }} />
-            </div>
-            <div className="mt-1.5 flex justify-between text-[8px] font-semibold text-muted-foreground">
-              <span>SHIFT PROGRESS</span>
-              <span>{estimatedClockOutSeconds === null ? '0%' : `${progressPercent}%`}</span>
+              <span className="mt-1 block text-[8px] text-muted-foreground">{estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shiftComplete ? '✓ SHIFT COMPLETE' : 'TIME UNTIL CLOCK OUT'}</span>
+              {estimatedClockOutSeconds !== null && <strong className="mt-1.5 block font-mono text-xs font-bold tabular-nums text-primary">{shiftComplete ? '00:00:00' : formatDuration(timeLeftSeconds)}</strong>}
             </div>
           </div>
         </section>
