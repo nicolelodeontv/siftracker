@@ -1,10 +1,12 @@
-/* Subtle UX motion: fast enough for a work tool, clear enough to communicate state. */
+/* SIF Tracker: restrained motion + visual hierarchy. */
 
 :root {
   --motion-fast: 140ms;
   --motion-base: 220ms;
   --motion-slow: 360ms;
   --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --surface-border: color-mix(in srgb, var(--border) 72%, transparent);
+  --soft-surface: color-mix(in srgb, var(--card) 82%, var(--background));
 }
 
 @keyframes sif-page-in {
@@ -17,10 +19,14 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes sif-pop {
-  0% { opacity: .35; transform: scale(.96); }
-  70% { opacity: 1; transform: scale(1.015); }
+@keyframes sif-result-pop {
+  0% { opacity: .55; transform: scale(.985); }
   100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sif-live-pulse {
+  0%, 100% { opacity: .55; transform: scale(.92); }
+  50% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes sif-toast-in {
@@ -55,27 +61,172 @@ main > div.relative > section:first-of-type {
 #shift { animation-delay: 220ms; }
 #tools { animation-delay: 250ms; }
 
-#calculator > .grid > article,
-#workflow,
+/* Consistent spacing rhythm: 4 / 8 / 12 / 16 / 24 / 32px. */
+main > div.relative {
+  padding-bottom: 24px;
+}
+
+main > div.relative > section:first-of-type {
+  padding-top: 24px;
+  padding-bottom: 20px;
+}
+
+#calculator > .mb-3,
+#shift > div:first-child {
+  margin-bottom: 12px;
+}
+
+#calculator > .grid,
+#shift .grid {
+  gap: 12px;
+}
+
 #shift,
-#tools,
-#settings {
+#tools {
+  margin-top: 16px;
+}
+
+/* Quiet header. */
+main nav {
+  border-color: var(--surface-border);
+}
+
+main nav time {
+  color: var(--muted-foreground);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Workload cards: clear input -> quantity -> duration hierarchy. */
+#calculator > .grid > article {
+  border-color: var(--surface-border);
+  background: var(--soft-surface);
+  box-shadow: 0 6px 22px var(--card-shadow);
   transition:
     transform var(--motion-base) var(--motion-ease),
     box-shadow var(--motion-base) var(--motion-ease),
-    border-color var(--motion-fast) ease;
+    border-color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease;
   will-change: transform;
 }
 
-#calculator > .grid > article:hover,
-#settings:hover,
-#tools:hover {
+#calculator > .grid > article:hover {
   transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+  box-shadow: 0 10px 28px var(--card-shadow);
 }
 
-#workflow:hover,
-#shift:hover {
-  transform: translateY(-1px);
+#calculator > .grid > article > div:first-child > div:last-child output {
+  font-size: clamp(1rem, 1.8vw, 1.05rem);
+  letter-spacing: -0.04em;
+}
+
+#calculator > .grid > article:focus-within output {
+  animation: sif-result-pop var(--motion-base) var(--motion-ease);
+}
+
+#calculator article input {
+  border-color: color-mix(in srgb, var(--input) 82%, var(--border));
+  background: color-mix(in srgb, var(--background) 88%, var(--card));
+}
+
+#calculator article input:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+#calculator article button[aria-label*="quantity"] {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--background) 72%, var(--card));
+  color: var(--muted-foreground);
+}
+
+#calculator article button[aria-label*="quantity"]:hover {
+  color: var(--foreground);
+  background: var(--accent);
+}
+
+/* Compact one-total bridge. */
+#workflow {
+  min-height: 0;
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+  box-shadow: 0 10px 30px var(--primary-shadow);
+  background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 82%, var(--background)));
+}
+
+#workflow strong {
+  font-size: clamp(1.65rem, 3vw, 2.15rem);
+  letter-spacing: -0.06em;
+}
+
+/* Shift: a single visual flow, with Clock Out as the focal result. */
+#shift {
+  border-color: var(--surface-border);
+  background: color-mix(in srgb, var(--card) 92%, var(--background));
+  box-shadow: 0 8px 26px var(--card-shadow);
+}
+
+#shift .grid > div {
+  position: relative;
+  border-color: var(--surface-border);
+  background: color-mix(in srgb, var(--background) 72%, var(--card));
+}
+
+#shift .grid > div:last-child {
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+  background: color-mix(in srgb, var(--primary) 9%, var(--card));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--primary) 8%, transparent),
+    0 8px 24px var(--primary-shadow);
+}
+
+#shift .grid > div:last-child strong {
+  font-size: clamp(2rem, 4vw, 2.85rem);
+  color: var(--primary);
+  letter-spacing: -0.065em;
+}
+
+#shift .grid > div:last-child span:first-child {
+  color: var(--primary);
+}
+
+#shift .grid > div:last-child button {
+  transition:
+    transform var(--motion-fast) var(--motion-ease),
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease;
+}
+
+/* Make the PHT live indicator intentionally visible without adding UI chrome. */
+#shift .grid > div:first-child > span:first-child::before {
+  content: "● ";
+  display: inline-block;
+  color: var(--sif-green);
+  animation: sif-live-pulse 1.8s ease-in-out infinite;
+}
+
+/* Settings stays compact and utility-focused. */
+#settings {
+  border-color: var(--surface-border);
+  box-shadow: 0 6px 22px var(--card-shadow);
+}
+
+#settings .grid > div {
+  border-color: var(--surface-border);
+  background: color-mix(in srgb, var(--background) 58%, var(--card));
+}
+
+/* Tools and footer are intentionally quieter than calculator and Shift. */
+#tools {
+  border-color: var(--surface-border);
+  background: color-mix(in srgb, var(--card) 72%, var(--background));
+  box-shadow: none;
+}
+
+main footer {
+  padding-top: 12px;
+  padding-bottom: 4px;
+  color: var(--muted-foreground);
 }
 
 button {
@@ -90,9 +241,6 @@ button {
 
 button:hover { transform: translateY(-1px); }
 button:active { transform: translateY(0) scale(.97); }
-button:focus-visible {
-  transition-duration: var(--motion-fast);
-}
 
 input,
 textarea,
@@ -103,20 +251,6 @@ select {
     background-color var(--motion-fast) ease;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  transform: translateY(-1px);
-}
-
-#calculator article output {
-  transition: color var(--motion-base) var(--motion-ease), opacity var(--motion-base) ease;
-}
-
-#calculator article:focus-within output {
-  animation: sif-pop var(--motion-base) var(--motion-ease);
-}
-
 [role="status"] {
   animation: sif-toast-in var(--motion-base) var(--motion-ease) both;
 }
@@ -125,7 +259,48 @@ select:focus {
   animation: sif-dialog-in var(--motion-base) var(--motion-ease) both;
 }
 
+@media (min-width: 768px) {
+  /* Desktop shift flow: a single timeline rather than four equal boxes. */
+  #shift .grid {
+    position: relative;
+    align-items: stretch;
+  }
+
+  #shift .grid > div {
+    box-shadow: none;
+  }
+
+  #shift .grid > div:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    top: 50%;
+    right: -9px;
+    z-index: 2;
+    transform: translateY(-50%);
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted-foreground);
+    background: var(--card);
+    padding: 2px;
+  }
+}
+
 @media (max-width: 767px) {
+  main > div.relative {
+    padding-bottom: 12px;
+  }
+
+  main > div.relative > section:first-of-type {
+    padding-top: 18px;
+    padding-bottom: 16px;
+  }
+
+  #calculator > .grid,
+  #shift .grid {
+    gap: 10px;
+  }
+
   #calculator > .grid > article:hover,
   #workflow:hover,
   #shift:hover,
@@ -134,13 +309,33 @@ select:focus {
     transform: none;
   }
 
+  #shift .grid > div:last-child strong {
+    font-size: clamp(2rem, 10vw, 2.5rem);
+  }
+
+  #shift .grid > div:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    width: 1px;
+    height: 10px;
+    background: color-mix(in srgb, var(--border) 80%, transparent);
+  }
+
   button:hover { transform: none; }
   button:active { transform: scale(.97); }
+}
 
-  input:focus,
-  textarea:focus,
-  select:focus {
-    transform: none;
+@media (max-width: 380px) {
+  main > div.relative > section:first-of-type {
+    padding-top: 16px;
+    padding-bottom: 14px;
+  }
+
+  #workflow strong,
+  #shift .grid > div:last-child strong {
+    font-size: 1.85rem;
   }
 }
 
