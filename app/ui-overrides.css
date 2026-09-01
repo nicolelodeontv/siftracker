@@ -1,423 +1,119 @@
-/* Final UI normalization layer for consistent desktop + mobile rendering. */
+/* SIF Tracker responsive UI normalization.
+   Layout is owned by page.tsx + Tailwind; this file only provides safe sizing and spacing. */
 
-:root {
-  --ui-space-1: 4px;
-  --ui-space-2: 8px;
-  --ui-space-3: 12px;
-  --ui-space-4: 16px;
-  --ui-space-5: 24px;
-  --ui-space-6: 32px;
-  --ui-card-radius: 14px;
-  --ui-shadow: 0 8px 28px var(--card-shadow);
-}
+:root { --ui-card-radius: 14px; }
 
-html,
-body {
-  width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
-}
-
-body {
-  margin: 0;
-}
-
-main {
-  width: 100%;
-}
+html, body { width: 100%; min-width: 0; overflow-x: hidden; }
+body { margin: 0; }
+main { width: 100%; }
 
 main > div.relative {
   width: min(100%, 1160px);
   margin-inline: auto;
   padding-inline: clamp(16px, 3vw, 32px);
-  padding-bottom: var(--ui-space-5);
+  padding-bottom: 24px;
 }
 
-main nav {
-  min-height: 56px;
-  height: 56px;
-  gap: var(--ui-space-4);
-}
+main nav { min-height: 56px; height: 56px; gap: 16px; }
+main nav > div { min-width: 0; }
+main nav button { flex-shrink: 0; }
 
-main nav > div {
-  min-width: 0;
-}
-
-main nav button {
-  flex-shrink: 0;
-}
-
-main > div.relative > section:first-of-type {
-  padding-block: var(--ui-space-5) var(--ui-space-4);
-}
-
-main > div.relative > section:first-of-type h1 {
-  line-height: .98;
-}
-
-main > div.relative > section:first-of-type p {
-  max-width: 680px;
-}
+main > div.relative > section:first-of-type { padding-block: 24px 20px; }
+main > div.relative > section:first-of-type h1 { line-height: .98; }
+main > div.relative > section:first-of-type p { max-width: 680px; }
 
 #calculator > .mb-3,
-#shift > div:first-child {
-  margin-bottom: var(--ui-space-3);
-}
+#shift > div:first-child { margin-bottom: 12px; }
 
 #calculator > .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ui-space-3);
+  gap: 12px;
   align-items: stretch;
 }
 
 #calculator > .grid > article,
-#workflow {
-  min-width: 0;
-  min-height: 192px;
-  height: 100%;
-  border-radius: var(--ui-card-radius);
-}
+#workflow { min-width: 0; }
 
 #calculator > .grid > article {
   display: flex;
   flex-direction: column;
-  padding: var(--ui-space-4);
 }
 
-#calculator > .grid > article > div:last-child {
-  margin-top: auto;
-}
+#calculator > .grid > article > div:last-child { margin-top: auto; }
+#calculator article input { min-width: 0; width: 100%; }
 
-#calculator article input {
-  min-width: 0;
-  width: 100%;
-}
-
-#workflow {
-  display: flex;
-}
-
-#workflow > div {
-  width: 100%;
-  min-width: 0;
-}
+#workflow { display: flex; width: 100%; }
+#workflow > div { width: 100%; min-width: 0; }
 
 #shift,
-#tools {
-  margin-top: var(--ui-space-4);
-  border-radius: var(--ui-card-radius);
-}
-
-#shift {
-  padding: var(--ui-space-4);
-}
-
-#shift .grid {
-  gap: var(--ui-space-3);
-  align-items: stretch;
-}
-
-#shift .grid > div {
-  min-width: 0;
-  border-radius: 12px;
-}
+#tools { margin-top: 16px; border-radius: var(--ui-card-radius); }
+#shift { padding: 16px; }
+#shift .grid { gap: 12px; align-items: stretch; }
+#shift .grid > div { min-width: 0; border-radius: 12px; }
 
 #shift .grid > div:last-child {
-  min-width: 0;
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+  background: color-mix(in srgb, var(--primary) 9%, var(--card));
+  box-shadow: 0 8px 24px var(--primary-shadow);
 }
 
 #shift .grid > div:last-child strong {
-  font-size: clamp(2.15rem, 5vw, 3.25rem);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
   line-height: .95;
+  color: var(--primary);
+  letter-spacing: -.065em;
 }
 
-#shift .grid > div:first-child > div:last-child {
-  width: 100%;
-}
-
-#shift .grid > div:first-child > div:last-child > button {
-  min-height: 42px;
-}
-
-#settings {
-  border-radius: var(--ui-card-radius);
-}
-
-#settings .grid {
-  gap: var(--ui-space-2);
-}
-
-#settings .grid > div {
-  min-width: 0;
-}
-
-#tools {
-  padding: var(--ui-space-4);
-}
-
-#tools > button {
-  flex-shrink: 0;
-}
-
-main footer {
-  min-height: 36px;
-  margin-top: var(--ui-space-2);
-  padding-block: var(--ui-space-3) var(--ui-space-2);
-}
-
-/* Keep controls visually consistent with the compact tracker scale. */
-button,
-input {
-  border-radius: 10px;
-}
-
-/* Avoid accidental content clipping from long labels. */
-#calculator h3,
-#calculator p,
-#calculator span,
-#calculator output,
-#workflow h3,
-#workflow p,
-#workflow strong,
-#shift span,
-#shift strong,
-#tools p,
-main footer span {
-  min-width: 0;
-  overflow-wrap: normal;
-}
+#shift .grid > div:first-child > div:last-child { width: 100%; }
+#shift .grid > div:first-child > div:last-child > button { min-height: 42px; }
+#settings { border-radius: var(--ui-card-radius); }
+#settings .grid { gap: 8px; }
+#settings .grid > div { min-width: 0; }
+#tools { padding: 16px; }
+#tools > button { flex-shrink: 0; }
+main footer { min-height: 36px; margin-top: 8px; padding-block: 12px 4px; }
+button, input { border-radius: 10px; }
 
 @media (min-width: 768px) {
-  main nav {
-    padding-inline: 2px;
-  }
-
-  #calculator > .mb-3 {
-    align-items: center;
-  }
-
-  #workflow > div {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--ui-space-5);
-  }
-
-  #workflow > div > div:last-child {
-    flex-shrink: 0;
-    min-width: 220px;
-  }
-
-  #shift .grid > div:not(:last-child)::after {
-    right: -8px;
-  }
-
-  /* Put the live countdown directly beneath Clock Out on desktop. */
-  #shift {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--ui-space-3);
-    row-gap: var(--ui-space-3);
-  }
-
-  #shift > div:first-child {
-    grid-column: 1 / -1;
-  }
-
-  #shift > .grid {
-    display: contents;
-  }
-
-  #shift > div:last-child {
-    grid-column: 4;
-    margin-top: 0;
-    align-self: stretch;
-  }
-
-  #shift > div:last-child > div:first-child {
-    margin: 0;
-  }
-
-  #shift > div:last-child > .h-1\.5,
-  #shift > div:last-child > div:last-child {
-    display: none;
-  }
-
-  #shift > div:last-child {
-    border: 1px solid var(--surface-border);
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--card) 72%, var(--background));
-    padding: 10px 12px;
-  }
+  main nav { padding-inline: 2px; }
+  #workflow > div { display:flex; align-items:center; justify-content:space-between; gap:24px; }
+  #workflow > div > div:last-child { flex-shrink:0; min-width:220px; }
 }
 
 @media (max-width: 767px) {
-  main > div.relative {
-    padding-inline: 14px;
-    padding-bottom: 10px;
-  }
-
-  main nav {
-    min-height: 52px;
-    height: 52px;
-  }
-
-  main nav .hidden + time {
-    font-size: 8px !important;
-    letter-spacing: -.02em;
-  }
-
-  main nav button {
-    min-height: 36px;
-    height: 36px;
-    padding-inline: 10px;
-  }
-
-  main > div.relative > section:first-of-type {
-    padding-block: 18px 14px;
-  }
-
-  main > div.relative > section:first-of-type h1 {
-    font-size: clamp(2rem, 11vw, 3rem);
-  }
-
-  #calculator > .mb-3 {
-    margin-bottom: 10px;
-    align-items: flex-start;
-  }
-
-  #calculator > .mb-3 > div:first-child {
-    text-align: left;
-  }
-
-  #calculator > .mb-3 > div:last-child {
-    width: auto;
-  }
-
-  #calculator > .mb-3 > div:last-child button {
-    width: auto;
-  }
-
-  #calculator > .grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  #calculator > .grid > article,
-  #workflow {
-    min-height: 0;
-    height: auto;
-  }
-
-  #calculator > .grid > article {
-    padding: 13px;
-  }
-
-  #calculator article input {
-    height: 44px;
-    font-size: 16px;
-  }
-
-  #calculator article button[aria-label*="quantity"] {
-    width: 44px;
-    min-width: 44px;
-    height: 44px;
-  }
-
-  #workflow {
-    padding: 13px;
-  }
-
-  #workflow > div {
-    gap: 10px;
-  }
-
-  #workflow > div > div:last-child {
-    padding-top: 9px;
-    border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
-  }
-
-  #workflow strong {
-    font-size: clamp(1.6rem, 8vw, 2rem);
-  }
-
-  #shift,
-  #tools {
-    margin-top: 12px;
-    padding: 13px;
-  }
-
-  #shift .grid {
-    gap: 8px;
-  }
-
-  #shift .grid > div {
-    padding: 12px;
-  }
-
-  #shift .grid > div:last-child strong {
-    font-size: clamp(2.25rem, 12vw, 2.85rem);
-  }
-
-  #shift .grid > div:last-child {
-    padding: 14px;
-  }
-
-  /* On mobile the countdown naturally follows Clock Out in the single column. */
-  #shift > .grid {
-    display: contents;
-  }
-
-  #shift > div:last-child {
-    margin-top: 0;
-    padding: 10px 12px;
-    border: 1px solid var(--surface-border);
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--card) 72%, var(--background));
-  }
-
-  #shift > div:last-child > .h-1\.5,
-  #shift > div:last-child > div:last-child {
-    display: none;
-  }
-
-  #tools > button {
-    min-height: 42px;
-  }
-
-  main footer {
-    margin-top: 2px;
-    padding-block: 8px 2px;
-  }
+  main > div.relative { padding-inline:14px; padding-bottom:10px; }
+  main nav { min-height:52px; height:52px; }
+  main nav .hidden + time { font-size:8px !important; letter-spacing:-.02em; }
+  main nav button { min-height:36px; height:36px; padding-inline:10px; }
+  main > div.relative > section:first-of-type { padding-block:18px 16px; }
+  main > div.relative > section:first-of-type h1 { font-size:clamp(2rem,11vw,3rem); }
+  #calculator > .mb-3 { margin-bottom:10px; align-items:flex-start; }
+  #calculator > .mb-3 > div:first-child { text-align:left; }
+  #calculator > .mb-3 > div:last-child { width:auto; }
+  #calculator > .mb-3 > div:last-child button { width:auto; }
+  #calculator > .grid { grid-template-columns:1fr; gap:10px; }
+  #calculator > .grid > article { min-height:0; padding:13px; }
+  #calculator article input { height:44px; font-size:16px; }
+  #calculator article button[aria-label*="quantity"] { width:44px; min-width:44px; height:44px; }
+  #workflow { min-height:0; padding:13px; }
+  #workflow > div { gap:10px; }
+  #workflow > div > div:last-child { padding-top:9px; border-top:1px solid color-mix(in srgb,currentColor 24%,transparent); }
+  #workflow strong { font-size:clamp(1.6rem,8vw,2rem); }
+  #shift, #tools { margin-top:12px; padding:13px; }
+  #shift .grid { grid-template-columns:1fr; gap:8px; }
+  #shift .grid > div { padding:12px; }
+  #shift .grid > div:last-child { padding:14px; }
+  #shift .grid > div:last-child strong { font-size:clamp(2.25rem,12vw,2.9rem); }
+  #tools > button { min-height:42px; }
+  main footer { margin-top:2px; padding-block:8px 2px; }
 }
 
-@media (max-width: 380px) {
-  main > div.relative {
-    padding-inline: 10px;
-  }
-
-  main nav {
-    gap: 6px;
-  }
-
-  main nav .hidden + time {
-    max-width: 52vw;
-  }
-
-  main #calculator > .grid > article,
-  main #workflow,
-  main #shift,
-  main #tools {
-    padding-inline: 11px;
-  }
-
-  #calculator article button[aria-label*="quantity"] {
-    width: 42px;
-    min-width: 42px;
-  }
-
-  #shift .grid > div:last-child strong {
-    font-size: 2.05rem;
-  }
+@media (max-width:380px) {
+  main > div.relative { padding-inline:10px; }
+  main nav { gap:6px; }
+  main nav .hidden + time { max-width:52vw; }
+  #calculator > .grid > article, #workflow, #shift, #tools { padding-inline:11px; }
+  #calculator article button[aria-label*="quantity"] { width:42px; min-width:42px; }
+  #shift .grid > div:last-child strong { font-size:2.05rem; }
 }
