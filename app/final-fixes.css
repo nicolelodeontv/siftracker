@@ -1,7 +1,6 @@
 /* Final responsive UI normalization */
 html, body { min-width: 0; overflow-x: hidden; }
 
-/* Keep the hero tagline on one line while scaling it down gracefully on narrow screens. */
 main h1 {
   white-space: nowrap !important;
   line-height: 1 !important;
@@ -10,7 +9,6 @@ main h1 {
   max-width: 100%;
 }
 
-/* Keep the hero subtitle on one line and use the requested copy. */
 main section.py-7 > div > p.mt-3,
 main section.py-8 > div > p.mt-3,
 main section.py-10 > div > p.mt-3 {
@@ -30,11 +28,12 @@ main section.py-10 > div > p.mt-3::after {
   white-space: nowrap;
 }
 
+/* Keep the calculator row visually unified and let the Workflow panel stretch with its row. */
 @media (min-width: 768px) {
-  /* Let the grid determine the row height naturally so Workflow matches its paired workload card exactly. */
   main #calculator > .grid {
     align-items: stretch !important;
     grid-auto-rows: 1fr;
+    gap: 12px !important;
   }
 
   main #calculator article,
@@ -45,25 +44,137 @@ main section.py-10 > div > p.mt-3::after {
     box-sizing: border-box;
   }
 
+  main #calculator article {
+    padding: 16px !important;
+  }
+
+  main #calculator article input {
+    height: 44px !important;
+  }
+
+  main #workflow {
+    padding: 16px !important;
+    background: var(--primary) !important;
+  }
+
   main #workflow > div {
     height: 100% !important;
   }
+
+  /* Make the final Clock Out result the strongest visual anchor in the Shift section. */
+  main #shift {
+    margin-top: 16px !important;
+    padding: 16px !important;
+  }
+
+  main #shift > div:last-child {
+    gap: 12px !important;
+  }
+
+  main #shift > div:last-child > div {
+    min-height: 96px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 14px !important;
+  }
+
+  main #shift > div:last-child > div:last-child {
+    border-color: color-mix(in srgb, var(--primary) 28%, var(--border)) !important;
+    background: color-mix(in srgb, var(--primary) 7%, var(--card)) !important;
+  }
+
+  main #shift > div:last-child > div:last-child strong {
+    font-size: clamp(1.6rem, 2.5vw, 2.15rem) !important;
+    letter-spacing: -0.05em !important;
+  }
+
+  /* Make the entered expression/result pairing easier to scan. */
+  main #calculator article > div:first-child output {
+    min-width: 72px !important;
+    text-align: right !important;
+  }
 }
 
-/* Small-screen cleanup: prevent fixed/mobile elements from creating horizontal overflow. */
+/* Small-screen cleanup and comfortable one-thumb interaction. */
 @media (max-width: 767px) {
   main { width: 100%; max-width: 100%; overflow-x: hidden !important; }
   main > div.relative { width: 100%; max-width: 100%; }
   main section { max-width: 100%; }
-  main #calculator > .grid { width: 100%; max-width: 100%; }
+
+  main #calculator > .grid {
+    width: 100%;
+    max-width: 100%;
+    gap: 10px !important;
+  }
+
   main #calculator article,
   main #workflow,
   main #settings,
   main #shift,
-  main #tools { width: 100%; max-width: 100%; box-sizing: border-box; }
-  main #workflow { min-height: 0 !important; height: auto !important; }
-  main #workflow > div { height: auto !important; }
-  main #workflow strong { white-space: nowrap; }
-  .mobile-total-bar { max-width: calc(100vw - 14px); overflow: hidden; }
-  .mobile-total-bar strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  main #tools {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  main #calculator article {
+    padding: 14px !important;
+  }
+
+  main #calculator article input {
+    min-height: 46px !important;
+    font-size: 16px !important;
+  }
+
+  main #workflow {
+    min-height: 108px !important;
+    height: auto !important;
+    padding: 14px !important;
+  }
+
+  main #workflow > div {
+    height: auto !important;
+  }
+
+  main #workflow strong {
+    white-space: nowrap;
+  }
+
+  main #shift {
+    margin-top: 14px !important;
+    padding: 14px !important;
+  }
+
+  main #shift > div:last-child {
+    gap: 10px !important;
+  }
+
+  main #shift > div:last-child > div {
+    min-height: 92px !important;
+    padding: 13px !important;
+  }
+
+  main #shift > div:last-child > div:last-child strong {
+    font-size: 1.55rem !important;
+  }
+
+  .mobile-total-bar {
+    max-width: calc(100vw - 14px);
+    overflow: hidden;
+  }
+
+  .mobile-total-bar strong {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 380px) {
+  main > div.relative { padding-left: 10px !important; padding-right: 10px !important; }
+  main section.py-7 h1, main section.py-8 h1, main section.py-10 h1 { font-size: 1.8rem !important; }
+  main section.py-7 > div > p.mt-3::after,
+  main section.py-8 > div > p.mt-3::after,
+  main section.py-10 > div > p.mt-3::after { font-size: 10px; }
 }
