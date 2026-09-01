@@ -26,7 +26,6 @@ const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '
 const TIME_ZONE = 'Asia/Manila'
 const RATE_STORAGE_KEY = 'sif-tracker-rates-v1'
 const BREAK_SECONDS = 60 * 60
-const DAY_SECONDS = 24 * 60 * 60
 
 function getPhilippineParts(date: Date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -68,6 +67,7 @@ export default function Page() {
   const [rateDraft, setRateDraft] = useState('')
   const [mounted, setMounted] = useState(false)
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
+  const clockPickerRef = useRef<HTMLInputElement | null>(null)
   const shiftRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -216,9 +216,6 @@ export default function Page() {
   const timeLeftSeconds = estimatedClockOutSeconds === null || shiftComplete
     ? 0
     : Math.max(0, shiftSeconds - elapsedShiftSeconds)
-  const progressPercent = shiftSeconds > 0
-    ? Math.min(100, Math.max(0, Math.round((elapsedShiftSeconds / shiftSeconds) * 100)))
-    : 0
 
   const unsavedRates = useMemo(
     () => DEFAULT_WORKLOADS.some(({ id }) => rates[id] !== savedRates[id]),
@@ -301,9 +298,14 @@ export default function Page() {
     setClockInTime(philippineTime)
   }
 
-  function handleClockInChange(value: string) {
-    const cleaned = value.replace(/[^0-9:]/g, '').slice(0, 8)
-    setClockInTime(cleaned)
+  function openClockInPicker() {
+    const input = clockPickerRef.current
+    if (!input) return
+    try {
+      input.showPicker?.()
+    } catch {
+      input.focus()
+    }
   }
 
   async function copyClockOut() {
@@ -498,18 +500,10 @@ export default function Page() {
           <div className="grid min-w-0 gap-2.5 sm:grid-cols-4">
             <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3">
               <span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span>
-              <div className="mt-1.5 rounded-md border border-input bg-background px-2 py-1.5">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="off"
-                  value={clockInTime}
-                  onChange={(event) => handleClockInChange(event.target.value)}
-                  placeholder="HH:MM:SS"
-                  aria-label="Manual Clock In time"
-                  className="w-full bg-transparent text-center font-mono text-sm font-bold tabular-nums outline-none"
-                />
-              </div>
+              <button type="button" onClick={openClockInPicker} className="mt-1.5 flex min-h-11 w-full items-center justify-center rounded-md border border-input bg-background px-3 py-1.5 font-mono text-sm font-bold tabular-nums outline-none transition hover:border-primary/50 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime}`}>
+                {clockInTime || 'Choose time'}
+              </button>
+              <input ref={clockPickerRef} type="time" step="1" value={clockInTime} onChange={(event) => setClockInTime(event.target.value)} className="sr-only" tabIndex={-1} aria-hidden="true" />
               <div className="mt-2 flex justify-center">
                 <button type="button" onClick={handleClockNow} className="rounded-full border border-border bg-card px-5 py-2 text-[10px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent">NOW · {philippineTime}</button>
               </div>
