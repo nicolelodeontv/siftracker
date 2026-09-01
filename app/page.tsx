@@ -13,7 +13,6 @@ type Workload = {
 }
 
 type RateMap = Record<string, number>
-type ClockPart = 'hour' | 'minute' | 'second' | 'period'
 
 const DEFAULT_WORKLOADS: Workload[] = [
   { id: 'teamEdit', label: 'Team edit', unit: 'teams', minutesPerUnit: 15, accent: 'var(--chart-1)' },
@@ -88,15 +87,13 @@ function formatPhilippineTime(date: Date) {
   }).format(date)
 }
 
-function formatAmPmTime(totalSeconds: number | null) {
+function formatMilitaryTime(totalSeconds: number | null) {
   if (totalSeconds === null) return '—'
   const daySeconds = ((Math.round(totalSeconds) % 86400) + 86400) % 86400
   const hours = Math.floor(daySeconds / 3600)
   const minutes = Math.floor((daySeconds % 3600) / 60)
   const seconds = daySeconds % 60
-  const suffix = hours >= 12 ? 'PM' : 'AM'
-  const hour12 = hours % 12 || 12
-  return `${hour12}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${suffix}`
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 
 function calculateValue(value: string): number | null {
@@ -162,17 +159,6 @@ function timeToSeconds(value: string) {
   const seconds = Number(match[3])
   if (hours > 23 || minutes > 59 || seconds > 59) return null
   return hours * 3600 + minutes * 60 + seconds
-}
-
-function getClockPickerParts(value: string) {
-  const seconds = timeToSeconds(value) ?? 0
-  const hours24 = Math.floor(seconds / 3600)
-  return {
-    hour: hours24 % 12 || 12,
-    minute: Math.floor((seconds % 3600) / 60),
-    second: seconds % 60,
-    period: hours24 >= 12 ? 'PM' : 'AM',
-  } as const
 }
 
 export default function Page() {
@@ -247,7 +233,6 @@ export default function Page() {
     ? null
     : clockInSeconds + totalSeconds + BREAK_SECONDS
 
-  const clockPickerParts = getClockPickerParts(clockInTime)
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
 
   function updateValue(id: string, value: string) {
@@ -279,22 +264,24 @@ export default function Page() {
     setClockInTime(getCurrentClockIn())
   }
 
-  function updateClockPart(part: ClockPart, rawValue: string) {
+  function updateClockPart(part: 'hour' | 'minute' | 'second', rawValue: string) {
     const nextValue = Number(rawValue)
-    const current = getClockPickerParts(clockInTime)
-    let hour = current.hour
-    let minute = current.minute
-    let second = current.second
-    let period = current.period
+    const currentSeconds = timeToSeconds(clockInTime) ?? 0
+    let hours = Math.floor(currentSeconds / 3600)
+    let minutes = Math.floor((currentSeconds % 3600) / 60)
+    let seconds = currentSeconds % 60
 
-    if (part === 'hour') hour = Math.min(12, Math.max(1, nextValue))
-    if (part === 'minute') minute = Math.min(59, Math.max(0, nextValue))
-    if (part === 'second') second = Math.min(59, Math.max(0, nextValue))
-    if (part === 'period') period = rawValue as 'AM' | 'PM'
+    if (part === 'hour') hours = Math.min(23, Math.max(0, nextValue))
+    if (part === 'minute') minutes = Math.min(59, Math.max(0, nextValue))
+    if (part === 'second') seconds = Math.min(59, Math.max(0, nextValue))
 
-    let hour24 = hour % 12
-    if (period === 'PM') hour24 += 12
-    setClockInTime(`${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`)
+    setClockInTime(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`)
+  }
+
+  const clockParts = {
+    hour: Math.floor((timeToSeconds(clockInTime) ?? 0) / 3600),
+    minute: Math.floor(((timeToSeconds(clockInTime) ?? 0) % 3600) / 60),
+    second: (timeToSeconds(clockInTime) ?? 0) % 60,
   }
 
   return (
@@ -362,9 +349,9 @@ export default function Page() {
         <section id="shift" className="mt-5 rounded-xl border border-border bg-card/80 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift</p><h2 className="mt-1 text-base font-semibold tracking-tight">Automatic clock-out</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · fixed 1-hour break</span></div>
           <div className="grid min-w-0 gap-3 sm:grid-cols-3">
-            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><div className="shift-time-picker" role="group" aria-label="Clock in time"><select aria-label="Clock in hour" value={clockPickerParts.hour} onChange={(event) => updateClockPart('hour', event.target.value)}><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select><select aria-label="Clock in minute" value={clockPickerParts.minute} onChange={(event) => updateClockPart('minute', event.target.value)}>{Array.from({ length: 60 }, (_, index) => <option key={index} value={index}>{String(index).padStart(2, '0')}</option>)}</select><select aria-label="Clock in second" value={clockPickerParts.second} onChange={(event) => updateClockPart('second', event.target.value)}>{Array.from({ length: 60 }, (_, index) => <option key={index} value={index}>{String(index).padStart(2, '0')}</option>)}</select><select aria-label="Clock in period" className="shift-time-picker-period" value={clockPickerParts.period} onChange={(event) => updateClockPart('period', event.target.value)}><option value="AM">AM</option><option value="PM">PM</option></select></div><span className="mt-1 block text-[8px] text-muted-foreground">Automatically set to current PHT when opened.</span></div>
+            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><div className="shift-time-picker" role="group" aria-label="Clock in time"><select aria-label="Clock in hour" value={clockParts.hour} onChange={(event) => updateClockPart('hour', event.target.value)}><option value="0">00</option>{Array.from({ length: 23 }, (_, index) => <option key={index + 1} value={index + 1}>{String(index + 1).padStart(2, '0')}</option>)}</select><select aria-label="Clock in minute" value={clockParts.minute} onChange={(event) => updateClockPart('minute', event.target.value)}>{Array.from({ length: 60 }, (_, index) => <option key={index} value={index}>{String(index).padStart(2, '0')}</option>)}</select><select aria-label="Clock in second" value={clockParts.second} onChange={(event) => updateClockPart('second', event.target.value)}>{Array.from({ length: 60 }, (_, index) => <option key={index} value={index}>{String(index).padStart(2, '0')}</option>)}</select></div><span className="mt-1 block text-[8px] text-muted-foreground">24-hour format · automatically set to current PHT when opened.</span></div>
             <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{totalUnits === 0 ? '00:00:00' : formatDuration(totalSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload time, excluding break.</span></div>
-            <div className="min-w-0 rounded-lg border border-primary/20 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock Out</span><strong className="mt-1 block whitespace-nowrap font-mono text-lg font-bold tabular-nums">{formatAmPmTime(estimatedClockOutSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload + 01:00:00 break.</span></div>
+            <div className="min-w-0 rounded-lg border border-primary/20 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock Out</span><strong className="mt-1 block whitespace-nowrap font-mono text-lg font-bold tabular-nums">{formatMilitaryTime(estimatedClockOutSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload + 01:00:00 break.</span></div>
           </div>
         </section>
 
@@ -373,7 +360,7 @@ export default function Page() {
         <footer className="flex flex-col gap-1 py-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
       </div>
 
-      <div className="mobile-total-bar" aria-live="polite"><div><span className="mobile-total-label">WORKED</span><strong>{formatDuration(totalSeconds)}</strong></div><div><span className="mobile-total-label">OUT</span><strong>{formatAmPmTime(estimatedClockOutSeconds)}</strong></div><div><span className="mobile-total-label">BREAK</span><strong>01:00:00</strong></div></div>
+      <div className="mobile-total-bar" aria-live="polite"><div><span className="mobile-total-label">WORKED</span><strong>{formatDuration(totalSeconds)}</strong></div><div><span className="mobile-total-label">OUT</span><strong>{formatMilitaryTime(estimatedClockOutSeconds)}</strong></div><div><span className="mobile-total-label">BREAK</span><strong>01:00:00</strong></div></div>
     </main>
   )
 }
