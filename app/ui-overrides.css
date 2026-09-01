@@ -212,6 +212,44 @@ main footer span {
   #shift .grid > div:not(:last-child)::after {
     right: -8px;
   }
+
+  /* Put the live countdown directly beneath Clock Out on desktop. */
+  #shift {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--ui-space-3);
+    row-gap: var(--ui-space-3);
+  }
+
+  #shift > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  #shift > .grid {
+    display: contents;
+  }
+
+  #shift > div:last-child {
+    grid-column: 4;
+    margin-top: 0;
+    align-self: stretch;
+  }
+
+  #shift > div:last-child > div:first-child {
+    margin: 0;
+  }
+
+  #shift > div:last-child > .h-1\.5,
+  #shift > div:last-child > div:last-child {
+    display: none;
+  }
+
+  #shift > div:last-child {
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--card) 72%, var(--background));
+    padding: 10px 12px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -324,6 +362,24 @@ main footer span {
 
   #shift .grid > div:last-child {
     padding: 14px;
+  }
+
+  /* On mobile the countdown naturally follows Clock Out in the single column. */
+  #shift > .grid {
+    display: contents;
+  }
+
+  #shift > div:last-child {
+    margin-top: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--surface-border);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--card) 72%, var(--background));
+  }
+
+  #shift > div:last-child > .h-1\.5,
+  #shift > div:last-child > div:last-child {
+    display: none;
   }
 
   #tools > button {
