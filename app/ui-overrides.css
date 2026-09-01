@@ -25,6 +25,8 @@ main > div.relative > section:first-of-type p { max-width:48rem; font-size:clamp
 #shift .grid > div:last-child strong { font-size:clamp(2rem,4vw,3.5rem); line-height:.95; }
 #shift .grid > div:first-child > div:last-child { width:100%; }
 #shift .grid > div:first-child > div:last-child > button { min-height:42px; }
+#shift .grid > div:first-child button[aria-label^="Edit Clock In"] { font-family:var(--font-jetbrains-mono),ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace; font-variant-numeric:tabular-nums; letter-spacing:-.02em; background:color-mix(in srgb,var(--background) 88%,var(--card)); border-color:var(--input); box-shadow:0 1px 2px var(--card-shadow); }
+#shift .grid > div:first-child button[aria-label^="Edit Clock In"]:hover { border-color:color-mix(in srgb,var(--primary) 50%,var(--border)); background:var(--accent); }
 #settings { border-radius:clamp(12px,1vw,16px); }
 #settings .grid { gap:clamp(8px,1vw,12px); }
 #settings .grid > div { min-width:0; }
@@ -56,6 +58,7 @@ button { touch-action:manipulation; }
   #shift .grid > div { padding:12px; }
   #shift .grid > div:last-child { padding:14px; }
   #shift .grid > div:last-child strong { font-size:clamp(2.2rem,12vw,3rem); }
+  #shift .grid > div:first-child button[aria-label^="Edit Clock In"] { min-height:44px; font-size:16px; }
   #tools > button { width:100%; min-height:44px; }
   main footer { margin-top:2px; padding-block:8px 2px; }
 }
@@ -65,6 +68,7 @@ button { touch-action:manipulation; }
   main nav .hidden + time { max-width:56vw; }
   #calculator > .grid > article, #workflow, #shift, #tools { padding-inline:11px; }
   #calculator article button[aria-label*="quantity"] { width:42px; min-width:42px; }
+  #shift .grid > div:first-child button[aria-label^="Edit Clock In"] { font-size:15px; }
 }
 @media (min-width:1600px) { main > div.relative { padding-inline:40px; } }
 @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
