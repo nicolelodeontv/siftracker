@@ -10,17 +10,17 @@ type Workload = {
   unit: string
   minutesPerUnit: number
   accent: string
-  examples: string[]
 }
 
 type RateMap = Record<string, number>
+type ClockPart = 'hour' | 'minute' | 'second' | 'period'
 
 const DEFAULT_WORKLOADS: Workload[] = [
-  { id: 'teamEdit', label: 'Team edit', unit: 'teams', minutesPerUnit: 15, accent: 'var(--chart-1)', examples: ['1 team = 15m', '4 teams = 1h', '16 teams = 4h', '32 teams = 8h'] },
-  { id: 'indiClip', label: 'Indi clip', unit: 'indis', minutesPerUnit: 5, accent: 'var(--chart-2)', examples: ['1 indi = 5m', '12 indi = 1h', '48 indi = 4h', '96 indi = 8h'] },
-  { id: 'indiEdit', label: 'Indi edit', unit: 'indis', minutesPerUnit: 5, accent: 'var(--chart-3)', examples: ['1 indi = 5m', '12 indi = 1h', '48 indi = 4h', '96 indi = 8h'] },
-  { id: 'indiBuild', label: 'Indi build', unit: 'orders', minutesPerUnit: 4, accent: 'var(--chart-4)', examples: ['1 order = 4m', '15 orders = 1h', '60 orders = 4h', '120 orders = 8h'] },
-  { id: 'lateOrders', label: 'Late orders', unit: 'orders', minutesPerUnit: 15, accent: 'var(--chart-5)', examples: ['1 order = 15m', '4 orders = 1h', '16 orders = 4h', '32 orders = 8h'] },
+  { id: 'teamEdit', label: 'Team edit', unit: 'teams', minutesPerUnit: 15, accent: 'var(--chart-1)' },
+  { id: 'indiClip', label: 'Indi clip', unit: 'indis', minutesPerUnit: 5, accent: 'var(--chart-2)' },
+  { id: 'indiEdit', label: 'Indi edit', unit: 'indis', minutesPerUnit: 5, accent: 'var(--chart-3)' },
+  { id: 'indiBuild', label: 'Indi build', unit: 'orders', minutesPerUnit: 4, accent: 'var(--chart-4)' },
+  { id: 'lateOrders', label: 'Late orders', unit: 'orders', minutesPerUnit: 15, accent: 'var(--chart-5)' },
 ]
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
@@ -35,6 +35,26 @@ function formatDuration(totalSeconds: number) {
   const minutes = Math.floor((seconds % 3600) / 60)
   const remaining = seconds % 60
   return [hours, minutes, remaining].map((value) => String(value).padStart(2, '0')).join(':')
+}
+
+function formatExampleDuration(totalMinutes: number) {
+  const minutes = Math.max(0, Math.round(totalMinutes))
+  const hours = Math.floor(minutes / 60)
+  const remaining = minutes % 60
+  if (hours === 0) return `${remaining}m`
+  if (remaining === 0) return `${hours}h`
+  return `${hours}h ${remaining}m`
+}
+
+function getExampleAmounts(workload: Workload) {
+  if (workload.unit === 'teams') return [1, 4, 16, 32]
+  if (workload.unit === 'indis') return [1, 12, 48, 96]
+  return [1, 15, 60, 120]
+}
+
+function getUnitLabel(unit: string, amount: number) {
+  const singular = unit.slice(0, -1)
+  return `${amount} ${amount === 1 ? singular : unit}`
 }
 
 function getPhilippineParts(date: Date) {
@@ -144,6 +164,17 @@ function timeToSeconds(value: string) {
   return hours * 3600 + minutes * 60 + seconds
 }
 
+function getClockPickerParts(value: string) {
+  const seconds = timeToSeconds(value) ?? 0
+  const hours24 = Math.floor(seconds / 3600)
+  return {
+    hour: hours24 % 12 || 12,
+    minute: Math.floor((seconds % 3600) / 60),
+    second: seconds % 60,
+    period: hours24 >= 12 ? 'PM' : 'AM',
+  } as const
+}
+
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
   const [rates, setRates] = useState<RateMap>({ ...DEFAULT_RATES })
@@ -216,6 +247,7 @@ export default function Page() {
     ? null
     : clockInSeconds + totalSeconds + BREAK_SECONDS
 
+  const clockPickerParts = getClockPickerParts(clockInTime)
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
 
   function updateValue(id: string, value: string) {
@@ -247,6 +279,24 @@ export default function Page() {
     setClockInTime(getCurrentClockIn())
   }
 
+  function updateClockPart(part: ClockPart, rawValue: string) {
+    const nextValue = Number(rawValue)
+    const current = getClockPickerParts(clockInTime)
+    let hour = current.hour
+    let minute = current.minute
+    let second = current.second
+    let period = current.period
+
+    if (part === 'hour') hour = Math.min(12, Math.max(1, nextValue))
+    if (part === 'minute') minute = Math.min(59, Math.max(0, nextValue))
+    if (part === 'second') second = Math.min(59, Math.max(0, nextValue))
+    if (part === 'period') period = rawValue as 'AM' | 'PM'
+
+    let hour24 = hour % 12
+    if (period === 'PM') hour24 += 12
+    setClockInTime(`${String(hour24).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`)
+  }
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
       <div className="pointer-events-none fixed inset-0 opacity-[0.22] [background-image:radial-gradient(circle_at_1px_1px,var(--grid-dot)_1px,transparent_0)] [background-size:24px_24px]" />
@@ -266,7 +316,7 @@ export default function Page() {
           <div className="max-w-4xl">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div>
             <h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">Work smart. Clock out smarter.</h1>
-            <p className="mt-3 text-sm leading-5 text-muted-foreground sm:whitespace-nowrap">Enter your workload. SIF handles the math and tells you when you’re done.</p>
+            <p className="mt-3 text-sm leading-5 text-muted-foreground sm:whitespace-nowrap">Enter your workload. Get your total time and clock-out instantly.</p>
           </div>
         </section>
 
@@ -299,7 +349,7 @@ export default function Page() {
                   <output className="shrink-0 font-mono text-[15px] font-bold tabular-nums" style={{ color: workload.accent }}>{formatDuration((value ?? 0) * workload.minutesPerUnit * 60)}</output>
                 </div>
                 <label className="mt-3 block"><span className="mb-1 block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Number of {workload.unit}</span><div className="relative"><input type="text" inputMode="text" value={values[workload.id]} onChange={(event) => updateValue(workload.id, event.target.value)} className="h-11 w-full min-w-0 rounded-lg border border-input bg-background/70 px-3 pr-16 font-mono text-[15px] font-medium tabular-nums outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10" />{value !== null && values[workload.id] !== '' && <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground opacity-60">{value}</output>}</div></label>
-                <div className="mt-auto grid grid-cols-2 gap-x-2 gap-y-1 border-t border-border pt-2.5 sm:grid-cols-4">{workload.examples.map((example) => <span key={example} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground">{example}</span>)}</div>
+                <div className="mt-auto grid grid-cols-2 gap-x-2 gap-y-1 border-t border-border pt-2.5 sm:grid-cols-4">{getExampleAmounts(workload).map((amount) => <span key={amount} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground">{getUnitLabel(workload.unit, amount)} = {formatExampleDuration(amount * workload.minutesPerUnit)}</span>)}</div>
               </article>
             ))}
 
@@ -312,7 +362,7 @@ export default function Page() {
         <section id="shift" className="mt-5 rounded-xl border border-border bg-card/80 p-4 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift</p><h2 className="mt-1 text-base font-semibold tracking-tight">Automatic clock-out</h2></div><span className="font-mono text-[9px] text-muted-foreground">PHT · fixed 1-hour break</span></div>
           <div className="grid min-w-0 gap-3 sm:grid-cols-3">
-            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><input type="time" step="1" value={clockInTime} onChange={(event) => setClockInTime(event.target.value + (event.target.value.length === 5 ? ':00' : ''))} className="mt-1 h-10 w-full min-w-0 rounded-lg border border-input bg-background px-3 font-mono text-sm font-bold tabular-nums outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" /><span className="mt-1 block text-[8px] text-muted-foreground">Automatically set to current PHT when opened.</span></div>
+            <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock in</span><div className="shift-time-picker" role="group" aria-label="Clock in time"><select aria-label="Clock in hour" value={clockPickerParts.hour} onChange={(event) => updateClockPart('hour', event.target.value)}><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select><select aria-label="Clock in minute" value={clockPickerParts.minute} onChange={(event) => updateClockPart('minute', event.target.value)}>{Array.from({ length: 60 }, (_, index) => <option key={index} value={index}>{String(index).padStart(2, '0')}</option>)}</select><select aria-label="Clock in second" value={clockPickerParts.second} onChange={(event) => updateClockPart('second', event.target.value)}>{Array.from({ length: 60 }, (_, index) => <option key={index} value={index}>{String(index).padStart(2, '0')}</option>)}</select><select aria-label="Clock in period" className="shift-time-picker-period" value={clockPickerParts.period} onChange={(event) => updateClockPart('period', event.target.value)}><option value="AM">AM</option><option value="PM">PM</option></select></div><span className="mt-1 block text-[8px] text-muted-foreground">Automatically set to current PHT when opened.</span></div>
             <div className="min-w-0 rounded-lg border border-border bg-background/60 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Total hours worked</span><strong className="mt-1 block font-mono text-lg font-bold tabular-nums">{totalUnits === 0 ? '00:00:00' : formatDuration(totalSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload time, excluding break.</span></div>
             <div className="min-w-0 rounded-lg border border-primary/20 bg-primary/5 p-3"><span className="block text-[8px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Clock Out</span><strong className="mt-1 block whitespace-nowrap font-mono text-lg font-bold tabular-nums">{formatAmPmTime(estimatedClockOutSeconds)}</strong><span className="mt-1 block text-[8px] text-muted-foreground">Workload + 01:00:00 break.</span></div>
           </div>
