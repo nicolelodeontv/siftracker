@@ -166,8 +166,8 @@ button { touch-action: manipulation; }
   #calculator > .mb-3 { align-items: flex-start; }
   #calculator > .grid { grid-template-columns: 1fr; gap: 10px; }
   #calculator > .grid > article {
-    height: 190px;
-    min-height: 190px;
+    height: 220px;
+    min-height: 220px;
     padding: 13px;
   }
   #calculator > .grid > article > div:last-child { margin-top: auto; }
@@ -213,7 +213,7 @@ button { touch-action: manipulation; }
   #workflow,
   #shift,
   #tools { padding-inline: 11px; }
-  #calculator > .grid > article { height: 190px; min-height: 190px; }
+  #calculator > .grid > article { height: 220px; min-height: 220px; }
   #workflow { padding-block: 13px; }
   #calculator article button[aria-label*="quantity"] { width: 42px; min-width: 42px; }
   #shift .grid > div:first-child button[aria-label^="Edit Clock In"] { font-size: 15px; }
