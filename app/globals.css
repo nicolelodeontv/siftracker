@@ -4,10 +4,6 @@
 @import './mobile.css';
 @import './motion.css';
 @import './ui-overrides.css';
-@import './clockout-polish.css';
-@import './clockout-ui.css';
-@import './clockout-final.css';
-@import './clockout-emphasis.css';
 
 @custom-variant dark (&:is(.dark *));
 
