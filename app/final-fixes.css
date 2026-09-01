@@ -10,15 +10,27 @@ main h1 {
   max-width: 100%;
 }
 
-/* Keep the hero subtitle on one line on desktop without forcing mobile overflow. */
-@media (min-width: 768px) {
-  main section.py-7 > div > p.mt-3,
-  main section.py-8 > div > p.mt-3,
-  main section.py-10 > div > p.mt-3 {
-    white-space: nowrap !important;
-    max-width: none !important;
-  }
+/* Keep the hero subtitle on one line and use the requested copy. */
+main section.py-7 > div > p.mt-3,
+main section.py-8 > div > p.mt-3,
+main section.py-10 > div > p.mt-3 {
+  white-space: nowrap !important;
+  max-width: none !important;
+  font-size: 0 !important;
+}
 
+main section.py-7 > div > p.mt-3::after,
+main section.py-8 > div > p.mt-3::after,
+main section.py-10 > div > p.mt-3::after {
+  content: "Enter your workload. Get your total time and clock-out instantly.";
+  display: block;
+  font-size: clamp(10px, 1.7vw, 14px);
+  line-height: 1.25;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
   /* Let the grid determine the row height naturally so Workflow matches its paired workload card exactly. */
   main #calculator > .grid {
     align-items: stretch !important;
