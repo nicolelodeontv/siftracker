@@ -1,6 +1,6 @@
 # SIF Tracker
 
-A lightweight production workload estimator for calculating time requirements across different Sports In Focus production activities.
+A lightweight production workload tracker that turns workload quantities into total work time and an estimated clock-out time.
 
 ## 🌐 Live Demo
 
@@ -8,22 +8,32 @@ https://sif-tracker-omega.vercel.app/
 
 ## ✨ Features
 
-- Live workload time calculation
-- Per-category production time estimates
-- Combined total production estimate
-- Quick reset control
-- Input validation for supported quantity expressions
-- Supports simple calculations such as `4+8+12`
-- Supports optional checked totals such as `4+8+12=24`
-- Responsive desktop and mobile layout
-- Mobile-friendly scrolling and stacked workload cards
-- Touch-friendly inputs and controls
+- Instant workload time calculation
+- Supports expressions such as `5+5`, `10*3`, and `(5+5)*2`
+- Optional checked totals such as `4+8+12=24`
+- Per-workload `−` / `+` quantity controls
+- Per-workload clear (`×`) control
+- Clear invalid-expression feedback
+- Combined **One total, all workloads** result
+- Estimated **Clock Out** calculation
+- Fixed 1-hour break included in clock-out calculation
+- Live Philippine Time (PHT) clock
+- Clock In defaults to the current Philippine time when the page opens
+- **Now** button to sync Clock In with the current PHT clock
+- Clock Out copy button copies only the clock-out time
+- Editable workload rates from Settings
+- Save and Reset controls for workload rates
+- Rate changes automatically update calculator examples and time calculations
 - Light and dark mode support
-- Accessible labels and live output updates
+- Responsive desktop and mobile layouts
+- Touch-friendly controls and inputs
+- Accessible labels and status feedback
+- Subtle UX motion with reduced-motion support
+- Page inputs reset on refresh while saved workload rates persist
 
-## ⏱️ Workload Rates
+## ⏱️ Default Workload Rates
 
-The current production estimates are:
+The default production estimates are:
 
 | Activity | Time per Unit |
 | --- | ---: |
@@ -33,41 +43,68 @@ The current production estimates are:
 | Indi Build | 4 minutes / order |
 | Late Orders | 15 minutes / order |
 
-These values are defined by the application and can be adjusted when production requirements change.
+Rates can be changed from **Settings** without editing the source code. Changes take effect in the calculator after saving.
 
 ## 🧮 Example
 
-If the workload is:
+Entering:
 
 ```text
-Team Edit:   4 teams × 15 min = 60 min
-Indi Clip:  12 indIs × 5 min = 60 min
-Indi Build: 15 orders × 4 min = 60 min
+Team Edit: 5+5
 ```
 
-SIF Tracker automatically combines the estimates and displays the total production time.
+produces:
+
+```text
+10 teams
+```
+
+and the corresponding work duration based on the current Team Edit rate.
+
+The calculator also supports checked expressions:
+
+```text
+4+8+12=24
+```
+
+The expression is accepted only when the declared total matches the calculated result.
+
+## 🕒 Clock Out Calculation
+
+SIF Tracker combines:
+
+```text
+Clock In
++ Total Work Time
++ 01:00:00 Break
+= Estimated Clock Out
+```
+
+The Clock In field starts with the current Philippine time when the page opens. The **Now** button can re-sync it to the live PHT clock at any time.
+
+The live header clock displays the current Philippine date and time in `HH:MM:SS` format.
 
 ## 🛠️ Tech Stack
 
-- Next.js 16
-- React 19
+- Next.js
+- React
 - TypeScript
 - Tailwind CSS
 - Lucide React
 - shadcn/ui tooling
-- Vercel Analytics
 - pnpm
+- Vercel
 
 ## 📁 Project Structure
 
 ```text
 siftracker/
-├── app/                  # Next.js application pages and styles
-│   ├── page.tsx          # Main tracker UI
-│   ├── globals.css       # Global theme and layout styles
-│   └── mobile.css        # Mobile responsive styles
+├── app/
+│   ├── page.tsx          # Main tracker UI and calculator logic
+│   ├── globals.css       # Global theme and shared styles
+│   ├── mobile.css        # Responsive desktop/mobile layout rules
+│   └── motion.css        # UX motion and interaction styles
 ├── components/           # Reusable UI components
-├── lib/                  # Utility functions
 ├── public/               # Static assets
 ├── package.json          # Project scripts and dependencies
 ├── pnpm-lock.yaml        # Locked dependency versions
@@ -114,46 +151,49 @@ pnpm lint
 
 ## 🔧 How It Works
 
-Each production activity has a fixed time-per-unit value. The application multiplies the entered quantity by that value, converts the result into a readable duration, and adds the category estimates together.
+Each workload has a configurable time-per-unit rate. The app evaluates the entered expression, multiplies the resulting quantity by the active rate, and combines all workload durations into one total.
 
-The total updates instantly as values are entered, making it useful for quickly estimating production workload before or during a work session.
+When workload is present, the Shift section uses the selected Clock In time plus the total workload time and the fixed 1-hour break to calculate the estimated Clock Out time.
+
+Changing a workload rate in Settings also updates the calculator results and the example conversions shown on the workload cards.
 
 ## 📱 Mobile Support
 
-The interface is designed to work on phones and tablets as well as desktop screens.
+The interface is designed to work across phones, tablets, and desktop screens.
 
 On smaller screens:
 
 - Workload cards switch to a single-column layout.
-- The hero heading and description wrap naturally.
-- Inputs use larger touch-friendly sizing.
-- The workflow total stacks vertically for easier reading.
-- The page uses normal vertical scrolling so the full tracker remains accessible.
+- Inputs and quantity controls use touch-friendly sizing.
+- Text wraps naturally to avoid clipping.
+- Workflow and Shift sections stack vertically.
+- Footer spacing is kept compact and consistent with the rest of the page.
+- The full tracker remains vertically scrollable.
 
 ## ✅ Build Verification
 
-The repository includes an automated build check for changes pushed to `main` or opened as pull requests. The check installs dependencies with the lockfile and runs the production build:
+The production app is continuously deployed from the `main` branch. A production build can be checked locally with:
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm run build
 ```
 
-This helps catch dependency, TypeScript, Next.js, and build-time configuration errors before deployment.
-
 ## 🚢 Deployment
 
-SIF Tracker is a Next.js application and can be deployed to Vercel or another platform that supports Next.js.
+SIF Tracker is a Next.js application deployed through Vercel.
 
-For Vercel deployments, the intended source of truth is the `main` branch of this repository.
+The `main` branch is the source of truth for production deployments.
 
-The current live version is available at:
+Live deployment:
 
 https://sif-tracker-omega.vercel.app/
 
 ## 📌 Notes
 
-SIF Tracker is intended as a production planning and estimation utility. The workload rates are application-defined and may need to be updated as production requirements change.
+SIF Tracker is intended as a production planning and time-estimation utility. Workload rates are configurable and should be updated when production requirements change.
+
+Entered workload values are intentionally session-only and are cleared when the page is refreshed. Saved workload rates remain stored locally in the browser.
 
 ## 👤 Author
 
