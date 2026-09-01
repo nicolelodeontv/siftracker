@@ -11,14 +11,12 @@ import {
   getElapsedSeconds,
   isIncompleteExpression,
   timeToSeconds,
-  DAY_SECONDS,
 } from '@/lib/calculator'
 import {
   DEFAULT_RATES,
   DEFAULT_WORKLOADS,
   getExampleAmounts,
   getUnitLabel,
-  type Workload,
 } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
@@ -28,6 +26,7 @@ const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '
 const TIME_ZONE = 'Asia/Manila'
 const RATE_STORAGE_KEY = 'sif-tracker-rates-v1'
 const BREAK_SECONDS = 60 * 60
+const DAY_SECONDS = 24 * 60 * 60
 
 function getPhilippineParts(date: Date) {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -80,28 +79,34 @@ export default function Page() {
       setPhilippineSeconds(Number(parts.hour) * 3600 + Number(parts.minute) * 60 + Number(parts.second))
     }
 
-    updateClock()
-    setClockInTime(getCurrentClockIn())
+    const initialization = window.setTimeout(() => {
+      updateClock()
+      setClockInTime(getCurrentClockIn())
+      setMounted(true)
+    }, 0)
     const interval = window.setInterval(updateClock, 1000)
-    const frame = window.requestAnimationFrame(() => setMounted(true))
 
     return () => {
+      window.clearTimeout(initialization)
       window.clearInterval(interval)
-      window.cancelAnimationFrame(frame)
     }
   }, [])
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(window.localStorage.getItem(RATE_STORAGE_KEY) ?? 'null')
-      if (saved?.rates && typeof saved.rates === 'object') {
-        const merged = { ...DEFAULT_RATES, ...saved.rates }
-        setRates(merged)
-        setSavedRates(merged)
+    const loadSavedRates = window.setTimeout(() => {
+      try {
+        const saved = JSON.parse(window.localStorage.getItem(RATE_STORAGE_KEY) ?? 'null')
+        if (saved?.rates && typeof saved.rates === 'object') {
+          const merged = { ...DEFAULT_RATES, ...saved.rates }
+          setRates(merged)
+          setSavedRates(merged)
+        }
+      } catch {
+        // Ignore invalid local storage.
       }
-    } catch {
-      // Ignore invalid local storage.
-    }
+    }, 0)
+
+    return () => window.clearTimeout(loadSavedRates)
   }, [])
 
   useEffect(() => {
@@ -127,27 +132,20 @@ export default function Page() {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [confirmReset])
 
-  function clearWorkload(id: string) {
-    setValues((current) => ({ ...current, [id]: '' }))
-  }
-
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const active = document.activeElement
       const index = inputRefs.current.findIndex((input) => input === active)
-      const isWorkloadInput = index >= 0
+      if (index < 0) return
+
+      const id = DEFAULT_WORKLOADS[index].id
 
       if (event.key === 'Escape') {
-        if (isWorkloadInput) {
-          clearWorkload(DEFAULT_WORKLOADS[index].id)
-          return
-        }
+        setValues((current) => ({ ...current, [id]: '' }))
         setSettingsOpen(false)
         setConfirmReset(false)
         return
       }
-
-      if (!isWorkloadInput) return
 
       if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
         event.preventDefault()
@@ -164,7 +162,11 @@ export default function Page() {
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
         event.preventDefault()
         const delta = event.key === 'ArrowUp' ? 1 : -1
-        adjustQuantity(DEFAULT_WORKLOADS[index].id, delta)
+        setValues((currentValues) => {
+          const current = calculateValue(currentValues[id] ?? '') ?? 0
+          const next = Math.max(0, Math.round((current + delta) * 100) / 100)
+          return { ...currentValues, [id]: String(next) }
+        })
       }
     }
 
@@ -236,6 +238,10 @@ export default function Page() {
     const current = calculateValue(values[id] ?? '') ?? 0
     const next = Math.max(0, Math.round((current + delta) * 100) / 100)
     setValues((currentValues) => ({ ...currentValues, [id]: String(next) }))
+  }
+
+  function clearWorkload(id: string) {
+    setValues((currentValues) => ({ ...currentValues, [id]: '' }))
   }
 
   function adjustRate(id: string, delta: number) {
