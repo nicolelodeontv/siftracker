@@ -32,7 +32,7 @@ export function LiveStatusBar({ totalSeconds, totalUnits, clockInTime }: BasePro
         <LiveMetric label="Work" value={formatDuration(totalSeconds)} />
         <LiveMetric label="Break" value="01:00:00" />
         <LiveMetric label="Clock Out" value={clockOut} />
-        <div className="min-w-0 bg-primary px-2.5 py-2 text-primary-foreground sm:px-3">
+        <div className="min-w-0 bg-primary px-2.5 py-1.5 text-primary-foreground sm:px-3 sm:py-1.5">
           <span className="block text-[7px] font-bold uppercase tracking-[0.14em] opacity-70">Status</span>
           <strong className="mt-0.5 block truncate font-mono text-[10px] font-bold tabular-nums sm:text-xs">{shift.shiftStatus}</strong>
         </div>
@@ -98,7 +98,7 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
 
 function LiveMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 bg-card px-2.5 py-2 sm:px-3">
+    <div className="min-w-0 bg-card px-2.5 py-1.5 sm:px-3 sm:py-1.5">
       <span className="block text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
       <strong className="mt-0.5 block truncate font-mono text-[11px] font-bold tabular-nums sm:text-xs">{value}</strong>
     </div>
