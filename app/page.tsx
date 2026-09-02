@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ClockInPicker } from '@/components/clock-in-picker'
-import { LiveStatusBar, ShiftSummary } from '@/components/live-status'
+import { ShiftSummary } from '@/components/live-status'
 import { PhtClockDisplay } from '@/components/pht-clock-display'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { WorkloadCard } from '@/components/workload-card'
@@ -185,8 +185,6 @@ export default function Page() {
             <ThemeToggle />
           </div>
         </nav>
-
-        <LiveStatusBar totalSeconds={totalSeconds} totalUnits={totalUnits} clockInTime={clockInTime} />
 
         <section className="py-5 sm:py-6">
           <div className="max-w-4xl">
