@@ -44,7 +44,12 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
       <div className="shift-summary-grid">
         <div className="shift-summary-card">
           <span className="shift-summary-label">Clock in</span>
-          <button type="button" className="clock-in-display" aria-label={`Edit Clock In time, currently ${clockInTime}`}>
+          <button
+            type="button"
+            className="clock-in-display cursor-pointer"
+            aria-label={`Edit Clock In time, currently ${clockInTime}`}
+            title="Edit Clock In time"
+          >
             {clockInTime || 'Choose time'}
           </button>
           <input id="clock-in-hidden" type="time" step="1" value={clockInTime} onChange={(event) => onClockInChange(event.target.value)} className="sr-only" tabIndex={-1} aria-hidden="true" />
@@ -68,7 +73,9 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
               </button>
             )}
           </div>
-          <span className="mt-1 block text-[8px] text-muted-foreground">{shift.estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shift.shiftComplete ? '✓ SHIFT COMPLETE' : 'ON TRACK · TIME UNTIL CLOCK OUT'}</span>
+          <span className={`mt-1 block text-[8px] ${shift.shiftComplete ? 'font-bold text-[var(--sif-green)]' : 'text-muted-foreground'}`}>
+            {shift.estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shift.shiftComplete ? '✓ SHIFT COMPLETE' : 'ON TRACK · TIME UNTIL CLOCK OUT'}
+          </span>
           {shift.estimatedClockOutSeconds !== null && <strong className="mt-1.5 block font-mono text-xs font-bold tabular-nums text-primary">{shift.shiftComplete ? '00:00:00' : formatDuration(shift.timeLeftSeconds)}</strong>}
         </div>
       </div>
