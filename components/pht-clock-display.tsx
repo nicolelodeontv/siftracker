@@ -8,7 +8,7 @@ export function PhtClockDisplay() {
   return (
     <div className="hidden text-right sm:block" aria-label={`Current Philippine time ${time}`}>
       <span className="block text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">PHT Now</span>
-      <time className="block font-mono text-[10px] font-bold tabular-nums" dateTime={time}>{time}</time>
+      <time className="block font-mono text-[10px] font-bold tabular-nums" dateTime={`1970-01-01T${time}`}>{time}</time>
     </div>
   )
 }
