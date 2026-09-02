@@ -5,12 +5,12 @@ import { Check, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-r
 import { ClockInPicker } from '@/components/clock-in-picker'
 import { LiveStatus } from '@/components/live-status'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { WelcomePopup } from '@/components/welcome-popup'
 import { WorkloadCard } from '@/components/workload-card'
 import { WorkloadSettings } from '@/components/workload-settings'
-import { calculateValue, formatCompactDuration, formatDuration } from '@/lib/calculator'
+import { calculateValue, formatDuration } from '@/lib/calculator'
 import { loadSavedRates, persistSavedRates } from '@/lib/rates-storage'
 import { calculateWorkloads } from '@/lib/shift'
+import { getCurrentClockIn } from '@/lib/use-philippine-clock'
 import { DEFAULT_RATES, DEFAULT_WORKLOADS } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
@@ -28,6 +28,7 @@ export default function Page() {
   const [clockInTime, setClockInTime] = useState('09:00:00')
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([])
   const shiftRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -77,6 +78,10 @@ export default function Page() {
     setValues((currentValues) => ({ ...currentValues, [id]: String(next) }))
   }
 
+  function adjustRate(id: string, delta: number) {
+    setRates((current) => ({ ...current, [id]: Math.max(1, Math.min(240, (current[id] ?? DEFAULT_RATES[id]) + delta)) }))
+  }
+
   function clearWorkload(id: string) {
     setValues((currentValues) => ({ ...currentValues, [id]: '' }))
   }
@@ -95,6 +100,11 @@ export default function Page() {
     setRateDraft('')
   }
 
+  function cancelRateEdit() {
+    setEditingRate(null)
+    setRateDraft('')
+  }
+
   function resetRates() {
     const defaults = { ...DEFAULT_RATES }
     setRates(defaults)
@@ -104,8 +114,7 @@ export default function Page() {
   }
 
   async function saveRates() {
-    const valid = persistSavedRates(rates)
-    if (!valid) return
+    if (!persistSavedRates(rates)) return
 
     try {
       const response = await fetch('/api/workloads', {
@@ -115,7 +124,7 @@ export default function Page() {
       })
       if (!response.ok) throw new Error('Rate validation failed')
     } catch {
-      // Local persistence remains authoritative; the API is validation-only.
+      // Local persistence is authoritative; the API validates the payload when available.
     }
 
     setSavedRates({ ...rates })
@@ -128,23 +137,6 @@ export default function Page() {
     setClockInTime(getCurrentClockIn())
     setConfirmReset(false)
     setFeedback('reset')
-  }
-
-  function getCurrentClockIn() {
-    const now = new Date()
-    const parts = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Manila',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hourCycle: 'h23',
-    }).formatToParts(now)
-    const mapped = Object.fromEntries(parts.map(({ type, value }) => [type, value])) as Record<string, string>
-    return `${mapped.hour}:${mapped.minute}:${mapped.second}`
-  }
-
-  function handleClockNow(time: string) {
-    setClockInTime(time)
   }
 
   function openQuickGuide() {
@@ -170,10 +162,7 @@ export default function Page() {
             <span className="truncate text-sm font-bold tracking-tight">SIF Tracker</span>
           </div>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-            <div className="hidden text-right sm:block">
-              <span className="block text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">PHT Now</span>
-              <time className="block font-mono text-[10px] font-bold tabular-nums">Live</time>
-            </div>
+            <span className="hidden font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:inline">PHT</span>
             <button type="button" onClick={openQuickGuide} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Open Quick Guide">
               <HelpCircle className="size-3" /><span className="hidden sm:inline">Quick Guide</span>
             </button>
@@ -187,7 +176,7 @@ export default function Page() {
           clockInTime={clockInTime}
           shiftRef={shiftRef}
           onClockInChange={setClockInTime}
-          onSetClockInNow={handleClockNow}
+          onSetClockInNow={(time) => setClockInTime(time)}
           onCopyClockOut={copyClockOut}
         />
 
@@ -204,7 +193,7 @@ export default function Page() {
             <div>
               <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">01 / Calculator</p>
               <h2 className="mt-1 text-lg font-semibold tracking-tight">Enter your workload</h2>
-              <p className="mt-1 text-[8px] font-medium text-muted-foreground/70">⌨ Enter → next workload · ↑ ↓ adjust quantity · Ctrl/Cmd+Enter → summary</p>
+              <p className="mt-1 text-[8px] font-medium text-muted-foreground/70">⌨ Enter → next · ↑ ↓ adjust · Ctrl/Cmd+Enter → summary</p>
             </div>
             <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Settings2 className="size-3" />Settings{unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}
@@ -222,7 +211,7 @@ export default function Page() {
               onBeginEdit={beginRateEdit}
               onDraftChange={setRateDraft}
               onCommitEdit={commitRateEdit}
-              onCancelEdit={() => { setEditingRate(null); setRateDraft('') }}
+              onCancelEdit={cancelRateEdit}
               onReset={resetRates}
               onSave={saveRates}
               onClose={() => setSettingsOpen(false)}
@@ -235,9 +224,7 @@ export default function Page() {
                 key={workload.id}
                 workload={workload}
                 input={input}
-                inputRef={(element) => {
-                  ;(inputRefs.current[index] = element)
-                }}
+                inputRef={(element) => { inputRefs.current[index] = element }}
                 onChange={(nextValue) => updateValue(workload.id, nextValue)}
                 onAdjust={(delta) => adjustQuantity(workload.id, delta)}
                 onClear={() => clearWorkload(workload.id)}
@@ -245,7 +232,7 @@ export default function Page() {
                 onSummaryShortcut={() => shiftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
               />
             ))}
-            <section id="workflow" className={`${cardClass} mt-0 rounded-xl border-primary/20 bg-primary p-4 text-primary-foreground shadow-[0_12px_36px_var(--card-shadow)]`}>
+            <section id="workflow" className={`${cardClass} rounded-xl border-primary/20 bg-primary p-4 text-primary-foreground shadow-[0_12px_36px_var(--card-shadow)]`}>
               <div className="flex h-full flex-col justify-between gap-3 sm:flex-row sm:items-center">
                 <div className="min-w-0"><p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p><h3 className="mt-1 text-base font-semibold tracking-tight">One total, all workloads.</h3><p className="mt-1 text-[10px] leading-4 opacity-75">{totalUnits} total units across {workloads.length} workload types.</p></div>
                 <div className="min-w-0 text-left sm:text-right"><span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Total work time</span><strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong></div>
@@ -275,19 +262,6 @@ export default function Page() {
         </div>
       )}
       <ClockInPicker />
-      <WelcomePopup />
     </main>
   )
-}
-
-const inputRefs: Array<HTMLInputElement | null> = []
-
-function adjustRate(id: string, delta: number) {
-  const current = ratesPlaceholder(id)
-  void current
-  void delta
-}
-
-function ratesPlaceholder(id: string) {
-  return DEFAULT_RATES[id] ?? 1
 }
