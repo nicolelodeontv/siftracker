@@ -7,10 +7,10 @@ export function PhtClockDisplay() {
 
   return (
     <div
-      className="min-w-0 text-right leading-tight"
+      className="pht-clock-display min-w-0 text-right leading-tight"
       aria-label={`Current Philippine date and time ${date} ${time}`}
     >
-      <span className="block max-w-[150px] truncate text-[7px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:max-w-none sm:text-[8px] sm:tracking-[0.16em]">
+      <span className="block whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.16em]">
         Philippine Standard Time
       </span>
       <time
