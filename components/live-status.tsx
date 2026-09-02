@@ -1,6 +1,8 @@
 'use client'
 
-import { Copy, RotateCcw } from 'lucide-react'
+import { useRef } from 'react'
+import { Copy } from 'lucide-react'
+import type { RefObject } from 'react'
 import { formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
@@ -11,13 +13,16 @@ type Props = {
   totalSeconds: number
   totalUnits: number
   clockInTime: string
+  shiftRef?: RefObject<HTMLElement | null>
   onClockInChange: (value: string) => void
   onSetClockInNow: (value: string) => void
   onCopyClockOut: (value: string) => void
 }
 
-export function LiveStatus({ totalSeconds, totalUnits, clockInTime, onClockInChange, onSetClockInNow, onCopyClockOut }: Props) {
+export function LiveStatus({ totalSeconds, totalUnits, clockInTime, shiftRef, onClockInChange, onSetClockInNow, onCopyClockOut }: Props) {
   const { time, date, seconds: nowSeconds } = usePhilippineClock()
+  const fallbackRef = useRef<HTMLElement | null>(null)
+  const sectionRef = shiftRef ?? fallbackRef
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const clockOut = formatMilitaryTime(shift.estimatedClockOutSeconds)
 
@@ -35,7 +40,7 @@ export function LiveStatus({ totalSeconds, totalUnits, clockInTime, onClockInCha
         </div>
       </section>
 
-      <section id="shift" className={`${cardClass} mt-4 p-4`}>
+      <section ref={sectionRef} id="shift" className={`${cardClass} mt-4 p-4`}>
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift Summary</p>
@@ -50,30 +55,12 @@ export function LiveStatus({ totalSeconds, totalUnits, clockInTime, onClockInCha
         <div className="shift-summary-grid">
           <div className="shift-summary-card">
             <span className="shift-summary-label">Clock in</span>
-            <button
-              type="button"
-              className="clock-in-display"
-              aria-label={`Edit Clock In time, currently ${clockInTime}`}
-              onClick={() => {
-                const input = document.querySelector<HTMLInputElement>('#clock-in-hidden')
-                input?.focus()
-                input?.click()
-              }}
-            >
+            <button type="button" className="clock-in-display" aria-label={`Edit Clock In time, currently ${clockInTime}`}>
               {clockInTime || 'Choose time'}
             </button>
-            <input
-              id="clock-in-hidden"
-              type="time"
-              step="1"
-              value={clockInTime}
-              onChange={(event) => onClockInChange(event.target.value)}
-              className="sr-only"
-              tabIndex={-1}
-              aria-hidden="true"
-            />
+            <input id="clock-in-hidden" type="time" step="1" value={clockInTime} onChange={(event) => onClockInChange(event.target.value)} className="sr-only" tabIndex={-1} aria-hidden="true" />
             <div className="mt-2 flex justify-center">
-              <button type="button" onClick={() => onSetClockInNow(time)} className="rounded-full border border-border bg-card px-5 py-2 text-[10px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent">NOW · {time}</button>
+              <button type="button" onClick={() => onSetClockInNow(time)} className="rounded-full border border-border bg-card px-5 py-2 text-[10px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">NOW · {time}</button>
             </div>
           </div>
 
