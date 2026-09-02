@@ -3,7 +3,7 @@
 import { Minus, Plus, RotateCcw, X } from 'lucide-react'
 import { formatCompactDuration } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
-import { DEFAULT_RATES, getExampleAmounts } from '@/lib/workloads'
+import { getExampleAmounts } from '@/lib/workloads'
 
 type Props = {
   workloads: Workload[]
