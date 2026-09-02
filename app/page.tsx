@@ -22,16 +22,27 @@ const CARD_CLASS = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28p
 
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
-  const [rates, setRates] = useState<RateMap>(() => loadSavedRates())
-  const [savedRates, setSavedRates] = useState<RateMap>(() => loadSavedRates())
+  // Start with deterministic server-safe defaults, then hydrate saved rates after mount.
+  const [rates, setRates] = useState<RateMap>(() => ({ ...DEFAULT_RATES }))
+  const [savedRates, setSavedRates] = useState<RateMap>(() => ({ ...DEFAULT_RATES }))
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
-  const [clockInTime, setClockInTime] = useState(() => getCurrentClockIn())
+  const [clockInTime, setClockInTime] = useState('00:00:00')
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
   const shiftRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    const hydrate = window.setTimeout(() => {
+      const saved = loadSavedRates()
+      setRates(saved)
+      setSavedRates(saved)
+      setClockInTime(getCurrentClockIn())
+    }, 0)
+    return () => window.clearTimeout(hydrate)
+  }, [])
 
   useEffect(() => {
     if (!feedback) return
