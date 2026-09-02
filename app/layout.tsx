@@ -40,8 +40,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="bg-background">
-      <body className={`${inter.variable} ${jetBrainsMono.variable} font-sans antialiased`}>
+    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} bg-background`}>
+      <body className="font-sans antialiased">
         {children}
         <WelcomePopup />
         {process.env.NODE_ENV === 'production' && <Analytics />}
