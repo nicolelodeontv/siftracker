@@ -21,8 +21,8 @@ export function getCurrentClockIn() {
   return `${parts.hour}:${parts.minute}:${parts.second}`
 }
 
-function readClock() {
-  const now = new Date()
+function readClock(date = new Date()) {
+  const now = date
   const parts = getParts(now)
   const hour = Number(parts.hour)
   const minute = Number(parts.minute)
@@ -41,7 +41,9 @@ function readClock() {
 }
 
 export function usePhilippineClock() {
-  const [clock, setClock] = useState(() => readClock())
+  // Keep the first render identical on the server and client. The live time
+  // starts after hydration so the clock cannot cause a hydration mismatch.
+  const [clock, setClock] = useState(() => readClock(new Date(0)))
 
   useEffect(() => {
     const tick = () => setClock(readClock())
