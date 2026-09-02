@@ -48,7 +48,9 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
             type="button"
             className="clock-in-display cursor-pointer"
             aria-label={`Edit Clock In time, currently ${clockInTime}`}
+            suppressHydrationWarning
             title="Edit Clock In time"
+            onClick={() => document.getElementById('clock-in-hidden')?.click()}
           >
             {clockInTime || 'Choose time'}
           </button>
