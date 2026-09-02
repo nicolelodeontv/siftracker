@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import { JetBrains_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
+import { WelcomePopup } from '@/components/welcome-popup'
 import './globals.css'
 
 const jetBrainsMono = JetBrains_Mono({
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className="bg-background">
       <body className={`${jetBrainsMono.variable} font-mono antialiased`}>
         {children}
+        <WelcomePopup />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
