@@ -83,7 +83,7 @@ export function WorkloadCard({ workload, input, inputRef, onChange, onAdjust, on
                   onAdjust(event.key === 'ArrowUp' ? 1 : -1)
                 }
               }}
-              className={`workload-card__input h-11 w-full rounded-lg border bg-background/70 px-3 pr-16 font-mono text-[15px] font-medium tabular-nums outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+              className={`workload-card__input h-11 w-full rounded-lg border bg-input-background px-3 pr-16 font-mono text-[15px] font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
               aria-invalid={invalid}
               aria-describedby={`feedback-${workload.id}`}
               aria-label={`Number of ${workload.unit} for ${workload.label}`}

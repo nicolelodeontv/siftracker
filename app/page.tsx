@@ -173,7 +173,6 @@ export default function Page() {
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
-      <div className="pointer-events-none fixed inset-0 opacity-[0.20] [background-image:radial-gradient(circle_at_1px_1px,var(--grid-dot)_1px,transparent_0)] [background-size:24px_24px]" />
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6 sm:pb-8 lg:px-8">
         <nav className="flex min-h-14 items-center justify-between gap-4 border-b border-border/70">
           <div className="flex min-w-0 items-center gap-2.5">
@@ -274,7 +273,7 @@ export default function Page() {
               />
             ))}
 
-            <section id="workflow" className={`${CARD_CLASS} rounded-xl border-primary/20 bg-primary p-4 text-primary-foreground shadow-[0_12px_36px_var(--card-shadow)]`}>
+            <section id="workflow" className={`${CARD_CLASS} rounded-xl border-primary/40 bg-card p-4 shadow-[0_12px_36px_var(--card-shadow)]`}>
               <div className="flex h-full flex-col justify-between gap-3 sm:flex-row sm:items-center">
                 <div className="min-w-0">
                   <p className="text-[8px] font-bold uppercase tracking-[0.18em] opacity-70">02 / Workflow</p>
