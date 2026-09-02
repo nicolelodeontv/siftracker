@@ -1,11 +1,11 @@
-/* SIF Tracker control sizing: consistent without forcing every button to the same height. */
+/* SIF Tracker controls: one predictable system for desktop + mobile. */
 
 :root {
   --button-height: 40px;
   --button-compact-height: 32px;
 }
 
-/* Navigation actions share one stable height at every breakpoint. */
+/* Navigation actions stay aligned at every breakpoint. */
 main nav button {
   height: var(--button-height);
   min-height: var(--button-height);
@@ -13,16 +13,16 @@ main nav button {
   line-height: 1;
 }
 
-/* Keep native/control icons from becoming oversized. */
+/* Small icon-only controls stay compact. */
 main button[aria-label*="Close"],
 main button[aria-label*="Copy"],
 main .workload-card button[title="Clear"] {
-  height: 32px;
-  min-height: 32px;
+  height: var(--button-compact-height);
+  min-height: var(--button-compact-height);
   padding: 0;
 }
 
-/* Workload +/- controls match the main input height. */
+/* Workload +/- controls match the input height. */
 .workload-card__quantity-button {
   width: 44px;
   min-width: 44px;
@@ -32,7 +32,7 @@ main .workload-card button[title="Clear"] {
   padding: 0;
 }
 
-/* Small repeated quick-add controls use one compact size everywhere. */
+/* Compact quick-add controls. */
 .workload-card__quick-add > button {
   width: auto;
   min-width: 34px;
@@ -42,7 +42,7 @@ main .workload-card button[title="Clear"] {
   line-height: 1;
 }
 
-/* Rate controls use one compact 32px control height. */
+/* Rate controls. */
 #settings .flex.shrink-0 > button,
 #settings .flex.shrink-0 > input {
   height: var(--button-compact-height);
@@ -62,42 +62,94 @@ main .workload-card button[title="Clear"] {
   padding-inline: 4px;
 }
 
+/* Settings action buttons. */
 #settings .flex.gap-2 > button {
   height: var(--button-height);
   min-height: var(--button-height);
   padding-block: 0;
 }
 
-/* The clock-in display is an input-like action and stays aligned with workload inputs. */
+#settings .flex.gap-2 > button:not(:disabled) {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+#settings .flex.gap-2 > button:disabled {
+  opacity: .45;
+}
+
+/* Clock-in behaves like a full-width editable field. */
 .clock-in-display {
+  width: 100%;
   height: 44px;
   min-height: 44px;
   padding-inline: 12px;
 }
 
-/* Main actions that should stay comfortably tappable. */
-#calculator > .mb-3 > button,
-#tools > button,
-.shift-summary-card button.rounded-full {
-  min-height: var(--button-height);
+/* Consistent focus visibility for keyboard users. */
+main button:focus-visible,
+main input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Active Settings state without changing the existing markup. */
+#calculator:has(+ #settings) > .mb-3 > button,
+#calculator:has(#settings) > .mb-3 > button {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Workload feedback can use two compact lines instead of clipping on narrow screens. */
+.workload-card__feedback > p {
+  overflow: hidden;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Make the completed state more obvious while preserving the existing card. */
+.shift-clockout-card.is-complete {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sif-green) 28%, transparent), 0 8px 24px var(--primary-shadow);
 }
 
 @media (max-width: 767px) {
-  /* Prevent the header from forcing overflow when space gets tight. */
-  main nav button {
-    height: var(--button-height);
-    min-height: var(--button-height);
+  main nav {
+    gap: 8px;
+  }
+
+  main nav > div:last-child {
+    gap: 6px;
+  }
+
+  /* Keep the three navigation controls from squeezing the brand. */
+  .pht-clock-display {
+    max-width: min(42vw, 150px);
+  }
+
+  .pht-clock-display > span {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 7px;
+  }
+
+  .pht-clock-display > time {
+    font-size: 8px;
   }
 
   #calculator > .mb-3 > button,
   #tools > button,
-  #settings .flex.gap-2 > button,
   .shift-summary-card button.rounded-full {
-    width: 100%;
+    min-height: var(--button-height);
   }
 
-  #calculator > .mb-3 > button {
-    width: auto;
+  /* Settings footer actions share the available width. */
+  #settings .flex.gap-2 > button {
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   .workload-card__quantity-button {
@@ -106,24 +158,60 @@ main .workload-card button[title="Clear"] {
     flex-basis: 44px;
   }
 
+  .workload-card__quick-add {
+    gap: 3px;
+  }
+
+  .workload-card__quick-add > button {
+    min-width: 32px;
+    padding-inline: 6px;
+  }
+
   .workload-card__examples {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
-  .shift-clockout-card strong {
-    max-width: 100%;
+@media (max-width: 520px) {
+  /* Let settings rows wrap instead of squeezing labels and rate controls. */
+  #settings .grid > div {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  #settings .grid > div > div:first-child {
+    flex: 1 1 150px;
+  }
+
+  #settings .grid > div > div:last-child {
+    margin-left: auto;
   }
 }
 
-@media (max-width: 390px) {
-  .workload-card__quantity-button {
-    width: 42px;
-    min-width: 42px;
-    flex-basis: 42px;
+@media (max-width: 430px) {
+  main nav > div:first-child {
+    gap: 7px;
   }
 
-  #settings .flex.gap-2 > button {
-    min-width: 0;
-    flex: 1 1 0;
+  main nav > div:first-child > span {
+    font-size: 12px;
+  }
+
+  .pht-clock-display {
+    max-width: 132px;
+  }
+
+  /* The theme control becomes icon-only on narrow phones. */
+  .theme-toggle__label {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: .01ms !important;
   }
 }
