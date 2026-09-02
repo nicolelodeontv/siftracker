@@ -18,7 +18,7 @@ export const DEFAULT_RATES = Object.fromEntries(
   DEFAULT_WORKLOADS.map(({ id, minutesPerUnit }) => [id, minutesPerUnit]),
 ) as Record<string, number>
 
-export const WORKLOAD_CONFIG_VERSION = 1
+export const WORKLOAD_CONFIG_VERSION = 2
 
 export function getExampleAmounts(workload: Workload) {
   if (workload.unit === 'teams') return [1, 4, 16, 32]
@@ -32,7 +32,7 @@ export function getUnitLabel(unit: Workload['unit'], amount: number) {
 }
 
 export function validateRates(input: unknown) {
-  if (!input || typeof input !== 'object') return null
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return null
   const source = input as Record<string, unknown>
   const next: Record<string, number> = {}
 
