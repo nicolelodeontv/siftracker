@@ -40,7 +40,7 @@ export function persistSavedRates(rates: Record<string, number>) {
 
   try {
     const payload: RateStorage = {
-      version: WORKLOAD_CONFIG_VERSION + 1,
+      version: WORKLOAD_CONFIG_VERSION,
       rates: validated,
     }
     window.localStorage.setItem(RATE_STORAGE_KEY, JSON.stringify(payload))
