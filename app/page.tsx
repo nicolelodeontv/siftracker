@@ -151,6 +151,7 @@ export default function Page() {
   const shiftComplete = estimatedClockOutSeconds !== null && elapsedShiftSeconds >= shiftSeconds
   const timeLeftSeconds = estimatedClockOutSeconds === null || shiftComplete ? 0 : Math.max(0, shiftSeconds - elapsedShiftSeconds)
   const unsavedRates = useMemo(() => DEFAULT_WORKLOADS.some(({ id }) => rates[id] !== savedRates[id]), [rates, savedRates])
+  const shiftStatus = totalUnits === 0 ? 'NOT STARTED' : shiftComplete ? 'SHIFT COMPLETE' : 'IN PROGRESS'
 
   const motion = mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
   const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition'
@@ -224,6 +225,27 @@ export default function Page() {
           <div className="flex min-w-0 items-center gap-2.5"><div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"><TimerReset className="size-3.5" /></div><span className="truncate text-sm font-bold tracking-tight">SIF Tracker</span></div>
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3"><div className="hidden text-right sm:block"><span className="block text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">PHT Now</span><time className="block font-mono text-[10px] font-bold tabular-nums">{philippineTime}</time></div><time className="whitespace-nowrap font-mono text-[9px] font-semibold tabular-nums sm:hidden">{philippineTime} PHT</time><ThemeToggle /></div>
         </nav>
+
+        <section id="live-status" aria-label="Live shift status" className={`${motion} sticky top-2 z-30 mt-2 rounded-xl border border-border bg-card/95 shadow-md backdrop-blur`}>
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl bg-border sm:grid-cols-4">
+            <div className="min-w-0 bg-card px-2.5 py-2 sm:px-3">
+              <span className="block text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Work</span>
+              <strong className="mt-0.5 block truncate font-mono text-[11px] font-bold tabular-nums sm:text-xs">{formatDuration(totalSeconds)}</strong>
+            </div>
+            <div className="min-w-0 bg-card px-2.5 py-2 sm:px-3">
+              <span className="block text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Break</span>
+              <strong className="mt-0.5 block font-mono text-[11px] font-bold tabular-nums sm:text-xs">01:00:00</strong>
+            </div>
+            <div className="min-w-0 bg-card px-2.5 py-2 sm:px-3">
+              <span className="block text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Clock Out</span>
+              <strong className="mt-0.5 block truncate font-mono text-[11px] font-bold tabular-nums sm:text-xs">{formatMilitaryTime(estimatedClockOutSeconds)}</strong>
+            </div>
+            <div className="min-w-0 bg-primary px-2.5 py-2 text-primary-foreground sm:px-3">
+              <span className="block text-[7px] font-bold uppercase tracking-[0.14em] opacity-70">Status</span>
+              <strong className="mt-0.5 block truncate font-mono text-[10px] font-bold tabular-nums sm:text-xs">{shiftStatus}</strong>
+            </div>
+          </div>
+        </section>
 
         <section className={`py-5 sm:py-6 ${motion}`}><div className="max-w-4xl"><div className="mb-2 inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"><span className="size-1.5 animate-pulse rounded-full bg-[var(--sif-green)]" />Production time calculator</div><h1 className="text-4xl font-bold tracking-[-0.06em] sm:text-5xl lg:text-6xl">SIF Tracker</h1><p className="mt-1.5 text-sm leading-5 text-muted-foreground">Enter your workload. Get your total time and clock-out instantly.</p></div></section>
 
