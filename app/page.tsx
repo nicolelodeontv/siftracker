@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Check, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
+import { Check, Eraser, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ClockInPicker } from '@/components/clock-in-picker'
 import { ShiftSummary } from '@/components/shift-summary'
 import { PhtClockDisplay } from '@/components/pht-clock-display'
@@ -15,7 +15,7 @@ import { getCurrentClockIn } from '@/lib/use-philippine-clock'
 import { DEFAULT_RATES, DEFAULT_WORKLOADS } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
-type Feedback = 'saved' | 'reset' | 'copied' | null
+type Feedback = 'saved' | 'reset' | 'copied' | 'cleared' | null
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
 const CARD_CLASS = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur'
@@ -91,6 +91,12 @@ export default function Page() {
     setValues((currentValues) => ({ ...currentValues, [id]: '' }))
   }
 
+  function clearAllWorkloads() {
+    setValues({ ...EMPTY_VALUES })
+    setFeedback('cleared')
+    inputRefs.current[0]?.focus()
+  }
+
   function beginRateEdit(id: string) {
     setEditingRate(id)
     setRateDraft(String(rates[id] ?? DEFAULT_RATES[id]))
@@ -145,6 +151,7 @@ export default function Page() {
     setClockInTime(getCurrentClockIn())
     setConfirmReset(false)
     setFeedback('reset')
+    inputRefs.current[0]?.focus()
   }
 
   function openQuickGuide() {
@@ -199,20 +206,33 @@ export default function Page() {
 
         <section id="calculator">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">01 / Calculator</p>
               <h2 className="mt-1 text-lg font-semibold tracking-tight">Enter your workload</h2>
-              <p className="mt-1 text-[8px] font-medium text-muted-foreground/70">⌨ Enter → next · ↑ ↓ adjust · Ctrl/Cmd+Enter → summary</p>
+              <p className="mt-1 text-[8px] font-medium leading-4 text-muted-foreground/70">⌨ Enter → next · ↑ ↓ adjust · Ctrl/Cmd+Enter → summary</p>
             </div>
-            <button
-              type="button"
-              onClick={() => setSettingsOpen((open) => !open)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <Settings2 className="size-3" />
-              Settings
-              {unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2 sm:shrink-0">
+              <button
+                type="button"
+                onClick={clearAllWorkloads}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/30 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="Clear all workload inputs"
+              >
+                <Eraser className="size-3" />
+                Clear all
+              </button>
+              <button
+                type="button"
+                onClick={() => setSettingsOpen((open) => !open)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-expanded={settingsOpen}
+                aria-controls="settings"
+              >
+                <Settings2 className="size-3" />
+                Settings
+                {unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}
+              </button>
+            </div>
           </div>
 
           {settingsOpen && (
@@ -300,7 +320,7 @@ export default function Page() {
       {feedback && (
         <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status">
           <Check className="size-3 text-primary" />
-          {feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'Clock Out copied'}
+          {feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : feedback === 'cleared' ? 'All workloads cleared' : 'Clock Out copied'}
         </div>
       )}
 
