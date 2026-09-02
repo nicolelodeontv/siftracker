@@ -91,7 +91,7 @@ main > div.relative > section:first-of-type p {
   position: relative;
   flex: 0 0 132px;
   min-height: 132px;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .workload-card__label {
@@ -118,25 +118,6 @@ main > div.relative > section:first-of-type p {
   min-height: 44px;
 }
 
-.workload-card__quantity-button {
-  display: inline-flex;
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 44px;
-  border: 1px solid var(--input);
-  background: color-mix(in srgb, var(--background) 84%, var(--card));
-  transition: background .15s ease, border-color .15s ease;
-}
-
-.workload-card__quantity-button:hover {
-  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
-  background: var(--accent);
-}
-
 .workload-card__input {
   width: 100%;
 }
@@ -157,8 +138,6 @@ main > div.relative > section:first-of-type p {
   margin: 0 !important;
   padding-top: 4px;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   line-height: 14px;
 }
 
@@ -173,12 +152,6 @@ main > div.relative > section:first-of-type p {
   min-height: 28px;
   overflow: hidden;
   white-space: nowrap;
-}
-
-.workload-card__quick-add > button {
-  flex: 0 0 auto;
-  height: 24px;
-  min-height: 24px;
 }
 
 .workload-card__examples {
@@ -225,16 +198,6 @@ main > div.relative > section:first-of-type p {
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--background) 92%, var(--card));
   padding: 12px;
-}
-
-.shift-summary-label {
-  display: block;
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 12px;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
 }
 
 .clock-in-display {
@@ -309,19 +272,17 @@ main footer {
   }
 
   main nav { min-height: 52px; }
-  main nav button { min-height: 38px; height: 38px; padding-inline: 10px; }
   main > div.relative > section:first-of-type { padding-block: 18px 16px; }
 
   #calculator > .mb-3 { align-items: flex-start; }
   #calculator > .grid { grid-template-columns: 1fr; gap: 10px; }
 
   .workload-card {
-    height: 240px;
-    min-height: 240px;
+    height: 236px;
+    min-height: 236px;
     padding: 13px;
   }
 
-  .workload-card__body { margin-top: 12px; }
   .workload-card__input { height: 44px; font-size: 16px; }
 
   #workflow {
@@ -352,20 +313,27 @@ main footer {
   .shift-summary-card,
   .shift-clockout-card { padding: 12px; }
 
-  #tools > button { width: 100%; min-height: 44px; }
+  #tools > button { width: 100%; }
   main footer { margin-top: 2px; padding-block: 8px 2px; }
+
+  .workload-card__examples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 390px) {
-  main > div.relative { padding-inline: 10px; }
-  main nav { gap: 6px; }
-  #calculator > .grid > .workload-card,
-  #workflow,
-  #shift,
-  #tools { padding-inline: 11px; }
-  #workflow { padding-block: 13px; }
-  .workload-card__quantity-button { width: 42px; min-width: 42px; flex-basis: 42px; }
-  .workload-card__examples { column-gap: 5px; }
+@media (max-width: 520px) {
+  #settings .grid > div {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  #settings .grid > div > div:first-child { flex: 1 1 150px; }
+  #settings .grid > div > div:last-child { margin-left: auto; }
+}
+
+@media (max-width: 430px) {
+  main nav > div:last-child { gap: 6px; }
+  main nav > div:first-child > span { font-size: 12px; }
+  .pht-clock-display { max-width: 132px; }
 }
 
 @media (min-width: 1600px) {
