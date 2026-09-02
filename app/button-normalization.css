@@ -1,0 +1,93 @@
+/* SIF Tracker button sizing: consistent controls across desktop and mobile. */
+
+:root {
+  --button-height: 40px;
+  --button-compact-height: 32px;
+  --button-icon-height: 40px;
+}
+
+/* Primary / navigation actions share one stable height at every breakpoint. */
+main button {
+  min-height: var(--button-height);
+  height: var(--button-height);
+  padding-block: 0;
+  line-height: 1;
+}
+
+main nav button {
+  height: var(--button-height);
+  min-height: var(--button-height);
+}
+
+/* Workload +/- controls match the main input height. */
+.workload-card__quantity-button {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  flex-basis: 44px;
+  padding: 0;
+}
+
+/* Small repeated quick-add controls use one compact size everywhere. */
+.workload-card__quick-add > button {
+  width: auto;
+  min-width: 34px;
+  height: 24px;
+  min-height: 24px;
+  padding-inline: 8px;
+}
+
+/* Rate controls use one compact 32px control height. */
+#settings .flex.shrink-0 > button,
+#settings .flex.shrink-0 > input {
+  height: var(--button-compact-height);
+  min-height: var(--button-compact-height);
+}
+
+#settings .flex.shrink-0 > button:first-child,
+#settings .flex.shrink-0 > button:last-child {
+  width: 32px;
+  min-width: 32px;
+  padding: 0;
+}
+
+#settings .flex.shrink-0 > button:not(:first-child):not(:last-child) {
+  width: 48px;
+  min-width: 48px;
+  padding-inline: 4px;
+}
+
+#settings .flex.gap-2 > button {
+  height: var(--button-height);
+  min-height: var(--button-height);
+}
+
+/* The clock-in display is an input-like action and stays aligned with the workload inputs. */
+.clock-in-display {
+  height: 44px;
+  min-height: 44px;
+  padding-inline: 12px;
+}
+
+/* Remove the old breakpoint-specific height changes so mobile matches desktop. */
+@media (max-width: 767px) {
+  main nav button {
+    height: var(--button-height);
+    min-height: var(--button-height);
+    padding-inline: 10px;
+  }
+
+  #tools > button {
+    height: var(--button-height);
+    min-height: var(--button-height);
+  }
+}
+
+@media (max-width: 390px) {
+  .workload-card__quantity-button {
+    width: 44px;
+    min-width: 44px;
+    flex-basis: 44px;
+  }
+}
