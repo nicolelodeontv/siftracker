@@ -15,7 +15,7 @@ import { getCurrentClockIn } from '@/lib/use-philippine-clock'
 import { DEFAULT_RATES, DEFAULT_WORKLOADS } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
-type Feedback = 'saved' | 'reset' | 'copied' | 'cleared' | null
+type Feedback = 'saved' | 'reset' | 'copied' | 'cleared' | 'save-warning' | null
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
 const CARD_CLASS = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur'
@@ -143,6 +143,7 @@ export default function Page() {
       if (!response.ok) throw new Error('Rate validation failed')
     } catch {
       // Local persistence remains authoritative when the optional validation endpoint is unavailable.
+      setFeedback('save-warning')
     }
 
     setSavedRates({ ...rates })
@@ -282,7 +283,7 @@ export default function Page() {
                 </div>
                 <div className="min-w-0 text-left sm:text-right">
                   <span className="block text-[8px] font-bold uppercase tracking-[0.16em] opacity-60">Total work time</span>
-                  <strong className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong>
+                  <strong aria-live="polite" className="mt-0.5 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong>
                 </div>
               </div>
             </section>
@@ -323,7 +324,7 @@ export default function Page() {
       {feedback && (
         <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status">
           <Check className="size-3 text-primary" />
-          {feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : feedback === 'cleared' ? 'All workloads cleared' : 'Clock Out copied'}
+          {feedback === 'saved' ? 'Rates saved' : feedback === 'save-warning' ? 'Saved locally' : feedback === 'reset' ? 'Workload reset' : feedback === 'cleared' ? 'All workloads cleared' : 'Clock Out copied'}
         </div>
       )}
 
