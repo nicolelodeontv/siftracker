@@ -3,6 +3,7 @@
 @import 'shadcn/tailwind.css';
 @import './motion.css';
 @import './ui-overrides.css';
+@import './button-normalization.css';
 
 @custom-variant dark (&:is(.dark *));
 
