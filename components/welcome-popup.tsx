@@ -9,15 +9,21 @@ export function WelcomePopup() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    try {
-      if (window.localStorage.getItem(STORAGE_KEY) !== '1') setOpen(true)
-    } catch {
-      setOpen(true)
+    const initialize = () => {
+      try {
+        if (window.localStorage.getItem(STORAGE_KEY) !== '1') setOpen(true)
+      } catch {
+        setOpen(true)
+      }
     }
 
+    const frame = window.requestAnimationFrame(initialize)
     const reopen = () => setOpen(true)
     window.addEventListener('sif:open-welcome', reopen)
-    return () => window.removeEventListener('sif:open-welcome', reopen)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener('sif:open-welcome', reopen)
+    }
   }, [])
 
   function dismiss() {
