@@ -154,8 +154,7 @@ export default function Page() {
   function commitRateEdit(id: string) {
     const parsed = Number(rateDraft.replace(/m/gi, '').trim())
     if (Number.isFinite(parsed)) setRates((current) => ({ ...current, [id]: Math.max(1, Math.min(240, Math.round(parsed))) }))
-    setEditingRate(null)
-    setRateDraft('')
+    setEditingRate(null); setRateDraft('')
   }
   async function saveRates() {
     try { await fetch('/api/workloads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rates }) }) } catch { /* local storage fallback */ }
