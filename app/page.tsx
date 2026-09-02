@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ClockInPicker } from '@/components/clock-in-picker'
 import { LiveStatus } from '@/components/live-status'
+import { PhtClockDisplay } from '@/components/pht-clock-display'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { WorkloadCard } from '@/components/workload-card'
 import { WorkloadSettings } from '@/components/workload-settings'
@@ -162,7 +163,7 @@ export default function Page() {
             <span className="truncate text-sm font-bold tracking-tight">SIF Tracker</span>
           </div>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-            <span className="hidden font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:inline">PHT</span>
+            <PhtClockDisplay />
             <button type="button" onClick={openQuickGuide} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Open Quick Guide">
               <HelpCircle className="size-3" /><span className="hidden sm:inline">Quick Guide</span>
             </button>
