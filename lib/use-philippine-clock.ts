@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from 'react'
 
+type PhilippineClock = {
+  time: string
+  date: string
+  seconds: number
+}
+
 const TIME_ZONE = 'Asia/Manila'
 
 function getParts(date: Date) {
@@ -21,9 +27,8 @@ export function getCurrentClockIn() {
   return `${parts.hour}:${parts.minute}:${parts.second}`
 }
 
-function readClock(date = new Date()) {
-  const now = date
-  const parts = getParts(now)
+function readClock(date = new Date()): PhilippineClock {
+  const parts = getParts(date)
   const hour = Number(parts.hour)
   const minute = Number(parts.minute)
   const second = Number(parts.second)
@@ -35,15 +40,15 @@ function readClock(date = new Date()) {
       month: 'short',
       day: '2-digit',
       year: 'numeric',
-    }).format(now),
+    }).format(date),
     seconds: hour * 3600 + minute * 60 + second,
   }
 }
 
 export function usePhilippineClock() {
-  // Keep the first render identical on the server and client. The live time
-  // starts after hydration so the clock cannot cause a hydration mismatch.
-  const [clock, setClock] = useState(() => readClock(new Date(0)))
+  // Start empty so SSR never invents a historical date/time. The live PHT
+  // value is populated immediately after hydration and then refreshed each second.
+  const [clock, setClock] = useState<PhilippineClock | null>(null)
 
   useEffect(() => {
     const tick = () => setClock(readClock())
@@ -52,5 +57,5 @@ export function usePhilippineClock() {
     return () => window.clearInterval(interval)
   }, [])
 
-  return clock
+  return clock ?? { time: '--:--:--', date: 'Loading…', seconds: 0 }
 }

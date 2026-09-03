@@ -267,20 +267,20 @@ main footer {
 @media (max-width: 767px) {
   main > div.relative {
     width: 100%;
-    padding-inline: clamp(12px, 4vw, 16px);
-    padding-bottom: 12px;
+    padding-inline: 16px;
+    padding-bottom: 88px;
   }
 
-  main nav { min-height: 52px; }
-  main > div.relative > section:first-of-type { padding-block: 18px 16px; }
+  main nav { min-height: 56px; }
+  main > div.relative > section:first-of-type { padding-block: 24px 20px; }
 
-  #calculator > .mb-3 { align-items: flex-start; }
-  #calculator > .grid { grid-template-columns: 1fr; gap: 10px; }
+  #calculator > .mb-3 { align-items: flex-start; margin-bottom: 14px; }
+  #calculator > .grid { grid-template-columns: 1fr; gap: 12px; }
 
   .workload-card {
-    height: 236px;
-    min-height: 236px;
-    padding: 13px;
+    height: 240px;
+    min-height: 240px;
+    padding: 14px;
   }
 
   .workload-card__input { height: 44px; font-size: 16px; }
@@ -308,13 +308,15 @@ main footer {
   #workflow strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
 
   #shift,
-  #tools { padding: 13px; }
-  .shift-summary-grid { grid-template-columns: 1fr; gap: 8px; }
+  #tools { padding: 14px; }
+  #shift,
+  #tools { margin-top: 14px; }
+  .shift-summary-grid { grid-template-columns: 1fr; gap: 10px; }
   .shift-summary-card,
-  .shift-clockout-card { padding: 12px; }
+  .shift-clockout-card { padding: 14px; }
 
   #tools > button { width: 100%; }
-  main footer { margin-top: 2px; padding-block: 8px 2px; }
+  main footer { margin-top: 6px; padding-block: 12px 4px; }
 
   .workload-card__examples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -331,9 +333,11 @@ main footer {
 }
 
 @media (max-width: 430px) {
+  main nav { gap: 8px; }
   main nav > div:last-child { gap: 6px; }
   main nav > div:first-child > span { font-size: 12px; }
-  .pht-clock-display { max-width: 132px; }
+  .pht-clock-display { max-width: 124px; }
+  .pht-clock-display time { font-size: 10px; }
 }
 
 @media (min-width: 1600px) {
