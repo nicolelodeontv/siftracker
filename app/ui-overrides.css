@@ -175,9 +175,14 @@ main > div.relative > section:first-of-type p {
   min-width: 0;
 }
 
+#dashboard,
 #shift,
 #tools {
-  margin-top: clamp(12px, 1.5vw, 18px);
+  margin-top: 16px;
+}
+
+#dashboard {
+  margin-bottom: 0;
 }
 
 #shift {
@@ -287,6 +292,24 @@ html.theme-switching .theme-toggle {
   transform: none !important;
 }
 
+/* Keep the major sections on one predictable vertical rhythm. */
+#calculator + #dashboard,
+#calculator ~ #dashboard {
+  margin-top: 16px;
+}
+
+#dashboard > div:first-child {
+  padding-block: 16px;
+}
+
+#dashboard > div:nth-child(2) > div {
+  min-height: 76px;
+}
+
+#dashboard > div:last-child > div {
+  min-height: 220px;
+}
+
 @media (max-width: 1100px) {
   .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -298,11 +321,34 @@ html.theme-switching .theme-toggle {
     padding-bottom: 88px;
   }
 
-  main nav { min-height: 56px; }
-  main > div.relative > section:first-of-type { padding-block: 24px 20px; }
+  main nav {
+    min-height: 56px;
+    gap: 8px;
+  }
 
-  #calculator > .mb-3 { align-items: flex-start; margin-bottom: 14px; }
-  #calculator > .grid { grid-template-columns: 1fr; gap: 12px; }
+  main > div.relative > section:first-of-type {
+    padding-block: 22px 18px;
+  }
+
+  main > div.relative > section:first-of-type h1 {
+    line-height: .96;
+  }
+
+  #calculator > .mb-3 {
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+
+  #calculator > .mb-3 > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  #calculator > .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 
   .workload-card {
     height: 240px;
@@ -334,16 +380,53 @@ html.theme-switching .theme-toggle {
 
   #workflow strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
 
+  #dashboard,
+  #shift,
+  #tools {
+    margin-top: 12px;
+  }
+
+  #dashboard {
+    margin-bottom: 0;
+  }
+
+  #dashboard > div:first-child {
+    padding: 14px;
+  }
+
+  #dashboard > div:first-child > div {
+    gap: 12px;
+  }
+
+  #dashboard > div:nth-child(2) > div {
+    min-height: 72px;
+    padding: 10px 12px;
+  }
+
+  #dashboard > div:last-child > div {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  #dashboard .grid.grid-cols-2 > div:nth-child(2n) {
+    border-right: 0;
+  }
+
   #shift,
   #tools { padding: 14px; }
   #shift,
-  #tools { margin-top: 14px; }
+  #tools { margin-top: 12px; }
+
+  #shift > div:first-child {
+    margin-bottom: 12px;
+  }
+
   .shift-summary-grid { grid-template-columns: 1fr; gap: 10px; }
   .shift-summary-card,
   .shift-clockout-card { padding: 14px; }
 
   #tools > button { width: 100%; }
-  main footer { margin-top: 6px; padding-block: 12px 4px; }
+  main footer { margin-top: 4px; padding-block: 10px 4px; }
 
   .workload-card__examples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -360,11 +443,19 @@ html.theme-switching .theme-toggle {
 }
 
 @media (max-width: 430px) {
-  main nav { gap: 8px; }
-  main nav > div:last-child { gap: 6px; }
+  main nav { gap: 6px; }
+  main nav > div:first-child { gap: 7px; }
   main nav > div:first-child > span { font-size: 12px; }
-  .pht-clock-display { max-width: 124px; }
-  .pht-clock-display time { font-size: 10px; }
+  main nav > div:last-child { gap: 5px; }
+  .pht-clock-display { max-width: 118px; }
+  .pht-clock-display > span { font-size: 6.5px; letter-spacing: .06em; }
+  .pht-clock-display time { font-size: 8px; }
+}
+
+@media (max-width: 360px) {
+  main nav > div:last-child { gap: 4px; }
+  .pht-clock-display { max-width: 102px; }
+  .pht-clock-display > span { font-size: 6px; }
 }
 
 @media (min-width: 1600px) {
