@@ -4,15 +4,8 @@
 
 html,
 body,
-main {
-  width: 100%;
-  min-width: 0;
-}
-
-main {
-  min-height: 100dvh;
-  overflow-x: clip;
-}
+main { width: 100%; min-width: 0; }
+main { min-height: 100dvh; overflow-x: clip; }
 
 main > div.relative {
   width: min(100%, var(--ui-max-width));
@@ -27,9 +20,7 @@ main section,
 main article,
 main footer,
 main button,
-main input {
-  min-width: 0;
-}
+main input { min-width: 0; }
 
 main nav {
   min-height: clamp(48px, 5vw, 60px);
@@ -37,31 +28,25 @@ main nav {
 }
 
 button,
-input {
-  border-radius: clamp(8px, .8vw, 12px);
-}
-
+input { border-radius: clamp(8px, .8vw, 12px); }
 button { touch-action: manipulation; }
 
 main > div.relative > section:first-of-type {
   padding-block: clamp(16px, 2.5vw, 30px) clamp(14px, 2vw, 22px);
 }
-
 main > div.relative > section:first-of-type h1 {
   font-size: clamp(2.15rem, 6vw, 4.75rem);
   line-height: .98;
 }
-
 main > div.relative > section:first-of-type p {
   max-width: 48rem;
   font-size: clamp(.78rem, 1.4vw, .95rem);
 }
 
 #calculator > .mb-3,
-#shift > div:first-child {
-  margin-bottom: clamp(10px, 1.2vw, 14px);
-}
+#shift > div:first-child { margin-bottom: clamp(10px, 1.2vw, 14px); }
 
+/* Workloads: fixed two-row desktop grid with six equal cells. */
 #calculator > .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -69,11 +54,16 @@ main > div.relative > section:first-of-type p {
   align-items: stretch;
 }
 
-.workload-card {
+.workload-card,
+#workflow {
   width: 100%;
   min-width: 0;
   height: 240px;
   min-height: 240px;
+  box-sizing: border-box;
+}
+
+.workload-card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -81,7 +71,6 @@ main > div.relative > section:first-of-type p {
 }
 
 .workload-card__header { flex: 0 0 40px; min-height: 40px; }
-
 .workload-card__body {
   position: relative;
   flex: 0 0 132px;
@@ -112,7 +101,6 @@ main > div.relative > section:first-of-type p {
   height: 44px;
   min-height: 44px;
 }
-
 .workload-card__input { width: 100%; }
 
 .workload-card__feedback {
@@ -123,7 +111,6 @@ main > div.relative > section:first-of-type p {
   min-height: 28px;
   overflow: hidden;
 }
-
 .workload-card__feedback > p {
   width: 100%;
   height: 28px;
@@ -157,29 +144,31 @@ main > div.relative > section:first-of-type p {
   overflow: hidden;
 }
 
+/* Total card occupies the sixth slot and matches the workload-card footprint. */
 #workflow {
+  min-height: 240px;
+  padding: 14px;
+  display: flex;
+  align-items: stretch;
+}
+#workflow > div {
   width: 100%;
   min-width: 0;
-  min-height: clamp(132px, 12vw, 160px);
+  min-height: 0;
 }
-
-#workflow > div { width: 100%; min-width: 0; }
 
 #dashboard,
 #shift,
 #tools { margin-top: 16px; }
-
 #dashboard { margin-bottom: 0; }
 
 #shift { padding: clamp(12px, 1.6vw, 18px); }
-
 .shift-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(8px, 1.2vw, 14px);
   align-items: stretch;
 }
-
 .shift-summary-card,
 .shift-clockout-card {
   min-width: 0;
@@ -202,18 +191,15 @@ main > div.relative > section:first-of-type p {
   letter-spacing: -.02em;
   font-variant-numeric: tabular-nums;
 }
-
 .clock-in-display:hover {
   border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
   background: var(--accent);
 }
-
 .shift-clockout-card {
   border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
   background: color-mix(in srgb, var(--primary) 9%, var(--card));
   box-shadow: 0 8px 24px var(--primary-shadow);
 }
-
 .shift-clockout-card.is-complete {
   border-color: color-mix(in srgb, var(--sif-green) 50%, var(--border));
   background: color-mix(in srgb, var(--sif-green) 10%, var(--card));
@@ -230,7 +216,6 @@ main footer {
   margin-top: 6px;
   padding-block: 10px 4px;
 }
-
 #live-status { box-shadow: 0 6px 20px var(--card-shadow); }
 
 .theme-toggle {
@@ -239,7 +224,6 @@ main footer {
   max-width: 92px;
   flex: 0 0 92px;
 }
-
 .theme-toggle__label {
   display: inline-flex;
   width: 34px;
@@ -255,12 +239,10 @@ html.theme-switching *::after {
   transition: none !important;
   animation: none !important;
 }
-
 html.theme-switching .theme-toggle { transform: none !important; }
 
 #calculator + #dashboard,
 #calculator ~ #dashboard { margin-top: 16px; }
-
 #dashboard > div:first-child { padding-block: 16px; }
 #dashboard > div:nth-child(2) > div { min-height: 76px; }
 #dashboard > div:last-child > div { min-height: 220px; }
@@ -276,7 +258,6 @@ html.theme-switching .theme-toggle { transform: none !important; }
     padding-inline: 16px;
     padding-bottom: 88px;
   }
-
   main nav { min-height: 56px; gap: 8px; }
   main > div.relative > section:first-of-type { padding-block: 22px 18px; }
   main > div.relative > section:first-of-type h1 { line-height: .96; }
@@ -286,48 +267,42 @@ html.theme-switching .theme-toggle { transform: none !important; }
     margin-bottom: 12px;
     gap: 10px;
   }
-
   #calculator > .mb-3 > div:last-child {
     width: 100%;
     justify-content: flex-start;
   }
-
   #calculator > .grid { grid-template-columns: 1fr; gap: 12px; }
 
-  .workload-card {
+  .workload-card,
+  #workflow {
     height: 240px;
     min-height: 240px;
-    padding: 14px;
   }
-
+  .workload-card { padding: 14px; }
   .workload-card__input { height: 44px; font-size: 16px; }
 
   #workflow {
-    min-height: 0;
-    height: auto;
     padding: 14px;
+    display: block;
   }
-
   #workflow > div {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 10px;
-    height: auto;
+    height: 100%;
   }
-
   #workflow > div > div { width: 100%; text-align: left; }
   #workflow > div > div:last-child {
     padding-top: 9px;
     border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
     text-align: left;
   }
-
   #workflow strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
 
   #dashboard,
   #shift,
   #tools { margin-top: 12px; }
-
   #dashboard > div:first-child { padding: 14px; }
   #dashboard > div:first-child > div { gap: 12px; }
   #dashboard > div:nth-child(2) > div { min-height: 72px; padding: 10px 12px; }
@@ -352,7 +327,6 @@ html.theme-switching .theme-toggle { transform: none !important; }
     flex-wrap: wrap;
     row-gap: 8px;
   }
-
   #settings .grid > div > div:first-child { flex: 1 1 150px; }
   #settings .grid > div > div:last-child { margin-left: auto; }
 }
