@@ -1,8 +1,10 @@
 'use client'
 
+import type { MutableRefObject } from 'react'
 import { Eraser, Settings2 } from 'lucide-react'
 import { WorkloadCard } from '@/components/workload-card'
 import { WorkloadSettings } from '@/components/workload-settings'
+import { formatDuration } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 
 type CalculatedValue = { workload: Workload; input: string }
@@ -16,7 +18,7 @@ type Props = {
   unsavedRates: boolean
   editingRate: string | null
   rateDraft: string
-  inputRefs: React.MutableRefObject<Array<HTMLInputElement | null>>
+  inputRefs: MutableRefObject<Array<HTMLInputElement | null>>
   totalSeconds: number
   totalUnits: number
   onClearAll: () => void
@@ -148,5 +150,3 @@ export function CalculatorSection({
     </section>
   )
 }
-
-import { formatDuration } from '@/lib/calculator'
