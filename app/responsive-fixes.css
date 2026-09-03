@@ -1,0 +1,176 @@
+/* Responsive safety layer — preserves the reference UI while preventing clipping/overflow. */
+
+html,
+body,
+main,
+main > div.relative {
+  min-width: 0;
+  max-width: 100%;
+}
+
+main > div.relative {
+  overflow-x: clip;
+}
+
+main nav,
+main nav > div,
+#calculator > .mb-3,
+#calculator > .mb-3 > div,
+#shift > div:first-child,
+#shift > div:first-child > div,
+#tools,
+#tools > div {
+  min-width: 0;
+}
+
+.pht-clock-display {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.pht-clock-display span,
+.pht-clock-display time {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workload-card,
+#workflow,
+#shift,
+#tools,
+#settings {
+  max-width: 100%;
+}
+
+.workload-card__examples span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  main > div.relative {
+    width: 100%;
+    padding-inline: 16px;
+    padding-bottom: 88px;
+  }
+
+  main nav {
+    gap: 8px;
+  }
+
+  main nav > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  main nav > div:last-child {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 68%;
+  }
+
+  .pht-clock-display {
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 124px;
+  }
+
+  #calculator > .mb-3,
+  #shift > div:first-child {
+    align-items: flex-start;
+  }
+
+  #calculator > .mb-3 > div:first-child,
+  #shift > div:first-child > div:first-child {
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+
+  #calculator > .mb-3 > div:last-child,
+  #shift > div:first-child > div:last-child {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .workload-card__input-row {
+    min-width: 0;
+  }
+
+  .workload-card__input-row > div {
+    min-width: 0;
+  }
+
+  #workflow > div > div {
+    min-width: 0;
+  }
+
+  #tools > button {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  main > div.relative {
+    padding-inline: 12px;
+  }
+
+  main nav > div:last-child {
+    gap: 4px;
+    max-width: 72%;
+  }
+
+  .pht-clock-display {
+    max-width: 96px;
+  }
+
+  .pht-clock-display span {
+    font-size: 6px;
+    letter-spacing: .05em;
+  }
+
+  .pht-clock-display time {
+    font-size: 8px;
+  }
+
+  .theme-toggle {
+    width: 84px;
+    min-width: 84px;
+    max-width: 84px;
+    flex-basis: 84px;
+    padding-inline: 8px;
+    gap: 4px;
+  }
+
+  .theme-toggle__label {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+  }
+
+  #calculator > .mb-3 > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  #calculator > .mb-3 > div:last-child button {
+    flex: 0 1 auto;
+  }
+
+  .workload-card {
+    padding-inline: 12px;
+  }
+
+  .workload-card__examples {
+    column-gap: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
