@@ -4,6 +4,7 @@
 @import './motion.css';
 @import './ui-overrides.css';
 @import './button-normalization.css';
+@import './responsive-fixes.css';
 
 @custom-variant dark (&:is(.dark *));
 
