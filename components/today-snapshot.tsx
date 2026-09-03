@@ -5,7 +5,6 @@ import { Activity, Clock3, Coffee, Gauge, Timer, TrendingUp } from 'lucide-react
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
-import type { Workload } from '@/lib/workloads'
 
 const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur'
 
