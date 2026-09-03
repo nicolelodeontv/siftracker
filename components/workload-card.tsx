@@ -9,6 +9,7 @@ import { getExampleAmounts, getUnitLabel } from '@/lib/workloads'
 type Props = {
   workload: Workload
   input: string
+  totalSeconds: number
   inputRef: RefCallback<HTMLInputElement>
   onChange: (value: string) => void
   onAdjust: (delta: number) => void
@@ -17,17 +18,18 @@ type Props = {
   onSummaryShortcut: () => void
 }
 
-export function WorkloadCard({ workload, input, inputRef, onChange, onAdjust, onClear, onNext, onSummaryShortcut }: Props) {
+export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange, onAdjust, onClear, onNext, onSummaryShortcut }: Props) {
   const hasInput = input.trim() !== ''
   const value = calculateValue(input)
   const incomplete = hasInput && isIncompleteExpression(input)
   const invalid = hasInput && value === null && !incomplete
   const safeValue = Math.max(0, value ?? 0)
   const duration = safeValue * workload.minutesPerUnit * 60
+  const share = totalSeconds > 0 && value !== null ? Math.min(100, Math.round((duration / totalSeconds) * 100)) : 0
 
   return (
     <article data-workload-id={workload.id} className="workload-card rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition hover:border-primary/25">
-      <div className="workload-card__header flex min-w-0 items-start justify-between gap-3">
+      <div className="workload-card__header relative flex min-w-0 items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-2.5">
           <span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} aria-hidden="true" />
           <div className="min-w-0">
@@ -44,6 +46,9 @@ export function WorkloadCard({ workload, input, inputRef, onChange, onAdjust, on
               <X className="size-3" />
             </button>
           )}
+        </div>
+        <div className="absolute inset-x-0 -bottom-2 h-1 overflow-hidden rounded-full bg-muted/70" aria-hidden="true">
+          <div className="h-full rounded-full bg-primary/65 transition-[width] duration-300" style={{ width: `${share}%` }} />
         </div>
       </div>
 
@@ -116,6 +121,7 @@ export function WorkloadCard({ workload, input, inputRef, onChange, onAdjust, on
               +{amount}
             </button>
           ))}
+          {value !== null && hasInput && <span className="ml-auto font-mono text-[7px] font-bold tabular-nums text-muted-foreground">{share}% of total</span>}
         </div>
       </div>
 
