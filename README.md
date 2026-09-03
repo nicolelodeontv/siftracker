@@ -236,3 +236,5 @@ GitHub: https://github.com/nicolelodeontv
 ## 📄 License
 
 No open-source license is currently specified. Unless a license is added to this repository, the source code should be treated as **all rights reserved** by the repository owner.
+
+<!-- restore-reference-ui -->
