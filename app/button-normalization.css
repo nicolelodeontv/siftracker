@@ -5,7 +5,6 @@
   --button-compact-height: 32px;
 }
 
-/* Navigation actions stay aligned at every breakpoint. */
 main nav button {
   height: var(--button-height);
   min-height: var(--button-height);
@@ -13,7 +12,6 @@ main nav button {
   line-height: 1;
 }
 
-/* Small icon-only controls stay compact. */
 main button[aria-label*="Close"],
 main button[aria-label*="Copy"],
 main .workload-card button[title="Clear"] {
@@ -22,7 +20,6 @@ main .workload-card button[title="Clear"] {
   padding: 0;
 }
 
-/* Workload +/- controls match the input height. */
 .workload-card__quantity-button {
   width: 44px;
   min-width: 44px;
@@ -32,7 +29,6 @@ main .workload-card button[title="Clear"] {
   padding: 0;
 }
 
-/* Compact quick-add controls. */
 .workload-card__quick-add > button {
   width: auto;
   min-width: 34px;
@@ -42,7 +38,6 @@ main .workload-card button[title="Clear"] {
   line-height: 1;
 }
 
-/* Rate controls. */
 #settings .flex.shrink-0 > button,
 #settings .flex.shrink-0 > input {
   height: var(--button-compact-height);
@@ -62,7 +57,6 @@ main .workload-card button[title="Clear"] {
   padding-inline: 4px;
 }
 
-/* Settings action buttons. */
 #settings .flex.gap-2 > button {
   height: var(--button-height);
   min-height: var(--button-height);
@@ -77,7 +71,6 @@ main .workload-card button[title="Clear"] {
   opacity: .45;
 }
 
-/* Clock-in behaves like a full-width editable field. */
 .clock-in-display {
   width: 100%;
   height: 44px;
@@ -85,14 +78,12 @@ main .workload-card button[title="Clear"] {
   padding-inline: 12px;
 }
 
-/* Consistent focus visibility for keyboard users. */
 main button:focus-visible,
 main input:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
-/* Active Settings state without changing the existing markup. */
 #calculator:has(+ #settings) > .mb-3 > button,
 #calculator:has(#settings) > .mb-3 > button {
   border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
@@ -100,7 +91,6 @@ main input:focus-visible {
   color: var(--accent-foreground);
 }
 
-/* Workload feedback can use two compact lines instead of clipping on narrow screens. */
 .workload-card__feedback > p {
   overflow: hidden;
   white-space: normal;
@@ -109,9 +99,20 @@ main input:focus-visible {
   -webkit-line-clamp: 2;
 }
 
-/* Make the completed state more obvious while preserving the existing card. */
 .shift-clockout-card.is-complete {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--sif-green) 28%, transparent), 0 8px 24px var(--primary-shadow);
+}
+
+.theme-toggle {
+  position: relative;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.theme-toggle__label {
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 0 0 34px;
 }
 
 @media (max-width: 767px) {
@@ -123,7 +124,6 @@ main input:focus-visible {
     gap: 6px;
   }
 
-  /* Keep the three navigation controls from squeezing the brand. */
   .pht-clock-display {
     max-width: min(42vw, 150px);
   }
@@ -146,7 +146,6 @@ main input:focus-visible {
     min-height: var(--button-height);
   }
 
-  /* Settings footer actions share the available width. */
   #settings .flex.gap-2 > button {
     flex: 1 1 0;
     min-width: 0;
@@ -173,7 +172,6 @@ main input:focus-visible {
 }
 
 @media (max-width: 520px) {
-  /* Let settings rows wrap instead of squeezing labels and rate controls. */
   #settings .grid > div {
     align-items: flex-start;
     flex-wrap: wrap;
@@ -199,12 +197,38 @@ main input:focus-visible {
   }
 
   .pht-clock-display {
-    max-width: 132px;
+    max-width: 124px;
   }
 
-  /* The theme control becomes icon-only on narrow phones. */
+  /* Narrow phones: keep the theme control as a compact, tappable icon button. */
+  .theme-toggle {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    flex: 0 0 44px !important;
+    height: 40px;
+    min-height: 40px;
+    padding: 0 !important;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .theme-toggle > span:first-child {
+    margin: 0;
+  }
+
   .theme-toggle__label {
-    display: none;
+    display: none !important;
+  }
+}
+
+@media (max-width: 360px) {
+  main nav > div:last-child {
+    gap: 4px;
+  }
+
+  .pht-clock-display {
+    max-width: 106px;
   }
 }
 
