@@ -28,7 +28,7 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
   const share = totalSeconds > 0 && value !== null ? Math.min(100, Math.round((duration / totalSeconds) * 100)) : 0
 
   return (
-    <article data-workload-id={workload.id} className="workload-card rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition hover:border-primary/25">
+    <article data-workload-id={workload.id} data-workload-label={workload.label} data-duration-seconds={duration} className="workload-card rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition hover:border-primary/25">
       <div className="workload-card__header relative flex min-w-0 items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-2.5">
           <span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} aria-hidden="true" />
@@ -126,9 +126,7 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
       </div>
 
       <div className="workload-card__examples border-t border-border pt-2.5">
-        {getExampleAmounts(workload).map((amount) => (
-          <span key={amount} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground">{getUnitLabel(workload.unit, amount)} = {formatCompactDuration(amount * workload.minutesPerUnit)}</span>
-        ))}
+        {getExampleAmounts(workload).map((amount) => <span key={amount} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground">{getUnitLabel(workload.unit, amount)} = {formatCompactDuration(amount * workload.minutesPerUnit)}</span>)}
       </div>
     </article>
   )
