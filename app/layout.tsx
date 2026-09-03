@@ -31,13 +31,18 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'dark',
+  colorScheme: 'dark light',
   themeColor: '#0A0A0B',
 }
 
+const themeScript = `(() => { try { const key = 'sif-theme'; const saved = localStorage.getItem(key); const dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.classList.toggle('dark', dark); document.documentElement.style.colorScheme = dark ? 'dark' : 'light'; } catch {} })()`
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} bg-background`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetBrainsMono.variable} bg-background`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="font-sans antialiased">
         {children}
         <WelcomePopup />
