@@ -362,6 +362,14 @@ export default function Page() {
         </div>
       )}
 
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 p-2 backdrop-blur sm:hidden">
+        <div className="mx-auto flex max-w-md items-center gap-2">
+          <button type="button" onClick={() => shiftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className="flex-1 rounded-lg bg-primary px-3 py-2.5 text-[10px] font-bold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View progress</button>
+          <button type="button" onClick={() => setConfirmReset(true)} className="rounded-lg border border-border bg-background px-3 py-2.5 text-[10px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Reset</button>
+          <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="rounded-lg border border-border bg-background px-3 py-2.5 text-[10px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Toggle settings">Settings</button>
+        </div>
+      </div>
+
       <ClockInPicker />
     </main>
   )
