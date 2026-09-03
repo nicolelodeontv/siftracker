@@ -14,11 +14,7 @@ export function PhtClockDisplay() {
       <span className="block whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.16em]">
         Philippine Standard Time
       </span>
-      <time
-        className="block whitespace-nowrap font-mono text-[8px] font-bold tabular-nums sm:text-[10px]"
-        dateTime={isLoading ? undefined : undefined}
-        suppressHydrationWarning
-      >
+      <time className="block whitespace-nowrap font-mono text-[8px] font-bold tabular-nums sm:text-[10px]" suppressHydrationWarning>
         {date} · {time}
       </time>
     </div>
