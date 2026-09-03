@@ -28,9 +28,7 @@ export function formatMilitaryTime(totalSeconds: number | null) {
   const hours24 = Math.floor(daySeconds / 3600)
   const minutes = Math.floor((daySeconds % 3600) / 60)
   const seconds = daySeconds % 60
-  const period = hours24 >= 12 ? 'PM' : 'AM'
-  const hours12 = hours24 % 12 || 12
-  return `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${period}`
+  return `${String(hours24).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 
 export function calculateValue(value: string): number | null {
