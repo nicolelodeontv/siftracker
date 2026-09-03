@@ -25,10 +25,12 @@ export function formatCompactDuration(totalMinutes: number) {
 export function formatMilitaryTime(totalSeconds: number | null) {
   if (totalSeconds === null) return '—'
   const daySeconds = ((Math.round(totalSeconds) % DAY_SECONDS) + DAY_SECONDS) % DAY_SECONDS
-  const hours = Math.floor(daySeconds / 3600)
+  const hours24 = Math.floor(daySeconds / 3600)
   const minutes = Math.floor((daySeconds % 3600) / 60)
   const seconds = daySeconds % 60
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  const period = hours24 >= 12 ? 'PM' : 'AM'
+  const hours12 = hours24 % 12 || 12
+  return `${String(hours12).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${period}`
 }
 
 export function calculateValue(value: string): number | null {
