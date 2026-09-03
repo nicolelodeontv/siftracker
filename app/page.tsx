@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eraser, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ClockInPicker } from '@/components/clock-in-picker'
 import { ShiftSummary } from '@/components/shift-summary'
+import { TodaySnapshot } from '@/components/today-snapshot'
 import { PhtClockDisplay } from '@/components/pht-clock-display'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { WorkloadCard } from '@/components/workload-card'
@@ -22,7 +23,6 @@ const CARD_CLASS = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28p
 
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
-  // Start with deterministic server-safe defaults, then hydrate saved rates after mount.
   const [rates, setRates] = useState<RateMap>(() => ({ ...DEFAULT_RATES }))
   const [savedRates, setSavedRates] = useState<RateMap>(() => ({ ...DEFAULT_RATES }))
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -67,6 +67,7 @@ export default function Page() {
     () => calculateWorkloads(workloads, values),
     [values, workloads],
   )
+  const activeWorkloadCount = calculatedValues.filter(({ value }) => Math.max(0, value ?? 0) > 0).length
   const unsavedRates = useMemo(
     () => DEFAULT_WORKLOADS.some(({ id }) => rates[id] !== savedRates[id]),
     [rates, savedRates],
@@ -142,7 +143,6 @@ export default function Page() {
       })
       if (!response.ok) throw new Error('Rate validation failed')
     } catch {
-      // Local persistence remains authoritative when the optional validation endpoint is unavailable.
       setFeedback('save-warning')
     }
 
@@ -263,6 +263,7 @@ export default function Page() {
                 key={workload.id}
                 workload={workload}
                 input={input}
+                totalSeconds={totalSeconds}
                 inputRef={(element) => {
                   inputRefs.current[index] = element
                 }}
@@ -289,6 +290,14 @@ export default function Page() {
             </section>
           </div>
         </section>
+
+        <TodaySnapshot
+          totalSeconds={totalSeconds}
+          totalUnits={totalUnits}
+          activeWorkloads={workloads.length}
+          activeWorkloadCount={activeWorkloadCount}
+          clockInTime={clockInTime}
+        />
 
         <ShiftSummary
           totalSeconds={totalSeconds}
