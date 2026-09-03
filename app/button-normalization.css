@@ -20,13 +20,42 @@ main .workload-card button[title="Clear"] {
   padding: 0;
 }
 
+/* Workload quantity control: compact, centered, and identical across breakpoints. */
+.workload-card__input-row {
+  width: min(100%, 320px);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 10px;
+}
+
 .workload-card__quantity-button {
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
-  min-height: 44px;
-  flex: 0 0 44px;
+  width: 36px;
+  min-width: 36px;
+  height: 40px;
+  min-height: 40px;
+  flex: 0 0 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
+}
+
+.workload-card__input-row .relative {
+  width: 100%;
+  min-width: 0;
+}
+
+.workload-card__input {
+  width: 100%;
+  height: 40px !important;
+  min-height: 40px;
+  text-align: center;
+}
+
+.workload-card__input-row .workload-card__input + output {
+  right: 10px;
 }
 
 .workload-card__quick-add > button {
@@ -151,10 +180,16 @@ main input:focus-visible {
     min-width: 0;
   }
 
+  .workload-card__input-row {
+    width: min(100%, 320px);
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    gap: 8px;
+  }
+
   .workload-card__quantity-button {
-    width: 44px;
-    min-width: 44px;
-    flex-basis: 44px;
+    width: 36px;
+    min-width: 36px;
+    flex-basis: 36px;
   }
 
   .workload-card__quick-add {
@@ -220,6 +255,20 @@ main input:focus-visible {
   .theme-toggle__label {
     display: none !important;
   }
+
+  .workload-card__input-row {
+    width: min(100%, 300px);
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    gap: 8px;
+  }
+
+  .workload-card__quantity-button {
+    width: 34px;
+    min-width: 34px;
+    height: 40px;
+    min-height: 40px;
+    flex-basis: 34px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -229,6 +278,18 @@ main input:focus-visible {
 
   .pht-clock-display {
     max-width: 106px;
+  }
+
+  .workload-card__input-row {
+    width: min(100%, 280px);
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 7px;
+  }
+
+  .workload-card__quantity-button {
+    width: 32px;
+    min-width: 32px;
+    flex-basis: 32px;
   }
 }
 
