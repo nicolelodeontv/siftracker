@@ -21,6 +21,12 @@ type SummaryProps = BaseProps & {
   onCopyClockOut: (value: string) => void
 }
 
+const statusStyles = {
+  'NOT STARTED': 'border-border bg-muted text-muted-foreground',
+  'IN PROGRESS': 'border-primary/30 bg-primary/10 text-primary',
+  'SHIFT COMPLETE': 'border-[var(--sif-green)]/30 bg-[var(--sif-green)]/10 text-[var(--sif-green)]',
+} as const
+
 export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, onClockInChange, onSetClockInNow, onCopyClockOut }: SummaryProps) {
   const { time, date, seconds: nowSeconds } = usePhilippineClock()
   const fallbackRef = useRef<HTMLElement | null>(null)
@@ -35,9 +41,14 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
           <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift Summary</p>
           <h2 className="mt-1 text-base font-semibold tracking-tight">Know when you’re done.</h2>
         </div>
-        <div className="text-right">
-          <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Today · {date}</p>
-          <p className="mt-0.5 text-[8px] text-muted-foreground">Fixed 01:00:00 break</p>
+        <div className="flex flex-wrap items-center justify-end gap-2 text-right">
+          <span className={`rounded-full border px-2.5 py-1 text-[8px] font-bold tracking-[0.08em] ${statusStyles[shift.shiftStatus as keyof typeof statusStyles]}`} aria-live="polite">
+            {shift.shiftStatus}
+          </span>
+          <div>
+            <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">Today · {date}</p>
+            <p className="mt-0.5 text-[8px] text-muted-foreground">Fixed 01:00:00 break</p>
+          </div>
         </div>
       </div>
 
@@ -48,7 +59,6 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
             type="button"
             className="clock-in-display cursor-pointer"
             aria-label={`Edit Clock In time, currently ${clockInTime}`}
-            suppressHydrationWarning
             title="Edit Clock In time"
             onClick={() => document.getElementById('clock-in-hidden')?.click()}
           >
@@ -76,9 +86,13 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
             )}
           </div>
           <span className={`mt-1 block text-[8px] ${shift.shiftComplete ? 'font-bold text-[var(--sif-green)]' : 'text-muted-foreground'}`}>
-            {shift.estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shift.shiftComplete ? '✓ SHIFT COMPLETE' : 'ON TRACK · TIME UNTIL CLOCK OUT'}
+            {shift.estimatedClockOutSeconds === null ? 'Enter a workload to calculate' : shift.shiftComplete ? '✓ SHIFT COMPLETE' : 'TIME UNTIL CLOCK OUT'}
           </span>
-          {shift.estimatedClockOutSeconds !== null && <strong className="mt-1.5 block font-mono text-xs font-bold tabular-nums text-primary">{shift.shiftComplete ? '00:00:00' : formatDuration(shift.timeLeftSeconds)}</strong>}
+          {shift.estimatedClockOutSeconds !== null && (
+            <strong className="mt-1.5 block font-mono text-xs font-bold tabular-nums text-primary" aria-live="polite">
+              {shift.shiftComplete ? '00:00:00' : formatDuration(shift.timeLeftSeconds)}
+            </strong>
+          )}
         </div>
       </div>
     </section>
