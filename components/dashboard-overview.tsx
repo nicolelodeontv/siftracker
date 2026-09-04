@@ -1,7 +1,8 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { Activity, Clock3, Coffee, Gauge, Timer, TrendingUp } from 'lucide-react'
+import { useState } from 'react'
+import { Activity, Check, Clock3, Coffee, Copy, Gauge, Timer, TrendingUp } from 'lucide-react'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
@@ -24,6 +25,7 @@ const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30p
 
 export function DashboardOverview({ totalSeconds, totalUnits, workloads, calculatedValues, clockInTime }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
+  const [copied, setCopied] = useState(false)
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
   const status = shift.shiftStatus
@@ -54,6 +56,18 @@ export function DashboardOverview({ totalSeconds, totalUnits, workloads, calcula
 
   const breakStartSeconds = shift.clockInSeconds === null ? null : shift.clockInSeconds + totalSeconds
   const breakEndSeconds = breakStartSeconds === null ? null : breakStartSeconds + 60 * 60
+  const clockOutText = formatMilitaryTime(shift.estimatedClockOutSeconds)
+
+  async function copyClockOut() {
+    if (shift.estimatedClockOutSeconds === null) return
+    try {
+      await navigator.clipboard.writeText(clockOutText)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1400)
+    } catch {
+      setCopied(false)
+    }
+  }
 
   return (
     <section id="dashboard" aria-label="SIF dashboard" className={`${cardClass} mb-4 overflow-hidden`}>
@@ -92,9 +106,26 @@ export function DashboardOverview({ totalSeconds, totalUnits, workloads, calcula
           <div className="w-full shrink-0 rounded-lg border border-[var(--sif-green)]/25 bg-[var(--sif-green)]/5 p-3 shadow-[0_8px_24px_var(--card-shadow)] sm:w-56">
             <div className="flex items-center justify-between gap-2">
               <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-[var(--sif-green)]">Estimated Clock Out</span>
-              <Clock3 className="size-3 text-[var(--sif-green)]" />
+              <button
+                type="button"
+                onClick={copyClockOut}
+                disabled={shift.estimatedClockOutSeconds === null}
+                aria-label="Copy estimated clock out time"
+                title="Copy clock out time"
+                className="inline-flex size-6 items-center justify-center rounded-md border border-border bg-card/70 text-muted-foreground hover:border-[var(--sif-green)]/40 hover:text-[var(--sif-green)] disabled:pointer-events-none disabled:opacity-40"
+              >
+                {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+              </button>
             </div>
-            <strong className="mt-1 block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-green)]">{formatMilitaryTime(shift.estimatedClockOutSeconds)}</strong>
+            <button
+              type="button"
+              onClick={copyClockOut}
+              disabled={shift.estimatedClockOutSeconds === null}
+              title="Copy 24-hour clock out time"
+              className="mt-1 block w-full cursor-pointer text-left disabled:cursor-default"
+            >
+              <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-green)]">{clockOutText}</strong>
+            </button>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
               <div className={`h-full rounded-full transition-[width] duration-500 ${shift.shiftComplete ? 'bg-[var(--sif-green)]' : 'bg-[var(--sif-yellow)]'}`} style={{ width: `${progress}%` }} />
             </div>
@@ -102,6 +133,7 @@ export function DashboardOverview({ totalSeconds, totalUnits, workloads, calcula
               <span className={shift.shiftComplete ? 'text-[var(--sif-green)]' : 'text-[var(--sif-yellow)]'}>{progress}% complete</span>
               <span className="text-[var(--sif-yellow)]">01:00:00 break</span>
             </div>
+            <span aria-live="polite" className={`mt-1 block text-[7px] font-semibold ${copied ? 'text-[var(--sif-green)]' : 'text-transparent'}`}>{copied ? 'Copied' : 'Copied'}</span>
           </div>
         </div>
       </div>
@@ -156,7 +188,7 @@ export function DashboardOverview({ totalSeconds, totalUnits, workloads, calcula
             <TimelineItem label="Clock In" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(shift.clockInSeconds)} accent="blue" active />
             <TimelineItem label="Work complete" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(breakStartSeconds)} accent="violet" />
             <TimelineItem label="Break" value={shift.clockInSeconds === null ? '—' : `${formatMilitaryTime(breakStartSeconds)} → ${formatMilitaryTime(breakEndSeconds)}`} accent="yellow" breakPoint />
-            <TimelineItem label="Clock Out" value={formatMilitaryTime(shift.estimatedClockOutSeconds)} accent={shift.shiftComplete ? 'green' : 'orange'} active={shift.shiftComplete} />
+            <TimelineItem label="Clock Out" value={clockOutText} accent={shift.shiftComplete ? 'green' : 'orange'} active={shift.shiftComplete} />
           </div>
           <p className="mt-5 rounded-lg border border-border bg-background/35 px-3 py-2 text-[8px] leading-4 text-muted-foreground">
             Timeline is calculated from Clock In + workload time + the fixed 1-hour break.
