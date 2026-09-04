@@ -45,5 +45,20 @@ input,textarea,select { transition:border-color var(--motion-fast) ease,box-shad
 [role="dialog"]:has(#welcome-popup-title) .border-primary\/15 { border-color: color-mix(in srgb, var(--popup-accent) 20%, var(--border)) !important; }
 [role="dialog"]:has(#welcome-popup-title) .bg-primary\/5 { background: color-mix(in srgb, var(--popup-accent) 7%, var(--card)) !important; }
 
+/* Clock Out is a fixed-layout control. Its copy state must never translate or scale. */
+button[aria-label="Copy clock out time"],
+button[aria-label="Clock out time copied"],
+button[title="Copy HH:mm:ss"] {
+  transform: none !important;
+}
+button[aria-label="Copy clock out time"]:hover,
+button[aria-label="Clock out time copied"]:hover,
+button[title="Copy HH:mm:ss"]:hover,
+button[aria-label="Copy clock out time"]:active,
+button[aria-label="Clock out time copied"]:active,
+button[title="Copy HH:mm:ss"]:active {
+  transform: none !important;
+}
+
 @media (max-width:767px){button:hover{transform:none;}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
