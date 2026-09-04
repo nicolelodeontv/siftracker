@@ -58,8 +58,8 @@ main > div.relative > section:first-of-type p {
 #workflow {
   width: 100%;
   min-width: 0;
-  height: 240px;
-  min-height: 240px;
+  height: 220px;
+  min-height: 220px;
   box-sizing: border-box;
 }
 
@@ -73,9 +73,9 @@ main > div.relative > section:first-of-type p {
 .workload-card__header { flex: 0 0 40px; min-height: 40px; }
 .workload-card__body {
   position: relative;
-  flex: 0 0 132px;
-  min-height: 132px;
-  margin-top: 8px;
+  flex: 0 0 104px;
+  min-height: 104px;
+  margin-top: 6px;
 }
 
 .workload-card__label {
@@ -106,7 +106,7 @@ main > div.relative > section:first-of-type p {
 .workload-card__feedback {
   position: absolute;
   inset-inline: 0;
-  top: 66px;
+  top: 64px;
   height: 28px;
   min-height: 28px;
   overflow: hidden;
@@ -116,27 +116,19 @@ main > div.relative > section:first-of-type p {
   height: 28px;
   min-height: 28px;
   margin: 0 !important;
-  padding-top: 4px;
+  padding-top: 2px;
   overflow: hidden;
   line-height: 14px;
 }
 
-.workload-card__quick-add {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 28px;
-  min-height: 28px;
-  overflow: hidden;
-  white-space: nowrap;
-}
+/* Quick Add intentionally removed. Keep no reserved row/space for it. */
+.workload-card__quick-add { display: none !important; }
 
 .workload-card__examples {
   flex: 0 0 39px;
   min-height: 39px;
+  margin-top: 0;
+  padding-top: 7px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   column-gap: 8px;
@@ -146,7 +138,7 @@ main > div.relative > section:first-of-type p {
 
 /* Total card occupies the sixth slot and matches the workload-card footprint. */
 #workflow {
-  min-height: 240px;
+  min-height: 220px;
   padding: 14px;
   display: flex;
   align-items: stretch;
@@ -275,8 +267,8 @@ html.theme-switching .theme-toggle { transform: none !important; }
 
   .workload-card,
   #workflow {
-    height: 240px;
-    min-height: 240px;
+    height: 220px;
+    min-height: 220px;
   }
   .workload-card { padding: 14px; }
   .workload-card__input { height: 44px; font-size: 16px; }
