@@ -141,11 +141,9 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
       </div>
 
       {copied && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-5 z-[100] flex justify-center px-4" aria-live="polite" role="status">
-          <div className="flex items-center gap-2 rounded-full border border-[var(--sif-green)]/40 bg-card px-3 py-2 text-[9px] font-semibold text-[var(--sif-green)] shadow-lg shadow-black/20">
-            <Check className="size-3.5 shrink-0" />
-            <span>Copied</span>
-          </div>
+        <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status" aria-live="polite">
+          <Check className="size-3 text-primary" />
+          Copied
         </div>
       )}
     </section>
