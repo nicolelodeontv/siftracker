@@ -112,9 +112,9 @@ export function DashboardOverview({ totalSeconds, totalUnits, workloads, calcula
                 disabled={shift.estimatedClockOutSeconds === null}
                 aria-label={copied ? 'Clock out time copied' : 'Copy estimated clock out time'}
                 title={copied ? 'Copied' : 'Copy clock out time'}
-                className="inline-flex size-6 items-center justify-center rounded-md border border-border bg-card/70 text-muted-foreground hover:border-[var(--sif-green)]/40 hover:text-[var(--sif-green)] disabled:pointer-events-none disabled:opacity-40"
+                className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-[var(--sif-green)]/30 bg-card text-[var(--sif-green)] shadow-sm hover:bg-[var(--sif-green)]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-green)]/40 disabled:pointer-events-none disabled:opacity-40"
               >
-                {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+                {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
               </button>
             </div>
             <button
