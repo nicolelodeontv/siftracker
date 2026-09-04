@@ -103,16 +103,15 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                   <button
                     type="button"
                     onClick={copyClockOut}
-                    disabled={shift.estimatedClockOutSeconds === null}
                     aria-label="Copy clock out time"
                     title="Copy clock out time"
-                    className="clock-out-copy inline-flex size-7 shrink-0 items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40 disabled:pointer-events-none disabled:opacity-40"
+                    className="clock-out-copy relative z-20 inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40"
                   >
                     <Copy className="size-3.5 shrink-0" />
                   </button>
                 </div>
               </div>
-              <button type="button" onClick={copyClockOut} disabled={shift.estimatedClockOutSeconds === null} title="Copy HH:mm:ss" className="mt-1 block w-full cursor-pointer text-left disabled:cursor-default">
+              <button type="button" onClick={copyClockOut} title="Copy HH:mm:ss" className="relative z-10 mt-1 block w-full cursor-pointer text-left">
                 <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
               </button>
               <div className="mt-1 h-3" aria-hidden="true" />
@@ -141,7 +140,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
       </div>
 
       {copied && (
-        <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status" aria-live="polite">
+        <div className="pointer-events-none fixed bottom-4 left-1/2 z-[100] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status" aria-live="polite">
           <Check className="size-3 text-primary" />
           Copied
         </div>
