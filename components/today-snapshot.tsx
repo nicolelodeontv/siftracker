@@ -114,7 +114,14 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
               <button type="button" onClick={copyClockOut} title="Copy HH:mm:ss" className="relative z-10 mt-1 block w-full cursor-pointer text-left">
                 <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
               </button>
-              <div className="mt-1 h-3" aria-hidden="true" />
+              <div className="mt-1 flex h-3 items-center justify-center" aria-live="polite">
+                {copied && (
+                  <span className="pointer-events-none inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-lg">
+                    <Check className="size-3 text-primary" />
+                    Copied
+                  </span>
+                )}
+              </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
                 <div className={`h-full rounded-full transition-[width] duration-500 ${shift.shiftComplete ? 'bg-[var(--sif-green)]' : 'bg-[var(--sif-yellow)]'}`} style={{ width: `${progress}%` }} />
               </div>
@@ -138,13 +145,6 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
         </div>
         <div className="min-w-0 p-4 sm:p-5"><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Shift timeline</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Your workday at a glance</h3><div className="relative mt-5 space-y-4 pl-1"><div className="absolute left-[4px] top-2 bottom-2 w-px bg-border" aria-hidden="true" /><TimelineItem label="Clock In" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(shift.clockInSeconds)} active /><TimelineItem label="Work complete" value={breakStartSeconds === null ? '—' : formatMilitaryTime(breakStartSeconds)} /><TimelineItem label="Break" value={breakStartSeconds === null ? '—' : `${formatMilitaryTime(breakStartSeconds)} → ${formatMilitaryTime(breakEndSeconds)}`} breakPoint /><TimelineItem label="Clock Out" value={clockOutText} active={shift.shiftComplete} /></div><p className="mt-5 rounded-lg border border-border bg-background/35 px-3 py-2 text-[8px] leading-4 text-muted-foreground">Timeline uses Clock In + calculated workload time + the fixed 1-hour break.</p></div>
       </div>
-
-      {copied && (
-        <div className="pointer-events-none fixed bottom-4 left-1/2 z-[100] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status" aria-live="polite">
-          <Check className="size-3 text-primary" />
-          Copied
-        </div>
-      )}
     </section>
   )
 }
