@@ -110,18 +110,18 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
           ) : hasInput ? (
             <p className="rounded-md bg-background/40 px-2.5 py-1.5 font-mono text-[9px] font-semibold text-muted-foreground">{input} = {value} {getUnitLabel(workload.unit, value ?? 0)} → {formatDuration(duration)}</p>
           ) : (
-            <p className="text-[8px] text-muted-foreground/70">Enter a quantity or expression: 5+5 · 10*3 · (5+5)*2</p>
+            <p className="text-[9px] leading-4 text-muted-foreground/70">Enter a quantity or expression: 5+5 · 10*3 · (5+5)*2</p>
           )}
         </div>
 
         <div className="workload-card__quick-add" aria-label={`Quick add options for ${workload.label}`}>
-          <span className="mr-0.5 text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground/70">Quick add</span>
+          <span className="mr-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-muted-foreground/70">Quick add</span>
           {[1, 5, 10].map((amount) => (
             <button key={amount} type="button" onClick={() => onAdjust(amount)} className="inline-flex h-6 items-center justify-center rounded-md border border-border bg-background/60 px-2 font-mono text-[8px] font-bold tabular-nums transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Quick add ${amount} to ${workload.label}`}>
               +{amount}
             </button>
           ))}
-          {value !== null && hasInput && <span className="ml-auto font-mono text-[7px] font-bold tabular-nums text-muted-foreground">{share}% of total</span>}
+          {value !== null && hasInput && <span className="ml-auto font-mono text-[8px] font-bold tabular-nums text-muted-foreground">{share}% of total</span>}
         </div>
       </div>
 
