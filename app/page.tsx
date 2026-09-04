@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eraser, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ClockInPicker } from '@/components/clock-in-picker'
-import { ShiftSummary } from '@/components/shift-summary'
 import { TodaySnapshot } from '@/components/today-snapshot'
 import { PhtClockDisplay } from '@/components/pht-clock-display'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -16,10 +15,14 @@ import { getCurrentClockIn } from '@/lib/use-philippine-clock'
 import { DEFAULT_RATES, DEFAULT_WORKLOADS } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
-type Feedback = 'saved' | 'reset' | 'copied' | 'cleared' | 'save-warning' | null
+type Feedback = 'saved' | 'cleared' | 'reset' | null
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
 const CARD_CLASS = 'rounded-xl border border-border bg-card/85 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur'
+
+function scrollToWorkflow() {
+  document.getElementById('workflow')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
 
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
@@ -32,7 +35,6 @@ export default function Page() {
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
-  const shiftRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const hydrate = window.setTimeout(() => {
@@ -132,20 +134,8 @@ export default function Page() {
     setFeedback('saved')
   }
 
-  async function saveRates() {
+  function saveRates() {
     if (!persistSavedRates(rates)) return
-
-    try {
-      const response = await fetch('/api/workloads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rates }),
-      })
-      if (!response.ok) throw new Error('Rate validation failed')
-    } catch {
-      setFeedback('save-warning')
-    }
-
     setSavedRates({ ...rates })
     setSettingsOpen(false)
     setFeedback('saved')
@@ -163,15 +153,6 @@ export default function Page() {
     window.dispatchEvent(new Event('sif:open-welcome'))
   }
 
-  async function copyClockOut(value: string) {
-    try {
-      await navigator.clipboard.writeText(value)
-      setFeedback('copied')
-    } catch {
-      setFeedback(null)
-    }
-  }
-
   return (
     <main className="min-h-screen overflow-x-hidden bg-background text-foreground">
       <div className="relative mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6 sm:pb-8 lg:px-8">
@@ -184,12 +165,7 @@ export default function Page() {
           </div>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <PhtClockDisplay />
-            <button
-              type="button"
-              onClick={openQuickGuide}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label="Open Quick Guide"
-            >
+            <button type="button" onClick={openQuickGuide} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Open Quick Guide">
               <HelpCircle className="size-3" />
               <span className="hidden sm:inline">Quick Guide</span>
             </button>
@@ -216,22 +192,11 @@ export default function Page() {
               <p className="mt-1 text-[8px] font-medium leading-4 text-muted-foreground/70">⌨ Enter → next · ↑ ↓ adjust · Ctrl/Cmd+Enter → summary</p>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2 sm:shrink-0">
-              <button
-                type="button"
-                onClick={clearAllWorkloads}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/30 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label="Clear all workload inputs"
-              >
+              <button type="button" onClick={clearAllWorkloads} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/30 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Clear all workload inputs">
                 <Eraser className="size-3" />
                 Clear all
               </button>
-              <button
-                type="button"
-                onClick={() => setSettingsOpen((open) => !open)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-expanded={settingsOpen}
-                aria-controls="settings"
-              >
+              <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-expanded={settingsOpen} aria-controls="settings">
                 <Settings2 className="size-3" />
                 Settings
                 {unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}
@@ -271,7 +236,7 @@ export default function Page() {
                 onAdjust={(delta) => adjustQuantity(workload.id, delta)}
                 onClear={() => clearWorkload(workload.id)}
                 onNext={() => inputRefs.current[index + 1]?.focus()}
-                onSummaryShortcut={() => shiftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                onSummaryShortcut={scrollToWorkflow}
               />
             ))}
 
@@ -291,34 +256,14 @@ export default function Page() {
           </div>
         </section>
 
-        <TodaySnapshot
-          totalSeconds={totalSeconds}
-          totalUnits={totalUnits}
-          activeWorkloads={workloads.length}
-          activeWorkloadCount={activeWorkloadCount}
-          clockInTime={clockInTime}
-        />
-
-        <ShiftSummary
-          totalSeconds={totalSeconds}
-          totalUnits={totalUnits}
-          clockInTime={clockInTime}
-          shiftRef={shiftRef}
-          onClockInChange={setClockInTime}
-          onSetClockInNow={setClockInTime}
-          onCopyClockOut={copyClockOut}
-        />
+        <TodaySnapshot totalSeconds={totalSeconds} totalUnits={totalUnits} activeWorkloads={workloads.length} activeWorkloadCount={activeWorkloadCount} clockInTime={clockInTime} />
 
         <section id="tools" className={`${CARD_CLASS} mt-4 bg-card/50 p-3.5 sm:flex sm:items-center sm:justify-between sm:gap-4`}>
           <div className="min-w-0">
             <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">04 / Tools</p>
             <p className="mt-1 text-[10px] leading-4 text-muted-foreground">Reset today’s workload without changing your saved rates.</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setConfirmReset(true)}
-            className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-2 text-[10px] font-semibold transition hover:border-primary/30 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:mt-0 sm:w-auto"
-          >
+          <button type="button" onClick={() => setConfirmReset(true)} className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-2 text-[10px] font-semibold transition hover:border-primary/30 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:mt-0 sm:w-auto">
             <RotateCcw className="size-3" />
             Reset today’s workload
           </button>
@@ -333,20 +278,12 @@ export default function Page() {
       {feedback && (
         <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status">
           <Check className="size-3 text-primary" />
-          {feedback === 'saved' ? 'Rates saved' : feedback === 'save-warning' ? 'Saved locally' : feedback === 'reset' ? 'Workload reset' : feedback === 'cleared' ? 'All workloads cleared' : 'Clock Out copied'}
+          {feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'All workloads cleared'}
         </div>
       )}
 
       {confirmReset && (
-        <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="reset-title"
-          onMouseDown={(event) => {
-            if (event.currentTarget === event.target) setConfirmReset(false)
-          }}
-        >
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="reset-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setConfirmReset(false) }}>
           <div className="w-full max-w-sm rounded-xl border border-border bg-card p-4 shadow-2xl">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -354,12 +291,7 @@ export default function Page() {
                 <h3 id="reset-title" className="mt-1 text-sm font-semibold">Reset today’s workload?</h3>
                 <p className="mt-1.5 text-[10px] leading-4 text-muted-foreground">This clears all workload inputs and resets Clock In to the current PHT time. Your saved rates stay unchanged.</p>
               </div>
-              <button
-                type="button"
-                onClick={() => setConfirmReset(false)}
-                className="rounded-lg p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label="Close reset confirmation"
-              >
+              <button type="button" onClick={() => setConfirmReset(false)} className="rounded-lg p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Close reset confirmation">
                 <X className="size-3.5" />
               </button>
             </div>
@@ -373,7 +305,7 @@ export default function Page() {
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 p-2 backdrop-blur sm:hidden">
         <div className="mx-auto flex max-w-md items-center gap-2">
-          <button type="button" onClick={() => shiftRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className="flex-1 rounded-lg bg-primary px-3 py-2.5 text-[10px] font-bold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View progress</button>
+          <button type="button" onClick={scrollToWorkflow} className="flex-1 rounded-lg bg-primary px-3 py-2.5 text-[10px] font-bold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View progress</button>
           <button type="button" onClick={() => setConfirmReset(true)} className="rounded-lg border border-border bg-background px-3 py-2.5 text-[10px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Reset</button>
           <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="rounded-lg border border-border bg-background px-3 py-2.5 text-[10px] font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Toggle settings">Settings</button>
         </div>
