@@ -14,23 +14,27 @@ function getPreferredTheme(): Theme {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
+function applyTheme(theme: Theme) {
+  const root = document.documentElement
+  root.classList.toggle('dark', theme === 'dark')
+  root.style.colorScheme = theme
+}
+
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('light')
 
   useEffect(() => {
     const preferred = getPreferredTheme()
-    window.setTimeout(() => setTheme(preferred), 0)
-    document.documentElement.classList.toggle('dark', preferred === 'dark')
-    document.documentElement.style.colorScheme = preferred
+    applyTheme(preferred)
+    setTheme(preferred)
   }, [])
 
   function toggleTheme() {
-    const root = document.documentElement
     const next: Theme = theme === 'dark' ? 'light' : 'dark'
+    const root = document.documentElement
 
     root.classList.add('theme-switching')
-    root.classList.toggle('dark', next === 'dark')
-    root.style.colorScheme = next
+    applyTheme(next)
     window.localStorage.setItem(STORAGE_KEY, next)
     setTheme(next)
 
