@@ -113,19 +113,9 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
             <p className="text-[9px] leading-4 text-muted-foreground/70">Enter a quantity or expression: 5+5 · 10*3 · (5+5)*2</p>
           )}
         </div>
-
-        <div className="workload-card__quick-add" aria-label={`Quick add options for ${workload.label}`}>
-          <span className="mr-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-muted-foreground/70">Quick add</span>
-          {[1, 5, 10].map((amount) => (
-            <button key={amount} type="button" onClick={() => onAdjust(amount)} className="inline-flex h-6 items-center justify-center rounded-md border border-border bg-background/60 px-2 font-mono text-[8px] font-bold tabular-nums transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Quick add ${amount} to ${workload.label}`}>
-              +{amount}
-            </button>
-          ))}
-          {value !== null && hasInput && <span className="ml-auto font-mono text-[8px] font-bold tabular-nums text-muted-foreground">{share}% of total</span>}
-        </div>
       </div>
 
-      <div className="workload-card__examples border-t border-border pt-2.5">
+      <div className="workload-card__examples mt-3 border-t border-border pt-3">
         {getExampleAmounts(workload).map((amount) => <span key={amount} className="font-mono text-[8px] font-semibold leading-3.5 tracking-tight text-muted-foreground">{getUnitLabel(workload.unit, amount)} = {formatCompactDuration(amount * workload.minutesPerUnit)}</span>)}
       </div>
     </article>
