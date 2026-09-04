@@ -1,19 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Activity, Clock3, Coffee, Gauge, Timer, TrendingUp } from 'lucide-react'
+import { Activity, Clock3, Coffee, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
-
-const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur'
-
-type BreakdownItem = {
-  id: string
-  label: string
-  duration: number
-  quantity: number
-}
 
 type Props = {
   totalSeconds: number
@@ -22,6 +13,10 @@ type Props = {
   activeWorkloadCount: number
   clockInTime: string
 }
+
+type DashboardMetricProps = { icon: ReactNode; label: string; value: string; note: string }
+
+const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur'
 
 export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
@@ -77,18 +72,41 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
             </div>
           </div>
 
-          <div className="w-full shrink-0 rounded-lg border border-border bg-card p-3 sm:w-56">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Clock Out</span>
-              <Clock3 className="size-3 text-primary" />
+          <div className="grid w-full shrink-0 gap-2 sm:w-[28rem] sm:grid-cols-2">
+            <div className="rounded-lg border border-border bg-card p-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Clock In</span>
+                <TrendingUp className="size-3 text-primary" />
+              </div>
+              <button
+                type="button"
+                className="clock-in-display cursor-pointer"
+                aria-label={`Edit Clock In time, currently ${clockInTime}`}
+                suppressHydrationWarning
+                title="Edit Clock In time"
+                onClick={() => document.getElementById('clock-in-hidden')?.click()}
+              >
+                {clockInTime || 'Choose time'}
+              </button>
+              <input id="clock-in-hidden" type="time" step="1" value={clockInTime} onChange={(event) => document.dispatchEvent(new CustomEvent('sif:clock-in-change', { detail: event.target.value }))} className="sr-only" tabIndex={-1} aria-hidden="true" />
+              <div className="mt-2 flex justify-center">
+                <button type="button" onClick={() => document.dispatchEvent(new CustomEvent('sif:set-clock-in-now', { detail: time }))} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button>
+              </div>
             </div>
-            <strong className="mt-1 block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em]">{formatMilitaryTime(shift.estimatedClockOutSeconds)}</strong>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
-              <div className="h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: `${progress}%` }} />
-            </div>
-            <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              <span>{progress}% complete</span>
-              <span>01:00:00 break</span>
+
+            <div className="rounded-lg border border-border bg-card p-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Clock Out</span>
+                <Clock3 className="size-3 text-primary" />
+              </div>
+              <strong className="mt-1 block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em]">{formatMilitaryTime(shift.estimatedClockOutSeconds)}</strong>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+                <div className="h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: `${progress}%` }} />
+              </div>
+              <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                <span>{progress}% complete</span>
+                <span>01:00:00 break</span>
+              </div>
             </div>
           </div>
         </div>
@@ -98,7 +116,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
         <DashboardMetric icon={<Activity className="size-3" />} label="Active workloads" value={`${activeWorkloadCount}/${activeWorkloads}`} note={`${totalUnits} total units`} />
         <DashboardMetric icon={<Timer className="size-3" />} label="Work time" value={formatDuration(totalSeconds)} note="Calculated workload" />
         <DashboardMetric icon={<Coffee className="size-3" />} label="Break" value="01:00:00" note="Fixed 1-hour break" />
-        <DashboardMetric icon={<TrendingUp className="size-3" />} label="Clock in" value={clockInTime} note="PHT · editable below" />
+        <DashboardMetric icon={<TrendingUp className="size-3" />} label="Status" value={status} note="Live shift status" />
       </div>
 
       <div className="grid gap-0 lg:grid-cols-[1.35fr_.65fr]">
@@ -164,7 +182,7 @@ function DashboardLiveMetric({ label, value, emphasis }: { label: string; value:
   )
 }
 
-function DashboardMetric({ icon, label, value, note }: { icon: ReactNode; label: string; value: string; note: string }) {
+function DashboardMetric({ icon, label, value, note }: DashboardMetricProps) {
   return (
     <div className="min-w-0 border-r border-border px-3 py-3 last:border-r-0 sm:px-4">
       <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -190,3 +208,5 @@ function TimelineItem({ label, value, active, breakPoint }: { label: string; val
     </div>
   )
 }
+
+type BreakdownItem = { id: string; label: string; duration: number; quantity: number }
