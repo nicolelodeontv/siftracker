@@ -21,8 +21,8 @@ type SummaryProps = BaseProps & {
   onCopyClockOut: (value: string) => void
 }
 
-export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, onCopyClockOut }: SummaryProps) {
-  const { date, seconds: nowSeconds } = usePhilippineClock()
+export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, onClockInChange, onSetClockInNow, onCopyClockOut }: SummaryProps) {
+  const { time, date, seconds: nowSeconds } = usePhilippineClock()
   const fallbackRef = useRef<HTMLElement | null>(null)
   const sectionRef = shiftRef ?? fallbackRef
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
@@ -33,6 +33,9 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
 
   return (
     <section ref={sectionRef} id="shift" className={`${cardClass} mt-4 p-4`}>
+      <input id="clock-in-hidden" type="time" step="1" value={clockInTime} onChange={(event) => onClockInChange(event.target.value)} className="sr-only" tabIndex={-1} aria-hidden="true" />
+      <button id="clock-in-now-hidden" type="button" onClick={() => onSetClockInNow(time)} className="sr-only" tabIndex={-1} aria-hidden="true">Set Clock In to now</button>
+
       <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Shift Summary</p>
