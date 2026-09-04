@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Activity, Check, Clock3, Coffee, Copy, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
+import { Activity, Clock3, Coffee, Copy, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
@@ -21,7 +21,6 @@ const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30p
 export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
   const [breakdown, setBreakdown] = useState<BreakdownItem[]>([])
-  const [copied, setCopied] = useState(false)
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
   const status = shift.shiftStatus
@@ -56,10 +55,8 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
     if (shift.estimatedClockOutSeconds === null) return
     try {
       await navigator.clipboard.writeText(clockOutText)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1400)
     } catch {
-      setCopied(false)
+      // Clipboard may be unavailable in some browser contexts; keep the UI unchanged.
     }
   }
 
@@ -104,14 +101,11 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                     type="button"
                     onClick={copyClockOut}
                     disabled={shift.estimatedClockOutSeconds === null}
-                    aria-label={copied ? 'Clock out time copied' : 'Copy clock out time'}
-                    title={copied ? 'Copied' : 'Copy clock out time'}
-                    className="clock-out-copy inline-flex size-7 shrink-0 items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40 disabled:pointer-events-none disabled:opacity-40"
+                    aria-label="Copy clock out time"
+                    title="Copy clock out time"
+                    className="clock-out-copy inline-flex size-7 shrink-0 transform-none items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm transition-none hover:transform-none hover:bg-[var(--sif-orange)]/10 hover:border-[var(--sif-orange)]/60 active:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40 disabled:pointer-events-none disabled:opacity-40"
                   >
-                    <span className="relative block size-3.5 shrink-0" aria-hidden="true">
-                      <Copy className={`absolute inset-0 size-3.5 ${copied ? 'opacity-0' : 'opacity-100'}`} />
-                      <Check className={`absolute inset-0 size-3.5 ${copied ? 'opacity-100' : 'opacity-0'}`} />
-                    </span>
+                    <Copy className="size-3.5 shrink-0" aria-hidden="true" />
                   </button>
                 </div>
               </div>
