@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Check, Clock3, X } from 'lucide-react'
 import { getCurrentClockIn } from '@/lib/use-philippine-clock'
+import { Button } from '@/components/ui/button'
 
 function pad(value: number) {
   return String(value).padStart(2, '0')
@@ -116,8 +117,6 @@ export function ClockInPicker({ value, onChange }: Props) {
     setOpen(false)
   }
 
-  const buttonBase = 'inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-[9px] font-bold leading-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-
   const picker = (
     <div
       className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 p-2 backdrop-blur-[3px] sm:p-4"
@@ -151,12 +150,12 @@ export function ClockInPicker({ value, onChange }: Props) {
 
         <div className="shrink-0 border-t border-border bg-card px-4 py-3 sm:px-5 sm:py-4">
           <div className="grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => setOpen(false)} className={`${buttonBase} border border-border bg-background text-foreground hover:bg-accent`}>
+            <Button type="button" variant="outline" size="lg" onClick={() => setOpen(false)} className="w-full font-mono text-[9px] font-bold">
               Cancel
-            </button>
-            <button type="button" onClick={applyTime} className={`${buttonBase} bg-primary text-primary-foreground shadow-sm hover:opacity-90`}>
-              <Check className="size-3 shrink-0" />Apply
-            </button>
+            </Button>
+            <Button type="button" variant="default" size="lg" onClick={applyTime} className="w-full font-mono text-[9px] font-bold">
+              <Check className="size-3" />Apply
+            </Button>
           </div>
         </div>
       </div>
