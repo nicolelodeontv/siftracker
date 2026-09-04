@@ -116,6 +116,8 @@ export function ClockInPicker({ value, onChange }: Props) {
     setOpen(false)
   }
 
+  const buttonBase = 'inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md px-3 py-2 font-mono text-[9px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+
   const picker = (
     <div
       className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 p-2 backdrop-blur-[3px] sm:p-4"
@@ -149,8 +151,12 @@ export function ClockInPicker({ value, onChange }: Props) {
 
         <div className="shrink-0 border-t border-border bg-card px-4 py-3 sm:px-5 sm:py-4">
           <div className="grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => setOpen(false)} className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-border bg-background px-3 py-2.5 font-mono text-[10px] font-bold text-foreground transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Cancel</button>
-            <button type="button" onClick={applyTime} className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2.5 font-mono text-[10px] font-bold text-primary-foreground shadow-sm transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Check className="size-3.5 shrink-0" />Apply time</button>
+            <button type="button" onClick={() => setOpen(false)} className={`${buttonBase} border border-border bg-background text-foreground hover:bg-accent`}>
+              Cancel
+            </button>
+            <button type="button" onClick={applyTime} className={`${buttonBase} bg-primary text-primary-foreground shadow-sm hover:opacity-90`}>
+              <Check className="size-3.5 shrink-0" />Apply time
+            </button>
           </div>
         </div>
       </div>
