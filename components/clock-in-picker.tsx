@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Check, Clock3, X } from 'lucide-react'
+import { getCurrentClockIn } from '@/lib/use-philippine-clock'
 
 function pad(value: number) {
   return String(value).padStart(2, '0')
@@ -56,6 +57,12 @@ export function ClockInPicker({ value, onChange }: Props) {
       setOpen(true)
     }
 
+    const handleSetNow = () => {
+      onChange(getCurrentClockIn())
+      setError(false)
+      setOpen(false)
+    }
+
     const handleClickCapture = (event: MouseEvent) => {
       const target = event.target as HTMLElement | null
       const trigger = target?.closest?.('button[aria-label^="Edit Clock In"]')
@@ -67,12 +74,14 @@ export function ClockInPicker({ value, onChange }: Props) {
     }
 
     document.addEventListener('sif:edit-clock-in', handleOpen as EventListener)
+    document.addEventListener('sif:set-clock-in-now', handleSetNow as EventListener)
     document.addEventListener('click', handleClickCapture, true)
     return () => {
       document.removeEventListener('sif:edit-clock-in', handleOpen as EventListener)
+      document.removeEventListener('sif:set-clock-in-now', handleSetNow as EventListener)
       document.removeEventListener('click', handleClickCapture, true)
     }
-  }, [value])
+  }, [onChange, value])
 
   useEffect(() => {
     if (!open) return
