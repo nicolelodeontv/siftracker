@@ -7,6 +7,20 @@ body,
 main { width: 100%; min-width: 0; }
 main { min-height: 100dvh; overflow-x: clip; }
 
+*,
+*::before,
+*::after { box-sizing: border-box; }
+html,
+body { max-width: 100%; overflow-x: hidden; }
+body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+button,
+input,
+textarea,
+select,
+img,
+svg,
+video { max-width: 100%; }
+
 main > div.relative {
   width: min(100%, var(--ui-max-width));
   max-width: var(--ui-max-width);
@@ -121,9 +135,6 @@ main > div.relative > section:first-of-type p {
   line-height: 14px;
 }
 
-/* Quick Add intentionally removed. Keep no reserved row/space for it. */
-.workload-card__quick-add { display: none !important; }
-
 .workload-card__examples {
   flex: 0 0 39px;
   min-height: 39px;
@@ -134,6 +145,12 @@ main > div.relative > section:first-of-type p {
   column-gap: 8px;
   row-gap: 2px;
   overflow: hidden;
+}
+.workload-card__examples span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Total card occupies the sixth slot and matches the workload-card footprint. */
@@ -153,6 +170,12 @@ main > div.relative > section:first-of-type p {
 #shift,
 #tools { margin-top: 16px; }
 #dashboard { margin-bottom: 0; }
+#dashboard > div:first-child > div,
+#dashboard > div:nth-child(2),
+#dashboard > div:last-child { min-width: 0; }
+#dashboard > div:first-child { padding-block: 16px; }
+#dashboard > div:nth-child(2) > div { min-height: 76px; }
+#dashboard > div:last-child > div { min-height: 220px; }
 
 #shift { padding: clamp(12px, 1.6vw, 18px); }
 .shift-summary-grid {
@@ -235,13 +258,17 @@ html.theme-switching .theme-toggle { transform: none !important; }
 
 #calculator + #dashboard,
 #calculator ~ #dashboard { margin-top: 16px; }
-#dashboard > div:first-child { padding-block: 16px; }
-#dashboard > div:nth-child(2) > div { min-height: 76px; }
-#dashboard > div:last-child > div { min-height: 220px; }
 
 @media (max-width: 1100px) {
   #calculator > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) and (min-width: 768px) {
+  #dashboard > div:first-child > div { flex-direction: column; }
+  #dashboard > div:first-child > div > div:last-child { width: 100%; }
+  #dashboard > div:first-child > div > div:last-child > div { min-width: 0; }
+  #dashboard > div:first-child > div > div:last-child { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 767px) {
@@ -251,6 +278,9 @@ html.theme-switching .theme-toggle { transform: none !important; }
     padding-bottom: 88px;
   }
   main nav { min-height: 56px; gap: 8px; }
+  main nav > div { min-width: 0; }
+  main nav > div:first-child { flex: 1 1 auto; }
+  main nav > div:last-child { flex: 0 1 auto; max-width: 68%; }
   main > div.relative > section:first-of-type { padding-block: 22px 18px; }
   main > div.relative > section:first-of-type h1 { line-height: .96; }
 
@@ -259,9 +289,11 @@ html.theme-switching .theme-toggle { transform: none !important; }
     margin-bottom: 12px;
     gap: 10px;
   }
+  #calculator > .mb-3 > div:first-child { flex: 1 1 180px; min-width: 0; }
   #calculator > .mb-3 > div:last-child {
     width: 100%;
     justify-content: flex-start;
+    min-width: 0;
   }
   #calculator > .grid { grid-template-columns: 1fr; gap: 12px; }
 
@@ -272,6 +304,8 @@ html.theme-switching .theme-toggle { transform: none !important; }
   }
   .workload-card { padding: 14px; }
   .workload-card__input { height: 44px; font-size: 16px; }
+  .workload-card__input-row,
+  .workload-card__input-row > div { min-width: 0; }
 
   #workflow {
     padding: 14px;
@@ -284,7 +318,7 @@ html.theme-switching .theme-toggle { transform: none !important; }
     gap: 10px;
     height: 100%;
   }
-  #workflow > div > div { width: 100%; text-align: left; }
+  #workflow > div > div { width: 100%; text-align: left; min-width: 0; }
   #workflow > div > div:last-child {
     padding-top: 9px;
     border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
@@ -310,7 +344,7 @@ html.theme-switching .theme-toggle { transform: none !important; }
 
   #tools > button { width: 100%; }
   main footer { margin-top: 4px; padding-block: 10px 4px; }
-  .workload-card__examples { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workload-card__examples { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; }
 }
 
 @media (max-width: 520px) {
@@ -324,19 +358,52 @@ html.theme-switching .theme-toggle { transform: none !important; }
 }
 
 @media (max-width: 430px) {
+  main > div.relative { padding-inline: 10px; }
   main nav { gap: 6px; }
   main nav > div:first-child { gap: 7px; }
   main nav > div:first-child > span { font-size: 12px; }
-  main nav > div:last-child { gap: 5px; }
-  .pht-clock-display { max-width: 118px; }
-  .pht-clock-display > span { font-size: 6.5px; letter-spacing: .06em; }
+  main nav > div:last-child { gap: 5px; max-width: 72%; }
+  .pht-clock-display { max-width: 118px; flex: 0 1 auto; }
+  .pht-clock-display > span,
+  .pht-clock-display span { font-size: 6.5px; letter-spacing: .06em; }
   .pht-clock-display time { font-size: 8px; }
+  #dashboard > div:first-child > div > div:last-child { grid-template-columns: 1fr; }
+  #dashboard > div:nth-child(2) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #dashboard > div:nth-child(2) > div { border-right: 1px solid var(--border); }
+  #dashboard > div:nth-child(2) > div:nth-child(2n) { border-right: 0; }
+  .workload-card__examples { column-gap: 6px; }
+}
+
+@media (max-width: 380px) {
+  main > div.relative { padding-inline: 12px; }
+  main nav > div:last-child { gap: 4px; }
+  .pht-clock-display { max-width: 96px; }
+  .pht-clock-display span { font-size: 6px; letter-spacing: .05em; }
+  .pht-clock-display time { font-size: 8px; }
+  .theme-toggle {
+    width: 84px;
+    min-width: 84px;
+    max-width: 84px;
+    flex-basis: 84px;
+    padding-inline: 8px;
+    gap: 4px;
+  }
+  .theme-toggle__label {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+  }
+  #calculator > .mb-3 > div:last-child { width: 100%; justify-content: flex-start; }
+  #calculator > .mb-3 > div:last-child button { flex: 0 1 auto; }
+  .workload-card { padding-inline: 12px; }
 }
 
 @media (max-width: 360px) {
-  main nav > div:last-child { gap: 4px; }
-  .pht-clock-display { max-width: 102px; }
-  .pht-clock-display > span { font-size: 6px; }
+  main > div.relative { padding-inline: 8px; }
+  #dashboard > div:nth-child(2) > div { padding-inline: 9px; }
+  .workload-card { padding-inline: 10px; }
+  .workload-card__input-row { grid-template-columns: 30px minmax(0, 1fr) 30px; gap: 6px; }
+  .workload-card__quantity-button { width: 30px; min-width: 30px; }
 }
 
 @media (min-width: 1600px) { main > div.relative { padding-inline: 40px; } }
