@@ -24,7 +24,13 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
   const [copied, setCopied] = useState(false)
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
-  const workloadColors = ['var(--sif-cyan)', 'var(--sif-orange)', 'var(--sif-green)', 'var(--sif-yellow)'] as const
+  const workloadColors: Record<string, string> = {
+    lateOrders: 'var(--sif-orange)',
+    indiClip: 'var(--sif-cyan)',
+    indiEdit: 'var(--sif-green)',
+    indiBuild: 'var(--sif-yellow)',
+    teamEdit: 'var(--chart-1)',
+  }
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
   const status = shift.shiftStatus
   const statusClass = shift.shiftComplete
@@ -94,7 +100,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
               <div className="mt-2 flex justify-center"><button type="button" onClick={() => document.getElementById('clock-in-now-hidden')?.click()} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button></div>
             </div>
 
-            <div className="rounded-lg border border-[var(--sif-orange)]/30 bg-[var(--sif-orange)]/5 p-3">
+            <div className="relative rounded-lg border border-[var(--sif-orange)]/30 bg-[var(--sif-orange)]/5 p-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-[var(--sif-orange)]">Clock Out</span>
                 <div className="flex items-center gap-1.5">
@@ -118,7 +124,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
                 <div className={`h-full rounded-full transition-[width] duration-500 ${shift.shiftComplete ? 'bg-[var(--sif-green)]' : 'bg-[var(--sif-yellow)]'}`} style={{ width: `${progress}%` }} />
               </div>
-              <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"><span className={shift.shiftComplete ? 'text-[var(--sif-green)]' : 'text-[var(--sif-yellow)]'}>{progress}% complete</span><span className="text-[var(--sif-yellow)]">01:00:00 break</span></div>
+              <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"><span className={shift.shiftComplete ? 'text-[var(--sif-green)]' : 'text-[var(--sif-yellow)]'}>{progress}% complete</span><span className="text-[var(--sif-yellow)]">01:00:00 break</span></div>{copied && <div role="status" aria-live="polite" className="pointer-events-none absolute bottom-2 left-3 z-30"><span className="inline-flex items-center rounded border border-[var(--sif-green)]/25 bg-[var(--sif-green)]/10 px-1.5 py-1 text-[7px] font-semibold text-[var(--sif-green)] shadow-sm"><Check className="mr-1 size-2.5" />Copied</span></div>}
             </div>
           </div>
         </div>
@@ -134,11 +140,10 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
       <div className="grid gap-0 lg:grid-cols-[1.35fr_.65fr]">
         <div className="min-w-0 border-b border-border p-4 lg:border-b-0 lg:border-r sm:p-5">
           <div className="flex items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Workload breakdown</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Where today&apos;s time is going</h3></div><span className="font-mono text-[8px] font-bold text-muted-foreground">{breakdown.length} active</span></div>
-          <div className="mt-4 space-y-3">{breakdown.length > 0 ? breakdown.map((item, index) => { const color = workloadColors[index % workloadColors.length]; const share = totalSeconds > 0 ? Math.min(100, Math.round((item.duration / totalSeconds) * 100)) : 0; const width = Math.max(7, Math.round((item.duration / maxDuration) * 100)); return <div key={item.id} className="min-w-0"><div className="flex items-center justify-between gap-3 text-[8px] font-semibold"><div className="flex min-w-0 items-center gap-2"><span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" /><span className="truncate">{item.label}</span><span className="font-mono text-muted-foreground">{item.quantity}</span></div><span className="shrink-0 font-mono tabular-nums text-muted-foreground">{formatDuration(item.duration)} · {share}%</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${width}%`, backgroundColor: color }} /></div></div> }) : <div className="rounded-lg border border-dashed border-border bg-background/30 px-3 py-5 text-center text-[9px] text-muted-foreground">Add workload quantities above to populate the live breakdown.</div>}</div>
+          <div className="mt-4 space-y-3">{breakdown.length > 0 ? breakdown.map((item, index) => { const color = workloadColors[item.id] ?? 'var(--sif-cyan)'; const share = totalSeconds > 0 ? Math.min(100, Math.round((item.duration / totalSeconds) * 100)) : 0; const width = Math.max(7, Math.round((item.duration / maxDuration) * 100)); return <div key={item.id} className="min-w-0"><div className="flex items-center justify-between gap-3 text-[8px] font-semibold"><div className="flex min-w-0 items-center gap-2"><span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" /><span className="truncate">{item.label}</span><span className="font-mono text-muted-foreground">{item.quantity}</span></div><span className="shrink-0 font-mono tabular-nums text-muted-foreground">{formatDuration(item.duration)} · {share}%</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${width}%`, backgroundColor: color }} /></div></div> }) : <div className="rounded-lg border border-dashed border-border bg-background/30 px-3 py-5 text-center text-[9px] text-muted-foreground">Add workload quantities above to populate the live breakdown.</div>}</div>
         </div>
         <div className="min-w-0 p-4 sm:p-5"><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Shift timeline</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Your workday at a glance</h3><div className="relative mt-5 space-y-4 pl-1"><div className="absolute left-[4px] top-2 bottom-2 w-px bg-border" aria-hidden="true" /><TimelineItem label="Clock In" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(shift.clockInSeconds)} color="var(--sif-cyan)" /><TimelineItem label="Work complete" value={breakStartSeconds === null ? '—' : formatMilitaryTime(breakStartSeconds)} color="var(--sif-green)" /><TimelineItem label="Break" value={breakStartSeconds === null ? '—' : `${formatMilitaryTime(breakStartSeconds)} → ${formatMilitaryTime(breakEndSeconds)}`} color="var(--sif-yellow)" /><TimelineItem label="Clock Out" value={clockOutText} color="var(--sif-orange)" active={shift.shiftComplete} /></div><p className="mt-5 rounded-lg border border-border bg-background/35 px-3 py-2 text-[8px] leading-4 text-muted-foreground">Timeline uses Clock In + calculated workload time + the fixed 1-hour break.</p></div>
       </div>
-      {copied && <div role="status" aria-live="polite" className="fixed inset-x-0 bottom-4 z-50 flex justify-center px-4"><span className="inline-flex items-center rounded-full border border-[var(--sif-green)]/30 bg-card px-3 py-2 text-[9px] font-bold text-[var(--sif-green)] shadow-lg"><Check className="mr-1.5 size-3" />Copied clock out time</span></div>}
     </section>
   )
 }
