@@ -116,7 +116,7 @@ export function ClockInPicker({ value, onChange }: Props) {
     setOpen(false)
   }
 
-  const buttonBase = 'inline-flex min-h-10 w-full items-center justify-center gap-1.5 rounded-md px-3 py-2 font-mono text-[9px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+  const buttonBase = 'inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-[9px] font-bold leading-none transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
 
   const picker = (
     <div
@@ -155,7 +155,7 @@ export function ClockInPicker({ value, onChange }: Props) {
               Cancel
             </button>
             <button type="button" onClick={applyTime} className={`${buttonBase} bg-primary text-primary-foreground shadow-sm hover:opacity-90`}>
-              <Check className="size-3.5 shrink-0" />Apply time
+              <Check className="size-3 shrink-0" />Apply
             </button>
           </div>
         </div>
