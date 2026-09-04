@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Activity, Check, Clock3, Coffee, Copy, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
+import type { Workload } from '@/lib/workloads'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
 
@@ -12,15 +13,15 @@ type Props = {
   activeWorkloads: number
   activeWorkloadCount: number
   clockInTime: string
+  calculatedValues: Array<{ workload: Workload; input: string }>
 }
 
 type DashboardMetricProps = { icon: ReactNode; label: string; value: string; note: string }
 
 const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur'
 
-export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime }: Props) {
+export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime, calculatedValues }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
-  const [breakdown, setBreakdown] = useState<BreakdownItem[]>([])
   const [copied, setCopied] = useState(false)
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
@@ -31,21 +32,18 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
       ? 'bg-[var(--sif-green)]/10 text-[var(--sif-green)]'
       : 'bg-muted text-muted-foreground'
 
-  useEffect(() => {
-    const cards = Array.from(document.querySelectorAll<HTMLElement>('.workload-card[data-workload-id]'))
-    const next = cards
-      .map((card) => {
-        const id = card.dataset.workloadId ?? ''
-        const label = card.dataset.workloadLabel ?? id
-        const duration = Number(card.dataset.durationSeconds ?? 0)
-        const input = (card.querySelector('input') as HTMLInputElement | null)?.value ?? ''
-        const quantity = Math.max(0, calculateValue(input) ?? 0)
-        return { id, label, duration, quantity }
-      })
+  const breakdown = useMemo(
+    () => calculatedValues
+      .map(({ workload, input }) => ({
+        id: workload.id,
+        label: workload.label,
+        duration: Math.max(0, workload.minutesPerUnit * 60 * (calculateValue(input) ?? 0)),
+        quantity: Math.max(0, calculateValue(input) ?? 0),
+      }))
       .filter((item) => item.quantity > 0)
-      .sort((a, b) => b.duration - a.duration)
-    setBreakdown(next)
-  }, [totalSeconds, totalUnits, activeWorkloadCount])
+      .sort((a, b) => b.duration - a.duration),
+    [calculatedValues],
+  )
 
   const maxDuration = useMemo(() => Math.max(...breakdown.map((item) => item.duration), 1), [breakdown])
   const breakStartSeconds = shift.clockInSeconds === null ? null : shift.clockInSeconds + totalSeconds
