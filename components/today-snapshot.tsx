@@ -100,10 +100,17 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                 <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-[var(--sif-orange)]">Clock Out</span>
                 <div className="flex items-center gap-1.5">
                   <Clock3 className="size-3 shrink-0 text-[var(--sif-orange)]" />
-                  <button type="button" onClick={copyClockOut} disabled={shift.estimatedClockOutSeconds === null} aria-label={copied ? 'Clock out time copied' : 'Copy clock out time'} title={copied ? 'Copied' : 'Copy clock out time'} className="inline-flex size-7 shrink-0 items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm transition hover:bg-[var(--sif-orange)]/10 hover:border-[var(--sif-orange)]/60 disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40">
+                  <button
+                    type="button"
+                    onClick={copyClockOut}
+                    disabled={shift.estimatedClockOutSeconds === null}
+                    aria-label={copied ? 'Clock out time copied' : 'Copy clock out time'}
+                    title={copied ? 'Copied' : 'Copy clock out time'}
+                    className="clock-out-copy inline-flex size-7 shrink-0 items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40 disabled:pointer-events-none disabled:opacity-40"
+                  >
                     <span className="relative block size-3.5 shrink-0" aria-hidden="true">
-                      <Copy className={`absolute inset-0 size-3.5 transition-opacity ${copied ? 'opacity-0' : 'opacity-100'}`} />
-                      <Check className={`absolute inset-0 size-3.5 transition-opacity ${copied ? 'opacity-100' : 'opacity-0'}`} />
+                      <Copy className={`absolute inset-0 size-3.5 ${copied ? 'opacity-0' : 'opacity-100'}`} />
+                      <Check className={`absolute inset-0 size-3.5 ${copied ? 'opacity-100' : 'opacity-0'}`} />
                     </span>
                   </button>
                 </div>
