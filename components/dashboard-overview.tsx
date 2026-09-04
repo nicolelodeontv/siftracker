@@ -34,7 +34,7 @@ export function DashboardOverview({ totalSeconds, totalUnits, workloads, calcula
     : totalUnits > 0
       ? 'border-[var(--sif-green)]/30 bg-[var(--sif-green)]/10 text-[var(--sif-green)]'
       : 'border-border bg-muted text-muted-foreground'
-  const workedClass = shift.shiftComplete ? 'text-[var(--sif-green)]' : 'text-[var(--sif-green)]'
+  const workedClass = 'text-[var(--sif-green)]'
   const remainingClass = shift.shiftComplete
     ? 'text-[var(--sif-green)]'
     : shift.estimatedClockOutSeconds === null
@@ -110,8 +110,8 @@ export function DashboardOverview({ totalSeconds, totalUnits, workloads, calcula
                 type="button"
                 onClick={copyClockOut}
                 disabled={shift.estimatedClockOutSeconds === null}
-                aria-label="Copy estimated clock out time"
-                title="Copy clock out time"
+                aria-label={copied ? 'Clock out time copied' : 'Copy estimated clock out time'}
+                title={copied ? 'Copied' : 'Copy clock out time'}
                 className="inline-flex size-6 items-center justify-center rounded-md border border-border bg-card/70 text-muted-foreground hover:border-[var(--sif-green)]/40 hover:text-[var(--sif-green)] disabled:pointer-events-none disabled:opacity-40"
               >
                 {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
