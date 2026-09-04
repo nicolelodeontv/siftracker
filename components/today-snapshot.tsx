@@ -108,7 +108,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
               <button type="button" onClick={copyClockOut} disabled={shift.estimatedClockOutSeconds === null} title="Copy HH:mm:ss" className="mt-1 block w-full cursor-pointer text-left disabled:cursor-default">
                 <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
               </button>
-              <span aria-live="polite" className={`mt-1 block text-[7px] font-semibold ${copied ? 'text-[var(--sif-green)]' : 'text-transparent'}`}>{copied ? 'Copied' : 'Copied'}</span>
+              <span aria-live="polite" className={`mt-1 block h-3 text-[7px] font-semibold ${copied ? 'text-[var(--sif-green)]' : 'text-transparent'}`}>{copied ? 'Copied' : 'Copied'}</span>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
                 <div className={`h-full rounded-full transition-[width] duration-500 ${shift.shiftComplete ? 'bg-[var(--sif-green)]' : 'bg-[var(--sif-yellow)]'}`} style={{ width: `${progress}%` }} />
               </div>
