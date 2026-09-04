@@ -111,16 +111,15 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                   </button>
                 </div>
               </div>
-              <button type="button" onClick={copyClockOut} title="Copy HH:mm:ss" className="relative z-10 mt-1 block w-full cursor-pointer text-left">
-                <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
-              </button>
-              <div className="mt-1 flex h-3 items-center justify-center" aria-live="polite">
+              <div className="relative mt-1 min-h-8">
                 {copied && (
-                  <span className="pointer-events-none inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[10px] font-semibold shadow-lg">
-                    <Check className="size-3 text-primary" />
-                    Copied
+                  <span className="pointer-events-none absolute left-0 top-1/2 z-0 -translate-y-1/2 rounded-md border border-[var(--sif-orange)]/25 bg-[var(--sif-orange)]/10 px-2 py-1 text-[8px] font-bold text-[var(--sif-orange)] shadow-sm">
+                    <Check className="mr-1 inline size-2.5" />Copied
                   </span>
                 )}
+                <button type="button" onClick={copyClockOut} title="Copy HH:mm:ss" className="relative z-10 block w-full cursor-pointer text-left">
+                  <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
+                </button>
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
                 <div className={`h-full rounded-full transition-[width] duration-500 ${shift.shiftComplete ? 'bg-[var(--sif-green)]' : 'bg-[var(--sif-yellow)]'}`} style={{ width: `${progress}%` }} />
