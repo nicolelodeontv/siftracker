@@ -5,7 +5,7 @@ import { Activity, Clock3, Coffee, Gauge, Timer, TrendingUp, Play } from 'lucide
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 import { calculateShift } from '@/lib/shift'
-import { getCurrentClockIn, usePhilippineClock } from '@/lib/use-philippine-clock'
+import { usePhilippineClock } from '@/lib/use-philippine-clock'
 
 type Props = {
   totalSeconds: number
@@ -14,14 +14,13 @@ type Props = {
   activeWorkloadCount: number
   clockInTime: string
   calculatedValues: Array<{ workload: Workload; input: string }>
-  onClockInNow: () => void
 }
 
 type DashboardMetricProps = { icon: ReactNode; label: string; value: string; note: string }
 
 const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur'
 
-export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime, calculatedValues, onClockInNow }: Props) {
+export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime, calculatedValues }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const workloadColors: Record<string, string> = {
@@ -86,7 +85,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                 <TrendingUp className="size-3 text-primary" />
               </div>
               <button type="button" className="clock-in-display cursor-pointer" aria-label={`Edit Clock In time, currently ${clockInTime}`} suppressHydrationWarning title="Edit Clock In time" onClick={() => document.dispatchEvent(new Event('sif:edit-clock-in'))}>{clockInTime || 'Choose time'}</button>
-              <div className="mt-2 flex justify-center"><button type="button" onClick={onClockInNow} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button></div>
+              <div className="mt-2 flex justify-center"><button type="button" onClick={() => document.dispatchEvent(new Event('sif:set-clock-in-now'))} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button></div>
             </div>
 
             <div className="relative rounded-lg border border-[var(--sif-orange)]/30 bg-[var(--sif-orange)]/5 p-3">
