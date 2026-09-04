@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, type RefObject } from 'react'
-import { Copy, Play, Timer } from 'lucide-react'
+import { Copy, Timer } from 'lucide-react'
 import { formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
@@ -21,8 +21,8 @@ type SummaryProps = BaseProps & {
   onCopyClockOut: (value: string) => void
 }
 
-export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, onClockInChange, onSetClockInNow, onCopyClockOut }: SummaryProps) {
-  const { time, date, seconds: nowSeconds } = usePhilippineClock()
+export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, onCopyClockOut }: SummaryProps) {
+  const { date, seconds: nowSeconds } = usePhilippineClock()
   const fallbackRef = useRef<HTMLElement | null>(null)
   const sectionRef = shiftRef ?? fallbackRef
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
@@ -66,24 +66,6 @@ export function ShiftSummary({ totalSeconds, totalUnits, clockInTime, shiftRef, 
       </div>
 
       <div className="shift-summary-grid">
-        <div className="shift-summary-card">
-          <span className="shift-summary-label">Clock in</span>
-          <button
-            type="button"
-            className="clock-in-display cursor-pointer"
-            aria-label={`Edit Clock In time, currently ${clockInTime}`}
-            suppressHydrationWarning
-            title="Edit Clock In time"
-            onClick={() => document.getElementById('clock-in-hidden')?.click()}
-          >
-            {clockInTime || 'Choose time'}
-          </button>
-          <input id="clock-in-hidden" type="time" step="1" value={clockInTime} onChange={(event) => onClockInChange(event.target.value)} className="sr-only" tabIndex={-1} aria-hidden="true" />
-          <div className="mt-2 flex justify-center">
-            <button type="button" onClick={() => onSetClockInNow(time)} className="rounded-full border border-border bg-card px-5 py-2 text-[10px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button>
-          </div>
-        </div>
-
         <SummaryMetric label="Worked" value={formatDuration(totalSeconds)} note="Workload time only." />
         <SummaryMetric label="Break" value="01:00:00" note="Fixed 1-hour break." />
 
