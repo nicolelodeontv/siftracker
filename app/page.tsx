@@ -311,7 +311,7 @@ export default function Page() {
         </div>
       </div>
 
-      <ClockInPicker />
+      <ClockInPicker value={clockInTime} onChange={setClockInTime} />
     </main>
   )
 }
