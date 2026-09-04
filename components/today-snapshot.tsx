@@ -88,9 +88,8 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
               >
                 {clockInTime || 'Choose time'}
               </button>
-              <input id="clock-in-hidden" type="time" step="1" value={clockInTime} onChange={(event) => document.dispatchEvent(new CustomEvent('sif:clock-in-change', { detail: event.target.value }))} className="sr-only" tabIndex={-1} aria-hidden="true" />
               <div className="mt-2 flex justify-center">
-                <button type="button" onClick={() => document.dispatchEvent(new CustomEvent('sif:set-clock-in-now', { detail: time }))} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button>
+                <button type="button" onClick={() => document.getElementById('clock-in-now-hidden')?.click()} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button>
               </div>
             </div>
 
