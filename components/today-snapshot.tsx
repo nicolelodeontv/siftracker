@@ -17,7 +17,7 @@ type Props = {
   onClockInChange?: (value: string) => void
 }
 
-type DashboardMetricProps = { icon: ReactNode; label: string; value: string; note: string }
+type DashboardMetricProps = { icon: ReactNode; label: string; value: string; note: string; accent: string }
 
 const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur'
 
@@ -30,6 +30,16 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
     indiEdit: 'var(--chart-3)',
     indiBuild: 'var(--chart-4)',
     teamEdit: 'var(--chart-1)',
+  }
+  const liveColors = {
+    live: '#22D3EE',
+    remaining: '#FACC15',
+    clockIn: '#A78BFA',
+    clockOut: '#FB7185',
+    active: '#34D399',
+    work: '#60A5FA',
+    break: '#F472B6',
+    status: '#F59E0B',
   }
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
   const status = shift.shiftStatus
@@ -70,7 +80,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><Gauge className="size-4" /></div>
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg" style={{ backgroundColor: `color-mix(in srgb, ${liveColors.live} 12%, transparent)`, color: liveColors.live }}><Gauge className="size-4" /></div>
               <div>
                 <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Dashboard / Live Shift</p>
                 <p className="mt-0.5 text-xs font-semibold">Production command center</p>
@@ -81,43 +91,43 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                 <span className={`inline-flex rounded-full px-2.5 py-1 text-[8px] font-bold uppercase tracking-[0.13em] ${statusClass}`}>{status}</span>
                 <p className="mt-1.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{date} · PHT {time}</p>
               </div>
-              <DashboardLiveMetric label="Live worked" value={formatDuration(shift.elapsedShiftSeconds)} />
-              <DashboardLiveMetric label="Time remaining" value={shift.estimatedClockOutSeconds === null ? '—' : formatDuration(shift.timeLeftSeconds)} emphasis />
+              <DashboardLiveMetric label="Live worked" value={formatDuration(shift.elapsedShiftSeconds)} accent={liveColors.live} />
+              <DashboardLiveMetric label="Time remaining" value={shift.estimatedClockOutSeconds === null ? '—' : formatDuration(shift.timeLeftSeconds)} accent={liveColors.remaining} />
             </div>
           </div>
 
           <div className="grid w-full shrink-0 gap-2 sm:w-[28rem] sm:grid-cols-2">
-            <div className="rounded-lg border border-border bg-card p-3">
+            <div className="rounded-lg border p-3" style={{ borderColor: `color-mix(in srgb, ${liveColors.clockIn} 30%, var(--border))`, backgroundColor: `color-mix(in srgb, ${liveColors.clockIn} 5%, transparent)` }}>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Clock In</span>
-                <TrendingUp className="size-3 text-primary" />
+                <span className="text-[7px] font-bold uppercase tracking-[0.14em]" style={{ color: liveColors.clockIn }}>Clock In</span>
+                <TrendingUp className="size-3" style={{ color: liveColors.clockIn }} />
               </div>
               <button type="button" className="clock-in-display cursor-pointer" aria-label={`Edit Clock In time, currently ${clockInTime}`} suppressHydrationWarning title="Edit Clock In time" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))}>{clockInTime || 'Choose time'}</button>
               <div className="mt-2 flex justify-center"><button type="button" onClick={setClockInNow} className="inline-flex min-h-8 items-center justify-center rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${time}`}><Play className="mr-1 inline size-2.5" />NOW · {time}</button></div>
             </div>
 
-            <div className="relative rounded-lg border border-[var(--sif-orange)]/30 bg-[var(--sif-orange)]/5 p-3">
+            <div className="relative rounded-lg border p-3" style={{ borderColor: `color-mix(in srgb, ${liveColors.clockOut} 30%, transparent)`, backgroundColor: `color-mix(in srgb, ${liveColors.clockOut} 5%, transparent)` }}>
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-[var(--sif-orange)]">Clock Out</span>
-                <Clock3 className="size-3 shrink-0 text-[var(--sif-orange)]" />
+                <span className="text-[7px] font-bold uppercase tracking-[0.14em]" style={{ color: liveColors.clockOut }}>Clock Out</span>
+                <Clock3 className="size-3 shrink-0" style={{ color: liveColors.clockOut }} />
               </div>
               <div className="relative mt-1 min-h-8">
-                <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
+                <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em]" style={{ color: liveColors.clockOut }}>{clockOutText}</strong>
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
-                <div className={`h-full rounded-full transition-[width] duration-500 ${shift.shiftComplete ? 'bg-[var(--sif-green)]' : 'bg-[var(--sif-yellow)]'}`} style={{ width: `${progress}%` }} />
+                <div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${progress}%`, backgroundColor: shift.shiftComplete ? 'var(--sif-green)' : liveColors.remaining }} />
               </div>
-              <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"><span className={shift.shiftComplete ? 'text-[var(--sif-green)]' : 'text-[var(--sif-yellow)]'}>{progress}% complete</span><span className="text-[var(--sif-yellow)]">01:00:00 break</span></div>
+              <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em]"><span style={{ color: shift.shiftComplete ? 'var(--sif-green)' : liveColors.remaining }}>{progress}% complete</span><span style={{ color: liveColors.break }}>01:00:00 break</span></div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 border-b border-border sm:grid-cols-4">
-        <DashboardMetric icon={<Activity className="size-3" />} label="Active workloads" value={`${activeWorkloadCount}/${activeWorkloads}`} note={`${totalUnits} total units`} />
-        <DashboardMetric icon={<Timer className="size-3" />} label="Work time" value={formatDuration(totalSeconds)} note="Calculated workload" />
-        <DashboardMetric icon={<Coffee className="size-3" />} label="Break" value="01:00:00" note="Fixed 1-hour break" />
-        <DashboardMetric icon={<TrendingUp className="size-3" />} label="Status" value={status} note="Live shift status" />
+        <DashboardMetric icon={<Activity className="size-3" />} label="Active workloads" value={`${activeWorkloadCount}/${activeWorkloads}`} note={`${totalUnits} total units`} accent={liveColors.active} />
+        <DashboardMetric icon={<Timer className="size-3" />} label="Work time" value={formatDuration(totalSeconds)} note="Calculated workload" accent={liveColors.work} />
+        <DashboardMetric icon={<Coffee className="size-3" />} label="Break" value="01:00:00" note="Fixed 1-hour break" accent={liveColors.break} />
+        <DashboardMetric icon={<TrendingUp className="size-3" />} label="Status" value={status} note="Live shift status" accent={liveColors.status} />
       </div>
 
       <div className="grid gap-0 lg:grid-cols-[1.35fr_.65fr]">
@@ -131,8 +141,8 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
   )
 }
 
-function DashboardLiveMetric({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) { return <div><span className="block text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</span><strong className={`mt-0.5 block font-mono text-xl font-bold tabular-nums ${emphasis ? 'text-primary' : ''}`}>{value}</strong></div> }
-function DashboardMetric({ icon, label, value, note }: DashboardMetricProps) { return <div className="min-w-0 border-r border-border px-3 py-3 last:border-r-0 sm:px-4"><div className="flex items-center gap-1.5 text-muted-foreground">{icon}<span className="text-[7px] font-bold uppercase tracking-[0.14em]">{label}</span></div><strong className="mt-1 block truncate font-mono text-sm font-bold tabular-nums tracking-[-0.02em]">{value}</strong><span className="mt-0.5 block truncate text-[7px] text-muted-foreground">{note}</span></div> }
+function DashboardLiveMetric({ label, value, accent }: { label: string; value: string; accent: string }) { return <div><span className="block text-[7px] font-bold uppercase tracking-[0.14em]" style={{ color: accent }}>{label}</span><strong className="mt-0.5 block font-mono text-xl font-bold tabular-nums" style={{ color: accent }}>{value}</strong></div> }
+function DashboardMetric({ icon, label, value, note, accent }: DashboardMetricProps) { return <div className="min-w-0 border-r border-border px-3 py-3 last:border-r-0 sm:px-4"><div className="flex items-center gap-1.5" style={{ color: accent }}>{icon}<span className="text-[7px] font-bold uppercase tracking-[0.14em]">{label}</span></div><strong className="mt-1 block truncate font-mono text-sm font-bold tabular-nums tracking-[-0.02em]" style={{ color: accent }}>{value}</strong><span className="mt-0.5 block truncate text-[7px] text-muted-foreground">{note}</span></div> }
 function TimelineItem({ label, value, accent, active }: { label: string; value: string; accent: 'violet' | 'blue' | 'pink' | 'red'; active?: boolean }) {
   const colors = {
     violet: '#A78BFA',
@@ -161,7 +171,7 @@ function TimelineItem({ label, value, accent, active }: { label: string; value: 
       </div>
       <div className="min-w-0 flex-1">
         <span className="block text-[7px] font-bold uppercase tracking-[0.14em]" style={{ color }}>{label}</span>
-        <strong className={`mt-0.5 block truncate font-mono text-[11px] font-bold tabular-nums ${active ? '' : 'text-muted-foreground'}`} style={active ? { color } : undefined}>{value}</strong>
+        <strong className="mt-0.5 block truncate font-mono text-[11px] font-bold tabular-nums" style={{ color, opacity: active ? 1 : 0.75 }}>{value}</strong>
       </div>
     </div>
   )
