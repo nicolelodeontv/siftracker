@@ -5,7 +5,7 @@ import { Activity, Clock3, Coffee, Gauge, Timer, TrendingUp, Play } from 'lucide
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 import { calculateShift } from '@/lib/shift'
-import { usePhilippineClock } from '@/lib/use-philippine-clock'
+import { getCurrentClockIn, usePhilippineClock } from '@/lib/use-philippine-clock'
 
 type Props = {
   totalSeconds: number
@@ -14,13 +14,14 @@ type Props = {
   activeWorkloadCount: number
   clockInTime: string
   calculatedValues: Array<{ workload: Workload; input: string }>
+  onClockInNow: () => void
 }
 
 type DashboardMetricProps = { icon: ReactNode; label: string; value: string; note: string }
 
 const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur'
 
-export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime, calculatedValues }: Props) {
+export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime, calculatedValues, onClockInNow }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const workloadColors: Record<string, string> = {
@@ -84,8 +85,8 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                 <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Clock In</span>
                 <TrendingUp className="size-3 text-primary" />
               </div>
-              <button type="button" className="clock-in-display cursor-pointer" aria-label={`Edit Clock In time, currently ${clockInTime}`} suppressHydrationWarning title="Edit Clock In time" onClick={() => document.getElementById('clock-in-hidden')?.click()}>{clockInTime || 'Choose time'}</button>
-              <div className="mt-2 flex justify-center"><button type="button" onClick={() => document.getElementById('clock-in-now-hidden')?.click()} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button></div>
+              <button type="button" className="clock-in-display cursor-pointer" aria-label={`Edit Clock In time, currently ${clockInTime}`} suppressHydrationWarning title="Edit Clock In time" onClick={() => document.dispatchEvent(new Event('sif:edit-clock-in'))}>{clockInTime || 'Choose time'}</button>
+              <div className="mt-2 flex justify-center"><button type="button" onClick={onClockInNow} className="rounded-full border border-border bg-background px-4 py-1.5 text-[9px] font-bold shadow-sm transition hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Play className="mr-1 inline size-2.5" />NOW · {time}</button></div>
             </div>
 
             <div className="relative rounded-lg border border-[var(--sif-orange)]/30 bg-[var(--sif-orange)]/5 p-3">
@@ -115,7 +116,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
       <div className="grid gap-0 lg:grid-cols-[1.35fr_.65fr]">
         <div className="min-w-0 border-b border-border p-4 lg:border-b-0 lg:border-r sm:p-5">
           <div className="flex items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Workload breakdown</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Where today&apos;s time is going</h3></div><span className="font-mono text-[8px] font-bold text-muted-foreground">{breakdown.length} active</span></div>
-          <div className="mt-4 space-y-3">{breakdown.length > 0 ? breakdown.map((item, index) => { const color = workloadColors[item.id] ?? 'var(--sif-cyan)'; const share = totalSeconds > 0 ? Math.min(100, Math.round((item.duration / totalSeconds) * 100)) : 0; const width = Math.max(7, Math.round((item.duration / maxDuration) * 100)); return <div key={item.id} className="min-w-0"><div className="flex items-center justify-between gap-3 text-[8px] font-semibold"><div className="flex min-w-0 items-center gap-2"><span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" /><span className="truncate">{item.label}</span><span className="font-mono text-muted-foreground">{item.quantity}</span></div><span className="shrink-0 font-mono tabular-nums text-muted-foreground">{formatDuration(item.duration)} · {share}%</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${width}%`, backgroundColor: color }} /></div></div> }) : <div className="rounded-lg border border-dashed border-border bg-background/30 px-3 py-5 text-center text-[9px] text-muted-foreground">Add workload quantities above to populate the live breakdown.</div>}</div>
+          <div className="mt-4 space-y-3">{breakdown.length > 0 ? breakdown.map((item) => { const color = workloadColors[item.id] ?? 'var(--sif-cyan)'; const share = totalSeconds > 0 ? Math.min(100, Math.round((item.duration / totalSeconds) * 100)) : 0; const width = Math.max(7, Math.round((item.duration / maxDuration) * 100)); return <div key={item.id} className="min-w-0"><div className="flex items-center justify-between gap-3 text-[8px] font-semibold"><div className="flex min-w-0 items-center gap-2"><span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" /><span className="truncate">{item.label}</span><span className="font-mono text-muted-foreground">{item.quantity}</span></div><span className="shrink-0 font-mono tabular-nums text-muted-foreground">{formatDuration(item.duration)} · {share}%</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${width}%`, backgroundColor: color }} /></div></div> }) : <div className="rounded-lg border border-dashed border-border bg-background/30 px-3 py-5 text-center text-[9px] text-muted-foreground">Add workload quantities above to populate the live breakdown.</div>}</div>
         </div>
         <div className="min-w-0 p-4 sm:p-5"><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Shift timeline</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Your workday at a glance</h3><div className="relative mt-5 space-y-4 pl-1"><div className="absolute left-[4px] top-2 bottom-2 w-px bg-border" aria-hidden="true" /><TimelineItem label="Clock In" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(shift.clockInSeconds)} color="var(--sif-cyan)" /><TimelineItem label="Work complete" value={breakStartSeconds === null ? '—' : formatMilitaryTime(breakStartSeconds)} color="var(--sif-green)" /><TimelineItem label="Break" value={breakStartSeconds === null ? '—' : `${formatMilitaryTime(breakStartSeconds)} → ${formatMilitaryTime(breakEndSeconds)}`} color="var(--sif-yellow)" /><TimelineItem label="Clock Out" value={clockOutText} color="var(--sif-orange)" active={shift.shiftComplete} /></div><p className="mt-5 rounded-lg border border-border bg-background/35 px-3 py-2 text-[8px] leading-4 text-muted-foreground">Timeline uses Clock In + calculated workload time + the fixed 1-hour break.</p></div>
       </div>
