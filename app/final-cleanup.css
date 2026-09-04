@@ -1,0 +1,86 @@
+/* Final responsive cleanup: loaded last so component-specific rules stay predictable. */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html,
+body { width: 100%; max-width: 100%; overflow-x: hidden; }
+
+body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+
+button,
+input,
+textarea,
+select { max-width: 100%; font: inherit; }
+
+img,
+svg,
+video { max-width: 100%; }
+
+main { width: 100%; min-width: 0; }
+main > div.relative { width: min(100%, var(--ui-max-width, 1360px)); min-width: 0; }
+
+/* Keep dashboard cards readable instead of forcing narrow columns. */
+#dashboard > div:first-child > div,
+#dashboard > div:nth-child(2),
+#dashboard > div:last-child { min-width: 0; }
+
+/* Compact desktop/tablet metrics gracefully when space gets tight. */
+@media (max-width: 900px) and (min-width: 768px) {
+  #dashboard > div:first-child > div { flex-direction: column; }
+  #dashboard > div:first-child > div > div:last-child { width: 100%; }
+  #dashboard > div:first-child > div > div:last-child > div { min-width: 0; }
+  #dashboard > div:first-child > div > div:last-child { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Phone layout: one clean reading order, no accidental horizontal scrolling. */
+@media (max-width: 767px) {
+  main > div.relative { padding-inline: 12px; }
+
+  nav { max-width: 100%; }
+  nav > div { min-width: 0; }
+
+  #dashboard,
+  #tools,
+  #settings,
+  #workflow,
+  .workload-card { max-width: 100%; }
+
+  #dashboard > div:first-child > div { gap: 12px; }
+  #dashboard > div:first-child > div > div:first-child { width: 100%; }
+  #dashboard > div:first-child > div > div:last-child { width: 100%; }
+
+  #dashboard > div:first-child > div > div:last-child { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+  .shift-summary-grid { grid-template-columns: 1fr; }
+
+  .workload-card__examples > * { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .workload-card__quick-add > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+}
+
+@media (max-width: 430px) {
+  main > div.relative { padding-inline: 10px; }
+
+  #dashboard > div:first-child > div > div:last-child { grid-template-columns: 1fr; }
+
+  #dashboard > div:nth-child(2) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #dashboard > div:nth-child(2) > div { border-right: 1px solid var(--border); }
+  #dashboard > div:nth-child(2) > div:nth-child(2n) { border-right: 0; }
+
+  .workload-card__input-row { max-width: 100%; }
+  .workload-card__quick-add { max-width: 100%; }
+}
+
+@media (max-width: 360px) {
+  main > div.relative { padding-inline: 8px; }
+
+  #dashboard > div:nth-child(2) > div { padding-inline: 9px; }
+  .workload-card { padding-inline: 10px; }
+  .workload-card__input-row { grid-template-columns: 30px minmax(0, 1fr) 30px; gap: 6px; }
+  .workload-card__quantity-button { width: 30px; min-width: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
