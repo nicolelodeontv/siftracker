@@ -38,9 +38,23 @@ export const viewport: Viewport = {
   ],
 }
 
+const themeBootstrap = `(() => {
+  try {
+    const saved = localStorage.getItem('sif-theme')
+    const theme = saved === 'dark' || saved === 'light'
+      ? saved
+      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    document.documentElement.style.colorScheme = theme
+  } catch {}
+})()`
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} bg-background`}>
+    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} bg-background`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body className="font-sans antialiased">
         {children}
         <WelcomePopup />
