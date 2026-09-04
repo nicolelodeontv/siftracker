@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo, useState, type ReactNode } from 'react'
-import { Activity, Check, Clock3, Coffee, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
+import { useMemo, type ReactNode } from 'react'
+import { Activity, Clock3, Coffee, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 import { calculateShift } from '@/lib/shift'
@@ -22,13 +22,12 @@ const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30p
 
 export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime, calculatedValues }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
-  const [copied, setCopied] = useState(false)
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const workloadColors: Record<string, string> = {
     lateOrders: 'var(--sif-orange)',
-    indiClip: 'var(--sif-cyan)',
-    indiEdit: 'var(--sif-green)',
-    indiBuild: 'var(--sif-yellow)',
+    indiClip: 'var(--chart-2)',
+    indiEdit: 'var(--chart-3)',
+    indiBuild: 'var(--chart-4)',
     teamEdit: 'var(--chart-1)',
   }
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
@@ -56,17 +55,6 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
   const breakStartSeconds = shift.clockInSeconds === null ? null : shift.clockInSeconds + totalSeconds
   const breakEndSeconds = breakStartSeconds === null ? null : breakStartSeconds + 60 * 60
   const clockOutText = formatMilitaryTime(shift.estimatedClockOutSeconds)
-
-  async function copyClockOut() {
-    if (shift.estimatedClockOutSeconds === null) return
-    try {
-      await navigator.clipboard.writeText(clockOutText)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1400)
-    } catch {
-      setCopied(false)
-    }
-  }
 
   return (
     <section id="dashboard" aria-label="SIF dashboard" className={`${cardClass} mb-4 overflow-hidden`}>
@@ -106,15 +94,12 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                 <Clock3 className="size-3 shrink-0 text-[var(--sif-orange)]" />
               </div>
               <div className="relative mt-1 min-h-8">
-                <button type="button" onClick={copyClockOut} aria-label="Copy clock out time" title="Copy clock out time" className="block w-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40">
-                  <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
-                  {copied && <span role="status" aria-live="polite" className="mt-0.5 block text-[7px] font-semibold text-[var(--sif-green)]"><Check className="mr-1 inline size-2.5" />Copied</span>}
-                </button>
+                <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
                 <div className={`h-full rounded-full transition-[width] duration-500 ${shift.shiftComplete ? 'bg-[var(--sif-green)]' : 'bg-[var(--sif-yellow)]'}`} style={{ width: `${progress}%` }} />
               </div>
-              <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"><span className={shift.shiftComplete ? 'text-[var(--sif-green)]' : 'text-[var(--sif-yellow)]'}>{progress}% complete</span><span className="text-[var(--sif-yellow)]">01:00:00 break</span></div>{copied && <div role="status" aria-live="polite" className="pointer-events-none absolute bottom-2 left-3 z-30"><span className="inline-flex items-center rounded border border-[var(--sif-green)]/25 bg-[var(--sif-green)]/10 px-1.5 py-1 text-[7px] font-semibold text-[var(--sif-green)] shadow-sm"><Check className="mr-1 size-2.5" />Copied</span></div>}
+              <div className="mt-1.5 flex items-center justify-between text-[7px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"><span className={shift.shiftComplete ? 'text-[var(--sif-green)]' : 'text-[var(--sif-yellow)]'}>{progress}% complete</span><span className="text-[var(--sif-yellow)]">01:00:00 break</span></div>
             </div>
           </div>
         </div>
