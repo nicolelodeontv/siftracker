@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { Activity, Clock3, Coffee, Copy, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
+import { Activity, Check, Clock3, Coffee, Copy, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
@@ -21,6 +21,7 @@ const cardClass = 'rounded-xl border border-border bg-card/85 shadow-[0_10px_30p
 export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activeWorkloadCount, clockInTime }: Props) {
   const { seconds: nowSeconds, time, date } = usePhilippineClock()
   const [breakdown, setBreakdown] = useState<BreakdownItem[]>([])
+  const [copied, setCopied] = useState(false)
   const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
   const status = shift.shiftStatus
@@ -55,8 +56,10 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
     if (shift.estimatedClockOutSeconds === null) return
     try {
       await navigator.clipboard.writeText(clockOutText)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1400)
     } catch {
-      // Clipboard may be unavailable in some browser contexts; keep the UI unchanged.
+      setCopied(false)
     }
   }
 
@@ -103,9 +106,9 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
                     disabled={shift.estimatedClockOutSeconds === null}
                     aria-label="Copy clock out time"
                     title="Copy clock out time"
-                    className="clock-out-copy inline-flex size-7 shrink-0 transform-none items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm transition-none hover:transform-none hover:bg-[var(--sif-orange)]/10 hover:border-[var(--sif-orange)]/60 active:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40 disabled:pointer-events-none disabled:opacity-40"
+                    className="clock-out-copy inline-flex size-7 shrink-0 items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40 disabled:pointer-events-none disabled:opacity-40"
                   >
-                    <Copy className="size-3.5 shrink-0" aria-hidden="true" />
+                    <Copy className="size-3.5 shrink-0" />
                   </button>
                 </div>
               </div>
@@ -136,6 +139,15 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
         </div>
         <div className="min-w-0 p-4 sm:p-5"><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Shift timeline</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Your workday at a glance</h3><div className="relative mt-5 space-y-4 pl-1"><div className="absolute left-[4px] top-2 bottom-2 w-px bg-border" aria-hidden="true" /><TimelineItem label="Clock In" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(shift.clockInSeconds)} active /><TimelineItem label="Work complete" value={breakStartSeconds === null ? '—' : formatMilitaryTime(breakStartSeconds)} /><TimelineItem label="Break" value={breakStartSeconds === null ? '—' : `${formatMilitaryTime(breakStartSeconds)} → ${formatMilitaryTime(breakEndSeconds)}`} breakPoint /><TimelineItem label="Clock Out" value={clockOutText} active={shift.shiftComplete} /></div><p className="mt-5 rounded-lg border border-border bg-background/35 px-3 py-2 text-[8px] leading-4 text-muted-foreground">Timeline uses Clock In + calculated workload time + the fixed 1-hour break.</p></div>
       </div>
+
+      {copied && (
+        <div className="pointer-events-none fixed inset-x-0 bottom-5 z-[100] flex justify-center px-4" aria-live="polite" role="status">
+          <div className="flex items-center gap-2 rounded-full border border-[var(--sif-green)]/40 bg-card px-3 py-2 text-[9px] font-semibold text-[var(--sif-green)] shadow-lg shadow-black/20">
+            <Check className="size-3.5 shrink-0" />
+            <span>Copied</span>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
