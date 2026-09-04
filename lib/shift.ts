@@ -2,7 +2,6 @@ import { calculateValue, getElapsedSeconds, timeToSeconds } from '@/lib/calculat
 import type { Workload } from '@/lib/workloads'
 
 export const BREAK_SECONDS = 60 * 60
-export const DAY_MILLISECONDS = 24 * 60 * 60 * 1000
 
 export type CalculatedWorkload = {
   workload: Workload
