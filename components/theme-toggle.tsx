@@ -26,7 +26,7 @@ export function ThemeToggle() {
   useEffect(() => {
     const preferred = getPreferredTheme()
     applyTheme(preferred)
-    setTheme(preferred)
+    queueMicrotask(() => setTheme(preferred))
   }, [])
 
   function toggleTheme() {
