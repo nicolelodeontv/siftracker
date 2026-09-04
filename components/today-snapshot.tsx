@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, type ReactNode } from 'react'
-import { Activity, Check, Clock3, Coffee, Copy, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
+import { Activity, Check, Clock3, Coffee, Gauge, Timer, TrendingUp, Play } from 'lucide-react'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 import { calculateShift } from '@/lib/shift'
@@ -103,22 +103,12 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
             <div className="relative rounded-lg border border-[var(--sif-orange)]/30 bg-[var(--sif-orange)]/5 p-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[7px] font-bold uppercase tracking-[0.14em] text-[var(--sif-orange)]">Clock Out</span>
-                <div className="flex items-center gap-1.5">
-                  <Clock3 className="size-3 shrink-0 text-[var(--sif-orange)]" />
-                  <button
-                    type="button"
-                    onClick={copyClockOut}
-                    aria-label="Copy clock out time"
-                    title="Copy clock out time"
-                    className="clock-out-copy relative z-20 inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-[var(--sif-orange)]/35 bg-card text-[var(--sif-orange)] shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40"
-                  >
-                    <Copy className="size-3.5 shrink-0" />
-                  </button>
-                </div>
+                <Clock3 className="size-3 shrink-0 text-[var(--sif-orange)]" />
               </div>
               <div className="relative mt-1 min-h-8">
-                <button type="button" onClick={copyClockOut} title="Copy HH:mm:ss" className="block w-full cursor-pointer text-left">
+                <button type="button" onClick={copyClockOut} aria-label="Copy clock out time" title="Copy clock out time" className="block w-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sif-orange)]/40">
                   <strong className="block font-mono text-2xl font-bold tabular-nums tracking-[-0.04em] text-[var(--sif-orange)]">{clockOutText}</strong>
+                  {copied && <span role="status" aria-live="polite" className="mt-0.5 block text-[7px] font-semibold text-[var(--sif-green)]"><Check className="mr-1 inline size-2.5" />Copied</span>}
                 </button>
               </div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Shift progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
