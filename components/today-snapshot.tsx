@@ -125,7 +125,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
           <div className="flex items-end justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Workload breakdown</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Where today&apos;s time is going</h3></div><span className="font-mono text-[8px] font-bold text-muted-foreground">{breakdown.length} active</span></div>
           <div className="mt-4 space-y-3">{breakdown.length > 0 ? breakdown.map((item) => { const color = workloadColors[item.id] ?? 'var(--sif-cyan)'; const share = totalSeconds > 0 ? Math.min(100, Math.round((item.duration / totalSeconds) * 100)) : 0; const width = Math.max(7, Math.round((item.duration / maxDuration) * 100)); return <div key={item.id} className="min-w-0"><div className="flex items-center justify-between gap-3 text-[8px] font-semibold"><div className="flex min-w-0 items-center gap-2"><span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden="true" /><span className="truncate">{item.label}</span><span className="font-mono text-muted-foreground">{item.quantity}</span></div><span className="shrink-0 font-mono tabular-nums text-muted-foreground">{formatDuration(item.duration)} · {share}%</span></div><div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${width}%`, backgroundColor: color }} /></div></div> }) : <div className="rounded-lg border border-dashed border-border bg-background/30 px-3 py-5 text-center text-[9px] text-muted-foreground">Add workload quantities above to populate the live breakdown.</div>}</div>
         </div>
-        <div className="min-w-0 p-4 sm:p-5"><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Shift timeline</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Your workday at a glance</h3><div className="relative mt-5 space-y-3 pl-1"><TimelineItem label="Clock In" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(shift.clockInSeconds)} color="var(--sif-cyan)" active /><TimelineItem label="Work complete" value={breakStartSeconds === null ? '—' : formatMilitaryTime(breakStartSeconds)} color="var(--sif-green)" /><TimelineItem label="Break" value={breakStartSeconds === null ? '—' : `${formatMilitaryTime(breakStartSeconds)} → ${formatMilitaryTime(breakEndSeconds)}`} color="var(--sif-yellow)" /><TimelineItem label="Clock Out" value={clockOutText} color="var(--sif-orange)" active={shift.shiftComplete} /></div><p className="mt-5 rounded-lg border border-border bg-background/35 px-3 py-2 text-[8px] leading-4 text-muted-foreground">Timeline uses Clock In + calculated workload time + the fixed 1-hour break.</p></div>
+        <div className="min-w-0 p-4 sm:p-5"><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Shift timeline</p><h3 className="mt-1 text-sm font-semibold tracking-tight">Your workday at a glance</h3><div className="relative mt-5 space-y-3 pl-1"><TimelineItem label="Clock In" value={shift.clockInSeconds === null ? '—' : formatMilitaryTime(shift.clockInSeconds)} accent="green" active /><TimelineItem label="Work complete" value={breakStartSeconds === null ? '—' : formatMilitaryTime(breakStartSeconds)} accent="green" /><TimelineItem label="Break" value={breakStartSeconds === null ? '—' : `${formatMilitaryTime(breakStartSeconds)} → ${formatMilitaryTime(breakEndSeconds)}`} accent="yellow" /><TimelineItem label="Clock Out" value={clockOutText} accent="orange" active={shift.shiftComplete} /></div><p className="mt-5 rounded-lg border border-border bg-background/35 px-3 py-2 text-[8px] leading-4 text-muted-foreground">Timeline uses Clock In + calculated workload time + the fixed 1-hour break.</p></div>
       </div>
     </section>
   )
@@ -133,5 +133,36 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
 
 function DashboardLiveMetric({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) { return <div><span className="block text-[7px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</span><strong className={`mt-0.5 block font-mono text-xl font-bold tabular-nums ${emphasis ? 'text-primary' : ''}`}>{value}</strong></div> }
 function DashboardMetric({ icon, label, value, note }: DashboardMetricProps) { return <div className="min-w-0 border-r border-border px-3 py-3 last:border-r-0 sm:px-4"><div className="flex items-center gap-1.5 text-muted-foreground">{icon}<span className="text-[7px] font-bold uppercase tracking-[0.14em]">{label}</span></div><strong className="mt-1 block truncate font-mono text-sm font-bold tabular-nums tracking-[-0.02em]">{value}</strong><span className="mt-0.5 block truncate text-[7px] text-muted-foreground">{note}</span></div> }
-function TimelineItem({ label, value, color, active }: { label: string; value: string; color: string; active?: boolean }) { return <div className="relative flex items-start gap-3 rounded-lg border px-2 py-1.5" style={{ borderColor: `color-mix(in srgb, ${color} 20%, transparent)`, backgroundColor: `color-mix(in srgb, ${color} 7%, transparent)` }}><div className="relative z-10 flex w-3 shrink-0 justify-center"><span className="mt-1.5 size-2.5 rounded-full border-2 border-card ring-1" style={{ backgroundColor: color, boxShadow: `0 0 0 1px color-mix(in srgb, ${color} 35%, transparent), 0 0 10px color-mix(in srgb, ${color} 20%, transparent)` }} /></div><div className="min-w-0 flex-1"><span className="block text-[7px] font-bold uppercase tracking-[0.14em]" style={{ color }}>{label}</span><strong className={`mt-0.5 block truncate font-mono text-[11px] font-bold tabular-nums ${active ? '' : 'text-muted-foreground'}`} style={active ? { color } : undefined}>{value}</strong></div></div> }
+function TimelineItem({ label, value, accent, active }: { label: string; value: string; accent: 'green' | 'yellow' | 'orange'; active?: boolean }) {
+  const colors = {
+    green: 'var(--sif-green)',
+    yellow: 'var(--sif-yellow)',
+    orange: 'var(--sif-orange)',
+  }
+  const color = colors[accent]
+
+  return (
+    <div
+      className="relative flex items-start gap-3 rounded-lg border px-2 py-1.5"
+      style={{
+        borderColor: `color-mix(in srgb, ${color} 20%, transparent)`,
+        backgroundColor: `color-mix(in srgb, ${color} 7%, transparent)`,
+      }}
+    >
+      <div className="relative z-10 flex w-3 shrink-0 justify-center">
+        <span
+          className="mt-1.5 size-2.5 rounded-full border-2 border-card ring-1"
+          style={{
+            backgroundColor: color,
+            boxShadow: `0 0 0 1px color-mix(in srgb, ${color} 35%, transparent), 0 0 10px color-mix(in srgb, ${color} 20%, transparent)`,
+          }}
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <span className="block text-[7px] font-bold uppercase tracking-[0.14em]" style={{ color }}>{label}</span>
+        <strong className={`mt-0.5 block truncate font-mono text-[11px] font-bold tabular-nums ${active ? '' : 'text-muted-foreground'}`} style={active ? { color } : undefined}>{value}</strong>
+      </div>
+    </div>
+  )
+}
 type BreakdownItem = { id: string; label: string; duration: number; quantity: number }
