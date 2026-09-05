@@ -1,0 +1,19 @@
+/* Sidebar cleanup and navigation order. */
+
+/* The top bar already provides the live PHT clock, so keep the sidebar focused on navigation. */
+@media (min-width: 1024px) {
+  .dashboard-sidebar > div.border-t.border-border.p-4 {
+    display: none;
+  }
+
+  .dashboard-sidebar nav > .space-y-1 {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Match the page's visible section order: Workload → Live Shift → Summary → Tools. */
+  .dashboard-sidebar nav > .space-y-1 > button:nth-child(1) { order: 2; }
+  .dashboard-sidebar nav > .space-y-1 > button:nth-child(2) { order: 1; }
+  .dashboard-sidebar nav > .space-y-1 > button:nth-child(3) { order: 3; }
+  .dashboard-sidebar nav > .space-y-1 > button:nth-child(4) { order: 4; }
+}
