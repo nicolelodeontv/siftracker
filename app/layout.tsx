@@ -40,9 +40,7 @@ export const metadata: Metadata = {
   creator: 'Nicole John Dela Cruz',
   publisher: 'SIF Tracker',
   category: 'productivity',
-  alternates: {
-    canonical: '/',
-  },
+  alternates: { canonical: '/' },
   robots: {
     index: true,
     follow: true,
@@ -96,11 +94,25 @@ const themeBootstrap = `(() => {
   } catch {}
 })()`
 
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'SIF Tracker',
+  url: siteUrl,
+  description: 'A production workload calculator for estimating work time and clock-out time.',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  author: { '@type': 'Person', name: 'Nicole John Dela Cruz' },
+}
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} bg-background`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </head>
       <body className="font-sans antialiased">
         {children}
