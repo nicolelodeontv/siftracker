@@ -6,11 +6,15 @@
     display: none;
   }
 
-  /* Stretch the sidebar with the full desktop content column so its background reaches the footer. */
+  /* End the sidebar at the Tools section instead of extending through the footer. */
   .dashboard-sidebar {
     height: auto;
-    min-height: 100vh;
+    min-height: 0;
     align-self: stretch;
+    margin-bottom: 3.25rem;
+    overflow: hidden;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
   }
 
   .dashboard-sidebar nav > .space-y-1 {
