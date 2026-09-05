@@ -1,0 +1,14 @@
+/* Page section order: workload first, live shift second. */
+
+main > div > div > div.relative {
+  display: flex;
+  flex-direction: column;
+}
+
+main > div > div > div.relative > nav { order: 0; }
+main > div > div > div.relative > section:first-of-type { order: 1; }
+#calculator { order: 2; }
+#dashboard { order: 3; }
+#workflow { order: 4; }
+#tools { order: 5; }
+main > div > div > div.relative > footer { order: 6; }
