@@ -5,6 +5,7 @@ import { WelcomePopup } from '@/components/welcome-popup'
 import './globals.css'
 import './page-order.css'
 import './sidebar-overrides.css'
+import './spacing-overrides.css'
 
 const siteUrl = 'https://sif-tracker-omega.vercel.app'
 
