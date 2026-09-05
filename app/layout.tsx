@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from 'next'
 import { WelcomePopup } from '@/components/welcome-popup'
 import './globals.css'
 import './page-order.css'
+import './sidebar-overrides.css'
 
 const siteUrl = 'https://sif-tracker-omega.vercel.app'
 
