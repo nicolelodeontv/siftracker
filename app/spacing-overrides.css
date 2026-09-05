@@ -1,0 +1,46 @@
+/* Shared spacing rhythm for desktop and mobile layouts. */
+
+main > div.relative > section + section,
+main > div.relative > footer {
+  margin-top: 16px;
+}
+
+main > div.relative > section:first-of-type {
+  padding-block: 20px 16px;
+}
+
+@media (max-width: 767px) {
+  main > div.relative {
+    padding-inline: 16px;
+    padding-bottom: 88px;
+  }
+
+  main > div.relative > section + section {
+    margin-top: 12px;
+  }
+
+  main > div.relative > footer {
+    margin-top: 4px;
+  }
+
+  main > div.relative > section:first-of-type {
+    padding-block: 20px 16px;
+  }
+
+  #calculator > .mb-3 {
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+
+  #calculator > .grid,
+  .shift-summary-grid,
+  #settings .grid {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  main > div.relative {
+    padding-inline: 12px;
+  }
+}
