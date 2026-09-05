@@ -47,10 +47,6 @@ export function ClockInPicker({ value, onChange }: Props) {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (!open) setDraft(value || '00:00:00')
-  }, [open, value])
-
-  useEffect(() => {
     const handleOpen = () => {
       const parsed = parseTime(value)
       setDraft(`${pad(parsed.hour)}:${pad(parsed.minute)}:${pad(parsed.second)}`)
