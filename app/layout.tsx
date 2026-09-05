@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import { WelcomePopup } from '@/components/welcome-popup'
 import './globals.css'
+import './page-order.css'
 
 const siteUrl = 'https://sif-tracker-omega.vercel.app'
 
