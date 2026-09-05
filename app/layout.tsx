@@ -4,6 +4,8 @@ import type { Metadata, Viewport } from 'next'
 import { WelcomePopup } from '@/components/welcome-popup'
 import './globals.css'
 
+const siteUrl = 'https://sif-tracker-omega.vercel.app'
+
 const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
@@ -17,9 +19,54 @@ const jetBrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'SIF Tracker | Production Time Calculator',
-  description: 'Estimate production time for edits, clips, builds, and late orders.',
-  generator: 'SIF Tracker',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'SIF Tracker | Production Time Calculator',
+    template: '%s | SIF Tracker',
+  },
+  description: 'SIF Tracker is a fast production workload calculator that estimates work time and clock-out time for edits, clips, builds, and late orders.',
+  applicationName: 'SIF Tracker',
+  keywords: [
+    'SIF Tracker',
+    'production time calculator',
+    'workload calculator',
+    'work time calculator',
+    'clock out calculator',
+    'shift calculator',
+    'production workload tracker',
+    'Philippine time tracker',
+  ],
+  authors: [{ name: 'Nicole John Dela Cruz' }],
+  creator: 'Nicole John Dela Cruz',
+  publisher: 'SIF Tracker',
+  category: 'productivity',
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    url: siteUrl,
+    siteName: 'SIF Tracker',
+    title: 'SIF Tracker | Production Time Calculator',
+    description: 'Calculate production workload time and estimated clock-out time quickly and accurately.',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'SIF Tracker | Production Time Calculator',
+    description: 'A fast production workload and clock-out time calculator.',
+  },
   icons: {
     icon: [
       { url: '/icon-light-32x32.png', media: '(prefers-color-scheme: light)' },
