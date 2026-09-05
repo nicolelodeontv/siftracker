@@ -6,12 +6,12 @@
     display: none;
   }
 
-  /* End the sidebar at the Tools section instead of extending through the footer. */
+  /* Match the sidebar's bottom to the 03 / Tools area, leaving the footer outside it. */
   .dashboard-sidebar {
     height: auto;
     min-height: 0;
     align-self: stretch;
-    margin-bottom: 3.25rem;
+    margin-bottom: 4.5rem;
     overflow: hidden;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
