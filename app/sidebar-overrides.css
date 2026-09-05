@@ -1,20 +1,24 @@
-/* Sidebar cleanup and navigation order. */
+/* Stable desktop sidebar: navigation only, no duplicate clock, no height hacks. */
 
-/* The top bar already provides the live PHT clock, so keep the sidebar focused on navigation. */
 @media (min-width: 1024px) {
+  /* The top bar already owns the live PHT clock. */
   .dashboard-sidebar > div.border-t.border-border.p-4 {
     display: none;
   }
 
-  /* Match the sidebar's bottom to the 03 / Tools area, leaving the footer outside it. */
   .dashboard-sidebar {
-    height: auto;
-    min-height: 0;
-    align-self: stretch;
-    margin-bottom: 4.5rem;
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
     overflow: hidden;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+  }
+
+  .dashboard-sidebar nav {
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
   }
 
   .dashboard-sidebar nav > .space-y-1 {
@@ -23,9 +27,14 @@
     gap: 0.25rem;
   }
 
-  /* Match the page's visible section order: Workload → Live Shift → Summary → Tools. */
+  /* Sidebar click order mirrors the page order: Workload → Live Shift → Summary → Tools. */
   .dashboard-sidebar nav > .space-y-1 > button:nth-child(1) { order: 2; }
   .dashboard-sidebar nav > .space-y-1 > button:nth-child(2) { order: 1; }
   .dashboard-sidebar nav > .space-y-1 > button:nth-child(3) { order: 3; }
   .dashboard-sidebar nav > .space-y-1 > button:nth-child(4) { order: 4; }
+
+  .dashboard-sidebar nav > .space-y-1 > button {
+    width: 100%;
+    min-height: 40px;
+  }
 }
