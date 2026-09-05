@@ -26,15 +26,21 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
   const safeValue = Math.max(0, value ?? 0)
   const duration = safeValue * workload.minutesPerUnit * 60
   const share = totalSeconds > 0 && value !== null ? Math.min(100, Math.round((duration / totalSeconds) * 100)) : 0
+  const unitLabel = workload.unit.slice(0, -1)
 
   return (
-    <article data-workload-id={workload.id} data-workload-label={workload.label} data-duration-seconds={duration} className="workload-card rounded-xl border border-border bg-card/85 p-3.5 shadow-[0_8px_28px_var(--card-shadow)] backdrop-blur transition hover:border-primary/25">
+    <article data-workload-id={workload.id} data-workload-label={workload.label} data-duration-seconds={duration} className="workload-card rounded-2xl border border-border bg-card/90 p-3.5 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_14px_36px_var(--card-shadow)]">
       <div className="workload-card__header relative flex min-w-0 items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-2.5">
-          <span className="mt-1.5 size-2 shrink-0 rounded-full" style={{ backgroundColor: workload.accent }} aria-hidden="true" />
+          <span className="mt-1 size-2.5 shrink-0 rounded-full ring-4" style={{ backgroundColor: workload.accent, boxShadow: `0 0 0 4px color-mix(in srgb, ${workload.accent} 10%, transparent)` }} aria-hidden="true" />
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3>
-            <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{workload.minutesPerUnit} minutes per {workload.unit.slice(0, -1)}</p>
+            <div className="flex items-center gap-2">
+              <h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3>
+              <span className="hidden rounded-full border px-1.5 py-0.5 text-[6px] font-bold uppercase tracking-[0.14em] sm:inline-flex" style={{ borderColor: `color-mix(in srgb, ${workload.accent} 25%, var(--border))`, color: workload.accent }}>
+                {hasInput ? 'Active' : 'Ready'}
+              </span>
+            </div>
+            <p className="mt-0.5 truncate text-[9px] text-muted-foreground">{workload.minutesPerUnit} min / {unitLabel}</p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
@@ -47,15 +53,15 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
             </button>
           )}
         </div>
-        <div className="absolute inset-x-0 -bottom-2 h-1 overflow-hidden rounded-full bg-muted/70" aria-hidden="true">
-          <div className="h-full rounded-full bg-primary/65 transition-[width] duration-300" style={{ width: `${share}%` }} />
+        <div className="absolute inset-x-0 -bottom-2 h-1 overflow-hidden rounded-full bg-muted/80" aria-hidden="true">
+          <div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${share}%`, backgroundColor: workload.accent }} />
         </div>
       </div>
 
       <div className="workload-card__body">
         <label htmlFor={`workload-${workload.id}`} className="workload-card__label">Number of {workload.unit}</label>
-        <div className="workload-card__input-row gap-1.5">
-          <button type="button" onClick={() => onAdjust(-1)} className="workload-card__quantity-button hidden !w-8 !shrink-0 !p-0" aria-label={`Decrease ${workload.label} quantity`}>
+        <div className="workload-card__input-row">
+          <button type="button" onClick={() => onAdjust(-1)} className="workload-card__quantity-button inline-flex !w-9 !shrink-0 !items-center !justify-center !p-0" style={{ borderColor: `color-mix(in srgb, ${workload.accent} 25%, var(--border))` }} aria-label={`Decrease ${workload.label} quantity`}>
             <Minus className="size-3.5" />
           </button>
           <div className="relative min-w-0 flex-1">
@@ -88,16 +94,17 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
                   onAdjust(event.key === 'ArrowUp' ? 1 : -1)
                 }
               }}
-              className={`workload-card__input h-11 w-full rounded-lg border bg-input-background px-3 pr-16 font-mono text-[15px] font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+              className={`workload-card__input h-11 w-full rounded-xl border bg-input-background px-3 pr-16 font-mono text-[15px] font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
               aria-invalid={invalid}
               aria-describedby={`feedback-${workload.id}`}
               aria-label={`Number of ${workload.unit} for ${workload.label}`}
+              style={{ caretColor: workload.accent }}
             />
             {value !== null && hasInput && (
               <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground opacity-60" aria-hidden="true">{value}</output>
             )}
           </div>
-          <button type="button" onClick={() => onAdjust(1)} className="workload-card__quantity-button hidden !w-8 !shrink-0 !p-0" aria-label={`Increase ${workload.label} quantity`}>
+          <button type="button" onClick={() => onAdjust(1)} className="workload-card__quantity-button inline-flex !w-9 !shrink-0 !items-center !justify-center !p-0" style={{ borderColor: `color-mix(in srgb, ${workload.accent} 25%, var(--border))` }} aria-label={`Increase ${workload.label} quantity`}>
             <Plus className="size-3.5" />
           </button>
         </div>
@@ -108,9 +115,9 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
           ) : incomplete ? (
             <p className="text-[9px] font-medium text-muted-foreground">Waiting for expression…</p>
           ) : hasInput ? (
-            <p className="rounded-md bg-background/40 px-2.5 py-1.5 font-mono text-[9px] font-semibold text-muted-foreground">{input} = {value} {getUnitLabel(workload.unit, value ?? 0)} → {formatDuration(duration)}</p>
+            <p className="rounded-lg bg-background/50 px-2.5 py-1.5 font-mono text-[9px] font-semibold text-muted-foreground">{input} = {value} {getUnitLabel(workload.unit, value ?? 0)} → {formatDuration(duration)}</p>
           ) : (
-            <p className="text-[9px] leading-4 text-muted-foreground/70">Enter a quantity or expression: 5+5 · 10*3 · (5+5)*2</p>
+            <p className="text-[9px] leading-4 text-muted-foreground/70">Quantity or expression: 5+5 · 10*3 · (5+5)*2</p>
           )}
         </div>
       </div>
