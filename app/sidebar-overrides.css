@@ -6,6 +6,13 @@
     display: none;
   }
 
+  /* Stretch the sidebar with the full desktop content column so its background reaches the footer. */
+  .dashboard-sidebar {
+    height: auto;
+    min-height: 100vh;
+    align-self: stretch;
+  }
+
   .dashboard-sidebar nav > .space-y-1 {
     display: flex;
     flex-direction: column;
