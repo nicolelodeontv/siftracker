@@ -20,6 +20,7 @@
   .dashboard-sidebar nav > .space-y-1 {
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
   }
 
   /* Match the page's visible section order: Workload → Live Shift → Summary → Tools. */
