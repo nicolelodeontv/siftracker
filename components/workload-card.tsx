@@ -54,10 +54,7 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
 
       <div className="workload-card__body">
         <label htmlFor={`workload-${workload.id}`} className="workload-card__label">Number of {workload.unit}</label>
-        <div className="workload-card__input-row gap-1.5">
-          <button type="button" onClick={() => onAdjust(-1)} className="workload-card__quantity-button !w-8 !shrink-0 !p-0" aria-label={`Decrease ${workload.label} quantity`}>
-            <Minus className="size-3.5" />
-          </button>
+        <div className="workload-card__input-row relative !gap-0">
           <div className="relative min-w-0 flex-1">
             <input
               ref={inputRef}
@@ -88,7 +85,7 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
                   onAdjust(event.key === 'ArrowUp' ? 1 : -1)
                 }
               }}
-              className={`workload-card__input h-11 w-full rounded-lg border bg-input-background px-3 pr-16 font-mono text-[15px] font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+              className={`workload-card__input h-11 w-full rounded-lg border bg-input-background px-11 pr-11 font-mono text-[15px] font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
               aria-invalid={invalid}
               aria-describedby={`feedback-${workload.id}`}
               aria-label={`Number of ${workload.unit} for ${workload.label}`}
@@ -97,7 +94,10 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
               <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground opacity-60" aria-hidden="true">{value}</output>
             )}
           </div>
-          <button type="button" onClick={() => onAdjust(1)} className="workload-card__quantity-button !w-8 !shrink-0 !p-0" aria-label={`Increase ${workload.label} quantity`}>
+          <button type="button" onClick={() => onAdjust(-1)} className="workload-card__quantity-button absolute left-1 top-1/2 z-10 !size-9 !-translate-y-1/2 !p-0" aria-label={`Decrease ${workload.label} quantity`}>
+            <Minus className="size-3.5" />
+          </button>
+          <button type="button" onClick={() => onAdjust(1)} className="workload-card__quantity-button absolute right-1 top-1/2 z-10 !size-9 !-translate-y-1/2 !p-0" aria-label={`Increase ${workload.label} quantity`}>
             <Plus className="size-3.5" />
           </button>
         </div>
