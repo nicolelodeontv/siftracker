@@ -1,7 +1,7 @@
 'use client'
 
 import type { RefCallback } from 'react'
-import { X } from 'lucide-react'
+import { X, Minus, Plus } from 'lucide-react'
 import { calculateValue, formatCompactDuration, formatDuration, isIncompleteExpression } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 import { getExampleAmounts, getUnitLabel } from '@/lib/workloads'
@@ -18,7 +18,7 @@ type Props = {
   onSummaryShortcut: () => void
 }
 
-export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange, onClear, onNext, onSummaryShortcut }: Props) {
+export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange, onAdjust, onClear, onNext, onSummaryShortcut }: Props) {
   const hasInput = input.trim() !== ''
   const value = calculateValue(input)
   const incomplete = hasInput && isIncompleteExpression(input)
@@ -54,7 +54,10 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
 
       <div className="workload-card__body">
         <label htmlFor={`workload-${workload.id}`} className="workload-card__label">Number of {workload.unit}</label>
-        <div className="workload-card__input-row">
+        <div className="workload-card__input-row gap-1.5">
+          <button type="button" onClick={() => onAdjust(-1)} className="workload-card__quantity-button !w-8 !shrink-0 !p-0" aria-label={`Decrease ${workload.label} quantity`}>
+            <Minus className="size-3.5" />
+          </button>
           <div className="relative min-w-0 flex-1">
             <input
               ref={inputRef}
@@ -78,6 +81,11 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
                 if (event.key === 'Enter') {
                   event.preventDefault()
                   onNext()
+                  return
+                }
+                if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                  event.preventDefault()
+                  onAdjust(event.key === 'ArrowUp' ? 1 : -1)
                 }
               }}
               className={`workload-card__input h-11 w-full rounded-lg border bg-input-background px-3 pr-16 font-mono text-[15px] font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-destructive focus:ring-4 focus:ring-destructive/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
@@ -89,6 +97,9 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
               <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[15px] font-semibold tabular-nums text-muted-foreground opacity-60" aria-hidden="true">{value}</output>
             )}
           </div>
+          <button type="button" onClick={() => onAdjust(1)} className="workload-card__quantity-button !w-8 !shrink-0 !p-0" aria-label={`Increase ${workload.label} quantity`}>
+            <Plus className="size-3.5" />
+          </button>
         </div>
 
         <div id={`feedback-${workload.id}`} className="workload-card__feedback" aria-live="polite">
