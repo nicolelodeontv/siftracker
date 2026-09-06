@@ -49,12 +49,12 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      className="theme-toggle group inline-flex h-10 w-[92px] shrink-0 items-center gap-2 rounded-full border border-border bg-card/80 px-3 text-xs font-semibold text-foreground shadow-sm backdrop-blur transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="theme-toggle group inline-flex h-10 w-[88px] shrink-0 items-center gap-1.5 rounded-full border border-border bg-card/80 px-2.5 text-xs font-semibold text-foreground shadow-sm backdrop-blur transition hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition group-hover:text-foreground">
         {theme === 'dark' ? <Moon className="size-3.5" aria-hidden="true" /> : <Sun className="size-3.5" aria-hidden="true" />}
       </span>
-      <span className="theme-toggle__label w-[34px] text-center">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+      <span className="theme-toggle__label text-center">{theme === 'dark' ? 'Dark' : 'Light'}</span>
     </button>
   )
 }
