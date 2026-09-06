@@ -1,4 +1,4 @@
-/* SIF Tracker UI system: fluid layout, stable cards, explicit component hooks. */
+/* SIF Tracker UI system: layout-only overrides and responsive component structure. */
 
 :root { --ui-max-width: 1360px; }
 
@@ -41,7 +41,6 @@ main nav {
   gap: clamp(8px, 1.5vw, 18px);
 }
 
-button,
 input { border-radius: clamp(8px, .8vw, 12px); }
 button { touch-action: manipulation; }
 
@@ -60,7 +59,7 @@ main > div.relative > section:first-of-type p {
 #calculator > .mb-3,
 #shift > div:first-child { margin-bottom: clamp(10px, 1.2vw, 14px); }
 
-/* Workloads: fixed two-row desktop grid with six equal cells. */
+/* Workload grid: cards and the Summary card share one footprint. */
 #calculator > .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -69,7 +68,7 @@ main > div.relative > section:first-of-type p {
 }
 
 .workload-card,
-#workflow {
+.workload-total-card {
   width: 100%;
   min-width: 0;
   height: 220px;
@@ -153,14 +152,13 @@ main > div.relative > section:first-of-type p {
   white-space: nowrap;
 }
 
-/* Total card occupies the sixth slot and matches the workload-card footprint. */
-#workflow {
-  min-height: 220px;
+/* The inline Summary card is the only #workflow target. */
+.workload-total-card {
   padding: 14px;
   display: flex;
   align-items: stretch;
 }
-#workflow > div {
+.workload-total-card > div {
   width: 100%;
   min-width: 0;
   min-height: 0;
@@ -233,31 +231,12 @@ main footer {
 }
 #live-status { box-shadow: 0 6px 20px var(--card-shadow); }
 
-.theme-toggle {
-  width: 92px;
-  min-width: 92px;
-  max-width: 92px;
-  flex: 0 0 92px;
-}
-.theme-toggle__label {
-  display: inline-flex;
-  width: 34px;
-  min-width: 34px;
-  max-width: 34px;
-  justify-content: center;
-  text-align: center;
-}
-
 html.theme-switching *,
 html.theme-switching *::before,
 html.theme-switching *::after {
   transition: none !important;
   animation: none !important;
 }
-html.theme-switching .theme-toggle { transform: none !important; }
-
-#calculator + #dashboard,
-#calculator ~ #dashboard { margin-top: 16px; }
 
 @media (max-width: 1100px) {
   #calculator > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -298,7 +277,7 @@ html.theme-switching .theme-toggle { transform: none !important; }
   #calculator > .grid { grid-template-columns: 1fr; gap: 12px; }
 
   .workload-card,
-  #workflow {
+  .workload-total-card {
     height: 220px;
     min-height: 220px;
   }
@@ -307,24 +286,21 @@ html.theme-switching .theme-toggle { transform: none !important; }
   .workload-card__input-row,
   .workload-card__input-row > div { min-width: 0; }
 
-  #workflow {
-    padding: 14px;
-    display: block;
-  }
-  #workflow > div {
+  .workload-total-card { padding: 14px; display: block; }
+  .workload-total-card > div {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 10px;
     height: 100%;
   }
-  #workflow > div > div { width: 100%; text-align: left; min-width: 0; }
-  #workflow > div > div:last-child {
+  .workload-total-card > div > div { width: 100%; text-align: left; min-width: 0; }
+  .workload-total-card > div > div:last-child {
     padding-top: 9px;
     border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
     text-align: left;
   }
-  #workflow strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
+  .workload-total-card strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
 
   #dashboard,
   #shift,
@@ -344,17 +320,6 @@ html.theme-switching .theme-toggle { transform: none !important; }
 
   #tools > button { width: 100%; }
   main footer { margin-top: 4px; padding-block: 10px 4px; }
-  .workload-card__examples { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 8px; }
-}
-
-@media (max-width: 520px) {
-  #settings .grid > div {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    row-gap: 8px;
-  }
-  #settings .grid > div > div:first-child { flex: 1 1 150px; }
-  #settings .grid > div > div:last-child { margin-left: auto; }
 }
 
 @media (max-width: 430px) {
@@ -371,7 +336,6 @@ html.theme-switching .theme-toggle { transform: none !important; }
   #dashboard > div:nth-child(2) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #dashboard > div:nth-child(2) > div { border-right: 1px solid var(--border); }
   #dashboard > div:nth-child(2) > div:nth-child(2n) { border-right: 0; }
-  .workload-card__examples { column-gap: 6px; }
 }
 
 @media (max-width: 380px) {
@@ -380,19 +344,6 @@ html.theme-switching .theme-toggle { transform: none !important; }
   .pht-clock-display { max-width: 96px; }
   .pht-clock-display span { font-size: 6px; letter-spacing: .05em; }
   .pht-clock-display time { font-size: 8px; }
-  .theme-toggle {
-    width: 84px;
-    min-width: 84px;
-    max-width: 84px;
-    flex-basis: 84px;
-    padding-inline: 8px;
-    gap: 4px;
-  }
-  .theme-toggle__label {
-    width: 30px;
-    min-width: 30px;
-    max-width: 30px;
-  }
   #calculator > .mb-3 > div:last-child { width: 100%; justify-content: flex-start; }
   #calculator > .mb-3 > div:last-child button { flex: 0 1 auto; }
   .workload-card { padding-inline: 12px; }
@@ -406,7 +357,9 @@ html.theme-switching .theme-toggle { transform: none !important; }
   .workload-card__quantity-button { width: 30px; min-width: 30px; }
 }
 
-@media (min-width: 1600px) { main > div.relative { padding-inline: 40px; } }
+@media (min-width: 1600px) {
+  main > div.relative { padding-inline: 40px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
