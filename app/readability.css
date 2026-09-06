@@ -1,0 +1,80 @@
+/* SIF Tracker readability system: clearer hierarchy without changing the layout. */
+
+:root {
+  --readable-muted: var(--muted-foreground);
+  --readable-subtle: color-mix(in srgb, var(--foreground) 72%, var(--muted-foreground));
+}
+
+/* Small UI labels were previously too faint at normal viewing distance. */
+main .text-muted-foreground {
+  color: var(--readable-muted);
+}
+
+main .text-muted-foreground\/70 {
+  color: color-mix(in srgb, var(--foreground) 68%, var(--muted-foreground)) !important;
+}
+
+/* Make the important operational numbers read first. */
+main .font-mono.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.top-summary strong,
+#workflow strong,
+.shift-clockout-card strong,
+.workload-card output {
+  font-weight: 750;
+}
+
+/* Section labels become easier to scan while staying compact. */
+main .tracking-\[0\.18em\],
+main .tracking-\[0\.16em\],
+main .tracking-\[0\.14em\] {
+  text-shadow: 0 0 0 currentColor;
+}
+
+/* Slightly stronger body copy and helper text. */
+main p.text-sm,
+main p.text-\[10px\],
+main p.text-\[9px\] {
+  color: var(--readable-muted);
+}
+
+.workload-card__label {
+  font-size: 9px;
+  color: var(--readable-muted);
+}
+
+.workload-card__feedback > p,
+.workload-card__examples span {
+  color: color-mix(in srgb, var(--foreground) 76%, var(--muted-foreground));
+}
+
+.workload-card__feedback > p.text-destructive {
+  color: var(--destructive);
+}
+
+.workload-card__feedback > p.font-mono {
+  color: color-mix(in srgb, var(--foreground) 82%, var(--muted-foreground));
+}
+
+@media (max-width: 767px) {
+  /* Mobile gets a small readability lift because the viewport is denser. */
+  main .text-\[8px\] {
+    font-size: 9px;
+  }
+
+  main .text-\[7px\] {
+    font-size: 8px;
+  }
+
+  .workload-card__label {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 430px) {
+  main .text-\[8px\] {
+    font-size: 8.5px;
+  }
+}
