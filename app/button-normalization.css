@@ -11,7 +11,6 @@
   --button-compact-height: 40px;
 }
 
-/* Global button baseline: identical typography, spacing, and vertical dimensions everywhere. */
 main button {
   min-height: var(--button-height);
   height: var(--button-height);
@@ -24,10 +23,10 @@ main button {
   box-sizing: border-box;
 }
 
-/* Every labeled icon + text pair uses one shared 6px gap. */
+/* Force the same icon/text spacing even when component classes use gap-1.5, gap-2, etc. */
 main button.inline-flex,
 main button.flex {
-  column-gap: var(--button-icon-gap) !important;
+  gap: var(--button-icon-gap) !important;
 }
 
 main button svg {
@@ -36,7 +35,7 @@ main button svg {
   flex: 0 0 auto;
 }
 
-/* Icon-only controls never reserve text spacing. */
+/* Icon-only controls */
 main button[aria-label*="Close"],
 main button[aria-label*="Copy"],
 main .workload-card button[title="Clear"] {
@@ -51,7 +50,6 @@ main .workload-card button[title="Clear"] {
   gap: 0 !important;
 }
 
-/* Workload quantity controls: same 40px button height as every other control. */
 .workload-card__input-row {
   width: min(100%, 320px);
   margin-inline: auto;
@@ -97,7 +95,7 @@ main .workload-card button[title="Clear"] {
   min-height: var(--button-height);
   padding-inline: 12px;
   line-height: 1 !important;
-  column-gap: var(--button-icon-gap) !important;
+  gap: var(--button-icon-gap) !important;
 }
 
 #settings .flex.shrink-0 > button,
@@ -125,7 +123,7 @@ main .workload-card button[title="Clear"] {
   min-height: var(--button-height);
   padding-block: 0;
   font-size: var(--button-font-size) !important;
-  column-gap: var(--button-icon-gap) !important;
+  gap: var(--button-icon-gap) !important;
 }
 
 #settings .flex.gap-2 > button:not(:disabled) {
@@ -168,12 +166,12 @@ main input:focus-visible {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--sif-green) 28%, transparent), 0 8px 24px var(--primary-shadow);
 }
 
-/* Theme control: the icon-to-text distance is the same 6px as every labeled button. */
+/* Theme control: same 6px icon/text gap as every other labeled button. */
 .theme-toggle {
   position: relative;
   justify-content: center;
   overflow: hidden;
-  column-gap: var(--button-icon-gap) !important;
+  gap: var(--button-icon-gap) !important;
 }
 
 .theme-toggle__label {
@@ -275,7 +273,6 @@ main input:focus-visible {
     max-width: 124px;
   }
 
-  /* Narrow phones: icon-only theme control remains 40px and centered. */
   .theme-toggle {
     width: 40px !important;
     min-width: 40px !important;
