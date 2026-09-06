@@ -2,6 +2,8 @@ import { calculateValue, getElapsedSeconds, timeToSeconds } from '@/lib/calculat
 import type { Workload } from '@/lib/workloads'
 
 export const BREAK_SECONDS = 60 * 60
+const PHT_OFFSET_MS = 8 * 60 * 60 * 1000
+const OVERNIGHT_THRESHOLD_SECONDS = 12 * 60 * 60
 
 export type CalculatedWorkload = {
   workload: Workload
@@ -15,22 +17,40 @@ export function calculateWorkloads(workloads: Workload[], values: Record<string,
     input: values[workload.id] ?? '',
     value: calculateValue(values[workload.id] ?? ''),
   }))
-
   const totalSeconds = calculatedValues.reduce(
     (total, { workload, value }) => total + Math.max(0, value ?? 0) * workload.minutesPerUnit * 60,
     0,
   )
-
   const totalUnits = calculatedValues.reduce((total, { value }) => total + Math.max(0, value ?? 0), 0)
-
   return { calculatedValues, totalSeconds, totalUnits }
 }
 
-/**
- * Calculate shift progress using an absolute clock-in timestamp when available.
- * This avoids the 24-hour wrap in getElapsedSeconds() for unusually long shifts.
- * The legacy wall-clock fallback remains for callers that only have HH:mm:ss.
- */
+function getPhilippineDateParts(timestampMs: number) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date(timestampMs))
+  return Object.fromEntries(parts.map(({ type, value }) => [type, value])) as Record<string, string>
+}
+
+function inferClockInTimestampMs(clockInSeconds: number, nowSeconds: number, nowTimestampMs: number) {
+  const parts = getPhilippineDateParts(nowTimestampMs)
+  const year = Number(parts.year)
+  const month = Number(parts.month)
+  const day = Number(parts.day)
+  const nowUtcEquivalent = Date.UTC(year, month - 1, day, 0, 0, 0)
+  const shouldUsePreviousDay = clockInSeconds > nowSeconds + OVERNIGHT_THRESHOLD_SECONDS
+  const dayOffset = shouldUsePreviousDay ? 1 : 0
+  const clockInUtcEquivalent = nowUtcEquivalent + clockInSeconds * 1000 - dayOffset * 24 * 60 * 60 * 1000
+  return clockInUtcEquivalent - PHT_OFFSET_MS
+}
+
 export function calculateShift(
   clockInTime: string,
   totalSeconds: number,
@@ -48,12 +68,11 @@ export function calculateShift(
       ? 0
       : clockInTimestampMs !== undefined && Number.isFinite(clockInTimestampMs) && Number.isFinite(nowTimestampMs)
         ? Math.max(0, Math.floor((nowTimestampMs - clockInTimestampMs) / 1000))
-        : getElapsedSeconds(clockInSeconds, nowSeconds)
+        : Math.max(0, Math.floor((nowTimestampMs - inferClockInTimestampMs(clockInSeconds, nowSeconds, nowTimestampMs)) / 1000))
 
   const shiftComplete = estimatedClockOutSeconds !== null && elapsedShiftSeconds >= shiftSeconds
   const timeLeftSeconds = estimatedClockOutSeconds === null || shiftComplete ? 0 : Math.max(0, shiftSeconds - elapsedShiftSeconds)
   const shiftStatus = totalUnits === 0 ? 'NOT STARTED' : shiftComplete ? 'SHIFT COMPLETE' : 'IN PROGRESS'
-
   return {
     clockInSeconds,
     shiftSeconds,
