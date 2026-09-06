@@ -1,6 +1,12 @@
-/* SIF Tracker UI system: layout-only overrides and responsive component structure. */
+/* SIF Tracker UI system: AITMPL-inspired spacing, surfaces, cards, and responsive structure. */
 
-:root { --ui-max-width: 1360px; }
+:root {
+  --ui-max-width: 1360px;
+  --ui-section-gap: 20px;
+  --ui-card-radius: 12px;
+  --ui-control-radius: 10px;
+  --ui-card-shadow: 0 1px 2px var(--card-shadow), 0 8px 24px rgba(0,0,0,.035);
+}
 
 html,
 body,
@@ -25,8 +31,8 @@ main > div.relative {
   width: min(100%, var(--ui-max-width));
   max-width: var(--ui-max-width);
   margin-inline: auto;
-  padding-inline: clamp(12px, 3vw, 32px);
-  padding-bottom: clamp(12px, 2vw, 24px);
+  padding-inline: clamp(14px, 2.2vw, 28px);
+  padding-bottom: clamp(16px, 2.2vw, 28px);
 }
 
 main nav,
@@ -38,32 +44,34 @@ main input { min-width: 0; }
 
 main nav {
   min-height: clamp(48px, 5vw, 60px);
-  gap: clamp(8px, 1.5vw, 18px);
+  gap: clamp(8px, 1.25vw, 16px);
+  border-bottom: 1px solid var(--border);
 }
 
-input { border-radius: clamp(8px, .8vw, 12px); }
+input { border-radius: var(--ui-control-radius); }
 button { touch-action: manipulation; }
 
 main > div.relative > section:first-of-type {
-  padding-block: clamp(16px, 2.5vw, 30px) clamp(14px, 2vw, 22px);
+  padding-block: clamp(18px, 2.4vw, 28px) clamp(16px, 2vw, 22px);
 }
 main > div.relative > section:first-of-type h1 {
-  font-size: clamp(2.15rem, 6vw, 4.75rem);
+  font-size: clamp(2.1rem, 5.6vw, 4.5rem);
   line-height: .98;
+  letter-spacing: -.045em;
 }
 main > div.relative > section:first-of-type p {
   max-width: 48rem;
-  font-size: clamp(.78rem, 1.4vw, .95rem);
+  font-size: clamp(.8rem, 1.35vw, .95rem);
 }
 
 #calculator > .mb-3,
-#shift > div:first-child { margin-bottom: clamp(10px, 1.2vw, 14px); }
+#shift > div:first-child { margin-bottom: 12px; }
 
-/* Workload grid: cards and the Summary card share one footprint. */
+/* A quieter 12px card system with compact 8px-grid spacing. */
 #calculator > .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(10px, 1.25vw, 16px);
+  gap: 12px;
   align-items: stretch;
 }
 
@@ -71,9 +79,12 @@ main > div.relative > section:first-of-type p {
 .workload-total-card {
   width: 100%;
   min-width: 0;
-  height: 220px;
-  min-height: 220px;
+  height: 216px;
+  min-height: 216px;
   box-sizing: border-box;
+  border-radius: var(--ui-card-radius) !important;
+  box-shadow: var(--ui-card-shadow) !important;
+  backdrop-filter: none !important;
 }
 
 .workload-card {
@@ -81,13 +92,19 @@ main > div.relative > section:first-of-type p {
   flex-direction: column;
   overflow: hidden;
   contain: layout paint;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
+}
+.workload-card:hover {
+  transform: none !important;
+  border-color: color-mix(in srgb, var(--foreground) 18%, var(--border)) !important;
+  box-shadow: 0 1px 2px var(--card-shadow), 0 10px 28px rgba(0,0,0,.045) !important;
 }
 
 .workload-card__header { flex: 0 0 40px; min-height: 40px; }
 .workload-card__body {
   position: relative;
-  flex: 0 0 104px;
-  min-height: 104px;
+  flex: 0 0 102px;
+  min-height: 102px;
   margin-top: 6px;
 }
 
@@ -102,7 +119,7 @@ main > div.relative > section:first-of-type p {
   font-size: 8px;
   font-weight: 700;
   line-height: 13px;
-  letter-spacing: .15em;
+  letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
@@ -152,42 +169,65 @@ main > div.relative > section:first-of-type p {
   white-space: nowrap;
 }
 
-/* The inline Summary card is the only #workflow target. */
 .workload-total-card {
-  padding: 14px;
+  padding: 14px !important;
   display: flex;
   align-items: stretch;
+  border-color: color-mix(in srgb, var(--primary) 28%, var(--border)) !important;
+  background: var(--card) !important;
 }
 .workload-total-card > div {
   width: 100%;
   min-width: 0;
   min-height: 0;
 }
+.workload-total-card > div > div:last-child {
+  border-color: var(--border);
+}
 
+/* Dashboard / shift / tools use the same surface hierarchy as the cards. */
 #dashboard,
 #shift,
-#tools { margin-top: 16px; }
+#tools { margin-top: var(--ui-section-gap); }
 #dashboard { margin-bottom: 0; }
 #dashboard > div:first-child > div,
 #dashboard > div:nth-child(2),
 #dashboard > div:last-child { min-width: 0; }
 #dashboard > div:first-child { padding-block: 16px; }
 #dashboard > div:nth-child(2) > div { min-height: 76px; }
-#dashboard > div:last-child > div { min-height: 220px; }
+#dashboard > div:last-child > div { min-height: 216px; }
 
-#shift { padding: clamp(12px, 1.6vw, 18px); }
+#dashboard > div:first-child,
+#dashboard > div:nth-child(2),
+#dashboard > div:last-child,
+#shift,
+#tools,
+#settings {
+  border-radius: var(--ui-card-radius);
+}
+
+#dashboard > div:first-child,
+#dashboard > div:nth-child(2),
+#dashboard > div:last-child,
+#shift,
+#tools {
+  border-color: var(--border);
+  box-shadow: var(--ui-card-shadow);
+}
+
+#shift { padding: 16px; }
 .shift-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(8px, 1.2vw, 14px);
+  gap: 10px;
   align-items: stretch;
 }
 .shift-summary-card,
 .shift-clockout-card {
   min-width: 0;
-  border-radius: clamp(10px, 1vw, 14px);
+  border-radius: 10px;
   border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--background) 92%, var(--card));
+  background: color-mix(in srgb, var(--card) 92%, var(--background));
   padding: 12px;
 }
 
@@ -196,9 +236,9 @@ main > div.relative > section:first-of-type p {
   min-height: 44px;
   margin-top: 6px;
   border: 1px solid var(--input);
-  background: color-mix(in srgb, var(--background) 88%, var(--card));
+  background: var(--input-background);
   box-shadow: 0 1px 2px var(--card-shadow);
-  font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: -.02em;
@@ -209,27 +249,27 @@ main > div.relative > section:first-of-type p {
   background: var(--accent);
 }
 .shift-clockout-card {
-  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
-  background: color-mix(in srgb, var(--primary) 9%, var(--card));
-  box-shadow: 0 8px 24px var(--primary-shadow);
+  border-color: color-mix(in srgb, var(--primary) 38%, var(--border));
+  background: color-mix(in srgb, var(--primary) 6%, var(--card));
+  box-shadow: 0 1px 2px var(--card-shadow), 0 8px 22px var(--primary-shadow);
 }
 .shift-clockout-card.is-complete {
-  border-color: color-mix(in srgb, var(--sif-green) 50%, var(--border));
-  background: color-mix(in srgb, var(--sif-green) 10%, var(--card));
+  border-color: color-mix(in srgb, var(--sif-green) 46%, var(--border));
+  background: color-mix(in srgb, var(--sif-green) 7%, var(--card));
 }
 
-#tools { padding: clamp(12px, 1.4vw, 16px); }
+#tools { padding: 16px; }
 #tools > button { flex-shrink: 0; }
-#settings { border-radius: clamp(12px, 1vw, 16px); }
-#settings .grid { gap: clamp(8px, 1vw, 12px); }
+#settings { border-radius: 12px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 75%, transparent); }
+#settings .grid { gap: 10px; }
 #settings .grid > div { min-width: 0; }
 
 main footer {
   min-height: 34px;
-  margin-top: 6px;
+  margin-top: 8px;
   padding-block: 10px 4px;
 }
-#live-status { box-shadow: 0 6px 20px var(--card-shadow); }
+#live-status { box-shadow: 0 1px 2px var(--card-shadow), 0 6px 18px var(--card-shadow); }
 
 html.theme-switching *,
 html.theme-switching *::before,
@@ -253,14 +293,14 @@ html.theme-switching *::after {
 @media (max-width: 767px) {
   main > div.relative {
     width: 100%;
-    padding-inline: 16px;
+    padding-inline: 14px;
     padding-bottom: 88px;
   }
   main nav { min-height: 56px; gap: 8px; }
   main nav > div { min-width: 0; }
   main nav > div:first-child { flex: 1 1 auto; }
   main nav > div:last-child { flex: 0 1 auto; max-width: 68%; }
-  main > div.relative > section:first-of-type { padding-block: 22px 18px; }
+  main > div.relative > section:first-of-type { padding-block: 20px 18px; }
   main > div.relative > section:first-of-type h1 { line-height: .96; }
 
   #calculator > .mb-3 {
@@ -278,15 +318,15 @@ html.theme-switching *::after {
 
   .workload-card,
   .workload-total-card {
-    height: 220px;
-    min-height: 220px;
+    height: 216px;
+    min-height: 216px;
   }
   .workload-card { padding: 14px; }
   .workload-card__input { height: 44px; font-size: 16px; }
   .workload-card__input-row,
   .workload-card__input-row > div { min-width: 0; }
 
-  .workload-total-card { padding: 14px; display: block; }
+  .workload-total-card { padding: 14px !important; display: block; }
   .workload-total-card > div {
     display: flex;
     flex-direction: column;
@@ -297,14 +337,14 @@ html.theme-switching *::after {
   .workload-total-card > div > div { width: 100%; text-align: left; min-width: 0; }
   .workload-total-card > div > div:last-child {
     padding-top: 9px;
-    border-top: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+    border-top: 1px solid var(--border);
     text-align: left;
   }
   .workload-total-card strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
 
   #dashboard,
   #shift,
-  #tools { margin-top: 12px; }
+  #tools { margin-top: 14px; }
   #dashboard > div:first-child { padding: 14px; }
   #dashboard > div:first-child > div { gap: 12px; }
   #dashboard > div:nth-child(2) > div { min-height: 72px; padding: 10px 12px; }
@@ -339,7 +379,7 @@ html.theme-switching *::after {
 }
 
 @media (max-width: 380px) {
-  main > div.relative { padding-inline: 12px; }
+  main > div.relative { padding-inline: 10px; }
   main nav > div:last-child { gap: 4px; }
   .pht-clock-display { max-width: 96px; }
   .pht-clock-display span { font-size: 6px; letter-spacing: .05em; }
@@ -358,7 +398,7 @@ html.theme-switching *::after {
 }
 
 @media (min-width: 1600px) {
-  main > div.relative { padding-inline: 40px; }
+  main > div.relative { padding-inline: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
