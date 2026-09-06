@@ -1,29 +1,28 @@
-/* SIF Tracker controls: one predictable button system for desktop + mobile. */
+/* SIF Tracker button system: one source of truth for button sizing and spacing. */
 
 :root {
   --button-height: 40px;
-  --button-min-width: 40px;
   --button-font-size: 10px;
   --button-padding-x: 12px;
   --button-radius: 10px;
   --button-icon-size: 14px;
   --button-icon-gap: 6px;
-  --button-compact-height: 40px;
 }
 
+/* Base: every button shares the same type, height, padding rhythm, and radius. */
 main button {
-  min-height: var(--button-height);
+  box-sizing: border-box;
   height: var(--button-height);
+  min-height: var(--button-height);
   padding-block: 0;
   padding-inline: var(--button-padding-x);
-  font-size: var(--button-font-size) !important;
-  line-height: 1 !important;
-  font-weight: 600;
   border-radius: var(--button-radius);
-  box-sizing: border-box;
+  font-size: var(--button-font-size) !important;
+  font-weight: 600;
+  line-height: 1 !important;
 }
 
-/* Force the same icon/text spacing even when component classes use gap-1.5, gap-2, etc. */
+/* Every icon + text button uses exactly the same spacing. */
 main button.inline-flex,
 main button.flex {
   gap: var(--button-icon-gap) !important;
@@ -35,41 +34,34 @@ main button svg {
   flex: 0 0 auto;
 }
 
-/* Icon-only controls */
+/* Icon-only controls stay square and have no artificial text gap. */
 main button[aria-label*="Close"],
 main button[aria-label*="Copy"],
-main .workload-card button[title="Clear"] {
-  width: var(--button-height);
-  min-width: var(--button-height);
-  height: var(--button-height);
-  min-height: var(--button-height);
-  padding: 0;
+main .workload-card button[title="Clear"],
+.workload-card__quantity-button {
+  width: var(--button-height) !important;
+  min-width: var(--button-height) !important;
+  height: var(--button-height) !important;
+  min-height: var(--button-height) !important;
+  padding: 0 !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0 !important;
 }
 
+/* Workload +/- controls use the same square button dimensions. */
 .workload-card__input-row {
   width: min(100%, 320px);
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) 40px;
+  grid-template-columns: var(--button-height) minmax(0, 1fr) var(--button-height);
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .workload-card__quantity-button {
-  width: 40px !important;
-  min-width: 40px !important;
-  height: 40px !important;
-  min-height: 40px !important;
-  flex: 0 0 40px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 !important;
-  gap: 0 !important;
+  flex: 0 0 var(--button-height);
 }
 
 .workload-card__input-row .relative {
@@ -79,8 +71,8 @@ main .workload-card button[title="Clear"] {
 
 .workload-card__input {
   width: 100%;
-  height: 40px !important;
-  min-height: 40px;
+  height: var(--button-height) !important;
+  min-height: var(--button-height);
   text-align: center;
 }
 
@@ -88,12 +80,11 @@ main .workload-card button[title="Clear"] {
   right: 10px;
 }
 
-.workload-card__quick-add > button {
-  width: auto;
-  min-width: 40px;
+/* Quick-add and settings actions use the same height and icon/text gap. */
+.workload-card__quick-add > button,
+#settings .flex.gap-2 > button {
   height: var(--button-height);
   min-height: var(--button-height);
-  padding-inline: 12px;
   line-height: 1 !important;
   gap: var(--button-icon-gap) !important;
 }
@@ -106,8 +97,8 @@ main .workload-card button[title="Clear"] {
 
 #settings .flex.shrink-0 > button:first-child,
 #settings .flex.shrink-0 > button:last-child {
-  width: 40px;
-  min-width: 40px;
+  width: var(--button-height);
+  min-width: var(--button-height);
   padding: 0;
   gap: 0 !important;
 }
@@ -118,20 +109,34 @@ main .workload-card button[title="Clear"] {
   padding-inline: 6px;
 }
 
-#settings .flex.gap-2 > button {
-  height: var(--button-height);
-  min-height: var(--button-height);
-  padding-block: 0;
-  font-size: var(--button-font-size) !important;
-  gap: var(--button-icon-gap) !important;
-}
-
 #settings .flex.gap-2 > button:not(:disabled) {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 24%, transparent);
 }
 
 #settings .flex.gap-2 > button:disabled {
   opacity: .45;
+}
+
+/* Theme toggle is a compact labeled button; its icon/text gap matches every other labeled button. */
+.theme-toggle {
+  position: relative;
+  width: 88px !important;
+  min-width: 88px !important;
+  max-width: 88px !important;
+  flex: 0 0 88px !important;
+  justify-content: center;
+  overflow: hidden;
+  gap: var(--button-icon-gap) !important;
+}
+
+.theme-toggle__label {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 0 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .clock-in-display {
@@ -166,26 +171,7 @@ main input:focus-visible {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--sif-green) 28%, transparent), 0 8px 24px var(--primary-shadow);
 }
 
-/* Theme control: same 6px icon/text gap as every other labeled button. */
-.theme-toggle {
-  position: relative;
-  justify-content: center;
-  overflow: hidden;
-  gap: var(--button-icon-gap) !important;
-}
-
-.theme-toggle__label {
-  overflow: hidden;
-  white-space: nowrap;
-  flex: 0 1 auto;
-  width: auto;
-}
-
 @media (max-width: 767px) {
-  main nav {
-    gap: 8px;
-  }
-
   main nav > div:last-child {
     gap: 6px;
   }
@@ -206,37 +192,13 @@ main input:focus-visible {
     font-size: 8px;
   }
 
-  #calculator > .mb-3 > button,
-  #tools > button,
-  .shift-summary-card button.rounded-full {
-    min-height: var(--button-height);
-    height: var(--button-height);
-  }
-
   #settings .flex.gap-2 > button {
     flex: 1 1 0;
     min-width: 0;
   }
 
-  .workload-card__input-row {
-    width: min(100%, 320px);
-    grid-template-columns: 40px minmax(0, 1fr) 40px;
-    gap: 8px;
-  }
-
-  .workload-card__quantity-button {
-    width: 40px !important;
-    min-width: 40px !important;
-    flex-basis: 40px;
-  }
-
   .workload-card__quick-add {
     gap: 4px;
-  }
-
-  .workload-card__quick-add > button {
-    min-width: 40px;
-    padding-inline: 10px;
   }
 
   .workload-card__examples {
@@ -261,32 +223,14 @@ main input:focus-visible {
 }
 
 @media (max-width: 430px) {
-  main nav > div:first-child {
-    gap: 7px;
-  }
-
-  main nav > div:first-child > span {
-    font-size: 12px;
-  }
-
-  .pht-clock-display {
-    max-width: 124px;
-  }
-
+  /* Narrow phones use the icon-only theme control, still at the same 40px button size. */
   .theme-toggle {
-    width: 40px !important;
-    min-width: 40px !important;
-    max-width: 40px !important;
-    flex: 0 0 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    width: var(--button-height) !important;
+    min-width: var(--button-height) !important;
+    max-width: var(--button-height) !important;
+    flex: 0 0 var(--button-height) !important;
     padding: 0 !important;
-    justify-content: center;
     gap: 0 !important;
-  }
-
-  .theme-toggle > span:first-child {
-    margin: 0;
   }
 
   .theme-toggle__label {
@@ -295,38 +239,6 @@ main input:focus-visible {
 
   .workload-card__input-row {
     width: min(100%, 300px);
-    grid-template-columns: 40px minmax(0, 1fr) 40px;
-    gap: 8px;
-  }
-
-  .workload-card__quantity-button {
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
-    flex-basis: 40px;
-  }
-}
-
-@media (max-width: 360px) {
-  main nav > div:last-child {
-    gap: 4px;
-  }
-
-  .pht-clock-display {
-    max-width: 106px;
-  }
-
-  .workload-card__input-row {
-    width: min(100%, 280px);
-    grid-template-columns: 40px minmax(0, 1fr) 40px;
-    gap: 7px;
-  }
-
-  .workload-card__quantity-button {
-    width: 40px !important;
-    min-width: 40px !important;
-    flex-basis: 40px;
   }
 }
 
