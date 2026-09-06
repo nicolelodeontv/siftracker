@@ -1,5 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Geist, Geist_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import { WelcomePopup } from '@/components/welcome-popup'
 import './globals.css'
@@ -9,16 +9,16 @@ import './spacing-overrides.css'
 
 const siteUrl = 'https://sif-tracker-omega.vercel.app'
 
-const inter = Inter({
+const geist = Geist({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-inter',
+  variable: '--font-geist',
 })
 
-const jetBrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
-  variable: '--font-jetbrains-mono',
+  variable: '--font-geist-mono',
 })
 
 export const metadata: Metadata = {
@@ -112,7 +112,7 @@ const structuredData = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable} bg-background`} suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable} bg-background`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
