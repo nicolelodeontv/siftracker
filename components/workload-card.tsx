@@ -129,31 +129,24 @@ export function WorkloadCard({ workload, input, totalSeconds, inputRef, onChange
       </article>
 
       {workload.id === 'lateOrders' && (
-        <>
-          <section className="workload-total-card h-[220px] min-h-[220px] w-full min-w-0 overflow-hidden rounded-2xl border border-primary/25 bg-card/90 p-3.5 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur sm:p-4">
-            <div className="flex h-full min-h-0 flex-col justify-center gap-3">
-              <div className="flex min-w-0 items-center gap-2.5">
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <TimerReset className="size-3.5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Summary</p>
-                  <h3 className="mt-0.5 text-base font-semibold tracking-tight">One total, all workloads.</h3>
-                </div>
+        <section id="workflow" aria-label="Workload summary" className="workload-total-card h-[220px] min-h-[220px] w-full min-w-0 overflow-hidden rounded-2xl border border-primary/25 bg-card/90 p-3.5 shadow-[0_10px_30px_var(--card-shadow)] backdrop-blur sm:p-4 scroll-mt-20">
+          <div className="flex h-full min-h-0 flex-col justify-center gap-3">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <TimerReset className="size-3.5" />
               </div>
-              <p className="text-[10px] leading-4 text-muted-foreground">Combined calculated workload time across all workload cards.</p>
-              <div className="rounded-xl border border-border bg-background/45 px-4 py-3">
-                <span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Total work time</span>
-                <strong aria-live="polite" className="mt-1 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong>
+              <div className="min-w-0">
+                <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Summary</p>
+                <h3 className="mt-0.5 text-base font-semibold tracking-tight">One total, all workloads.</h3>
               </div>
             </div>
-          </section>
-          <style jsx global>{`
-            #calculator + #workflow {
-              display: none !important;
-            }
-          `}</style>
-        </>
+            <p className="text-[10px] leading-4 text-muted-foreground">Combined calculated workload time across all workload cards.</p>
+            <div className="rounded-xl border border-border bg-background/45 px-4 py-3">
+              <span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Total work time</span>
+              <strong aria-live="polite" className="mt-1 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong>
+            </div>
+          </div>
+        </section>
       )}
     </>
   )
