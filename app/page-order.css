@@ -9,5 +9,5 @@ main > div > div > div.relative > nav { order: 0; }
 main > div > div > div.relative > section:first-of-type { order: 1; }
 #calculator { order: 2; }
 #dashboard { order: 3; }
-#tools { order: 5; }
-main > div > div > div.relative > footer { order: 6; }
+#tools { order: 4; }
+main > div > div > div.relative > footer { order: 5; }
