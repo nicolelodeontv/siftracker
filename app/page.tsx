@@ -287,25 +287,6 @@ export default function Page() {
               </div>
             </section>
 
-            <section id="workflow" className={`${CARD_CLASS} scroll-mt-20 mt-4 overflow-hidden border-primary/25 p-4 sm:p-5`}>
-              <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-center">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"><TimerReset className="size-3.5" /></div>
-                    <div>
-                      <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">02 / Summary</p>
-                      <h3 className="mt-0.5 text-base font-semibold tracking-tight">One total, all workloads.</h3>
-                    </div>
-                  </div>
-                  <p className="mt-2 max-w-xl text-[10px] leading-4 text-muted-foreground">{totalUnits} total units across {workloads.length} workload types. Use the live dashboard above to see where that time is going.</p>
-                </div>
-                <div className="rounded-xl border border-border bg-background/45 px-4 py-3 sm:min-w-[11rem] sm:text-right">
-                  <span className="block text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Total work time</span>
-                  <strong aria-live="polite" className="mt-1 block whitespace-nowrap font-mono text-2xl font-bold tracking-[-0.04em] tabular-nums sm:text-3xl">{formatDuration(totalSeconds)}</strong>
-                </div>
-              </div>
-            </section>
-
             <section id="tools" className={`${CARD_CLASS} scroll-mt-20 mt-4 p-3.5 sm:flex sm:items-center sm:justify-between sm:gap-4 sm:p-4`}>
               <div className="min-w-0">
                 <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">03 / Tools</p>
