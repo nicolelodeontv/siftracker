@@ -63,7 +63,7 @@ export function TodaySnapshot({ totalSeconds, totalUnits, activeWorkloads, activ
   )
 
   const maxDuration = useMemo(() => Math.max(...breakdown.map((item) => item.duration), 1), [breakdown])
-  const breakStartSeconds = shift.clockInSeconds === null ? null : shift.clockInSeconds + totalSeconds
+  const breakStartSeconds = shift.clockInSeconds === null || totalUnits === 0 ? null : shift.clockInSeconds + totalSeconds
   const breakEndSeconds = breakStartSeconds === null ? null : breakStartSeconds + 60 * 60
   const clockOutText = formatMilitaryTime(shift.estimatedClockOutSeconds)
   const setClockInNow = () => {
