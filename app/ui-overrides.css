@@ -215,6 +215,13 @@ main > div.relative > section:first-of-type p {
   box-shadow: var(--ui-card-shadow);
 }
 
+#dashboard,
+#shift,
+#tools {
+  background: var(--card) !important;
+  backdrop-filter: none !important;
+}
+
 #shift { padding: 16px; }
 .shift-summary-grid {
   display: grid;
@@ -263,6 +270,17 @@ main > div.relative > section:first-of-type p {
 #settings { border-radius: 12px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 75%, transparent); }
 #settings .grid { gap: 10px; }
 #settings .grid > div { min-width: 0; }
+
+/* Harmonize the legacy Live Shift accent colors with the warm-neutral palette. */
+#dashboard [style*="#22D3EE"] { color: var(--sif-orange) !important; background-color: color-mix(in srgb, var(--sif-orange) 12%, transparent) !important; border-color: color-mix(in srgb, var(--sif-orange) 30%, var(--border)) !important; }
+#dashboard [style*="#FACC15"] { color: var(--sif-yellow) !important; background-color: transparent !important; }
+#dashboard [style*="#A78BFA"] { color: var(--sif-violet) !important; }
+#dashboard [style*="#FB7185"] { color: var(--sif-red) !important; background-color: color-mix(in srgb, var(--sif-red) 5%, transparent) !important; border-color: color-mix(in srgb, var(--sif-red) 30%, var(--border)) !important; }
+#dashboard [style*="#34D399"] { color: var(--sif-green) !important; }
+#dashboard [style*="#60A5FA"] { color: var(--sif-blue) !important; }
+#dashboard [style*="#F472B6"] { color: var(--sif-violet) !important; }
+#dashboard [style*="#F59E0B"] { color: var(--sif-yellow) !important; }
+#dashboard [style*="#F87171"] { color: var(--sif-red) !important; }
 
 main footer {
   min-height: 34px;
