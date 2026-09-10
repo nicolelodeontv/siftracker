@@ -1,20 +1,56 @@
-/* SIF Tracker readability system: clearer hierarchy without changing the layout. */
+/* SIF Tracker readability system: stronger typography without changing the layout. */
 
 :root {
   --readable-muted: var(--muted-foreground);
-  --readable-subtle: color-mix(in srgb, var(--foreground) 72%, var(--muted-foreground));
+  --readable-subtle: color-mix(in srgb, var(--foreground) 76%, var(--muted-foreground));
 }
 
-/* Small UI labels were previously too faint at normal viewing distance. */
+/* Keep muted copy readable in both themes. */
 main .text-muted-foreground {
   color: var(--readable-muted);
 }
 
 main .text-muted-foreground\/70 {
-  color: color-mix(in srgb, var(--foreground) 68%, var(--muted-foreground)) !important;
+  color: color-mix(in srgb, var(--foreground) 72%, var(--muted-foreground)) !important;
 }
 
-/* Make the important operational numbers read first. */
+/* Global readability lift for the dashboard while preserving its compact layout. */
+main {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+main p,
+main li,
+main label,
+main span,
+main button,
+main input,
+main textarea,
+main select,
+main output {
+  line-height: 1.4;
+}
+
+/* Common tiny utility text gets bumped up so it remains readable at normal desktop distance. */
+main .text-\[7px\] { font-size: 10px !important; }
+main .text-\[8px\] { font-size: 10px !important; }
+main .text-\[9px\] { font-size: 11px !important; }
+main .text-\[10px\] { font-size: 12px !important; }
+main .text-\[11px\] { font-size: 12px !important; }
+main .text-xs { font-size: 13px !important; }
+main .text-sm { font-size: 14px !important; }
+
+/* Section labels stay compact but are easier to scan. */
+main .tracking-\[0\.18em\],
+main .tracking-\[0\.16em\],
+main .tracking-\[0\.14em\] {
+  font-size: 11px !important;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 0 currentColor;
+}
+
+/* Make important operational values visually dominant. */
 main .font-mono.tabular-nums {
   font-variant-numeric: tabular-nums;
 }
@@ -26,28 +62,21 @@ main .font-mono.tabular-nums {
   font-weight: 750;
 }
 
-/* Section labels become easier to scan while staying compact. */
-main .tracking-\[0\.18em\],
-main .tracking-\[0\.16em\],
-main .tracking-\[0\.14em\] {
-  text-shadow: 0 0 0 currentColor;
+.top-summary strong,
+.workload-card output {
+  font-size: 1.05em;
 }
 
-/* Slightly stronger body copy and helper text. */
-main p.text-sm,
-main p.text-\[10px\],
-main p.text-\[9px\] {
-  color: var(--readable-muted);
-}
-
+/* Workload labels and helper copy. */
 .workload-card__label {
-  font-size: 9px;
+  font-size: 11px;
+  line-height: 1.35;
   color: var(--readable-muted);
 }
 
 .workload-card__feedback > p,
 .workload-card__examples span {
-  color: color-mix(in srgb, var(--foreground) 76%, var(--muted-foreground));
+  color: color-mix(in srgb, var(--foreground) 80%, var(--muted-foreground));
 }
 
 .workload-card__feedback > p.text-destructive {
@@ -55,26 +84,42 @@ main p.text-\[9px\] {
 }
 
 .workload-card__feedback > p.font-mono {
-  color: color-mix(in srgb, var(--foreground) 82%, var(--muted-foreground));
+  color: color-mix(in srgb, var(--foreground) 86%, var(--muted-foreground));
+}
+
+/* Form controls should be clearly legible and comfortable to read. */
+main input,
+main textarea,
+main select {
+  font-size: 15px !important;
+  line-height: 1.4;
+}
+
+main button {
+  font-size: 14px !important;
+}
+
+@media (min-width: 768px) {
+  /* Stronger desktop type without materially changing the compact layout. */
+  main .text-\[7px\],
+  main .text-\[8px\] { font-size: 11px !important; }
+
+  main .text-\[9px\] { font-size: 12px !important; }
+  main .text-\[10px\],
+  main .text-\[11px\] { font-size: 13px !important; }
+  main .text-xs { font-size: 14px !important; }
+  main .text-sm { font-size: 15px !important; }
 }
 
 @media (max-width: 767px) {
-  /* Mobile gets a small readability lift because the viewport is denser. */
-  main .text-\[8px\] {
-    font-size: 9px;
-  }
-
-  main .text-\[7px\] {
-    font-size: 8px;
-  }
-
-  .workload-card__label {
-    font-size: 9px;
-  }
+  /* Mobile gets the same minimum readable sizing. */
+  main .text-\[7px\] { font-size: 9px !important; }
+  main .text-\[8px\] { font-size: 10px !important; }
+  main .text-\[9px\] { font-size: 10px !important; }
 }
 
 @media (max-width: 430px) {
-  main .text-\[8px\] {
-    font-size: 8.5px;
-  }
+  main { font-size: 14px; }
+  main .text-\[7px\] { font-size: 9px !important; }
+  main .text-\[8px\] { font-size: 9.5px !important; }
 }
