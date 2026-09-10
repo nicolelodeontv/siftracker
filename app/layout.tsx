@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
+import { CommandPalette } from '@/components/command-palette'
 import { WelcomePopup } from '@/components/welcome-popup'
 import './globals.css'
 import './page-order.css'
@@ -120,6 +121,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="font-sans antialiased">
         {children}
         <WelcomePopup />
+        <CommandPalette />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
