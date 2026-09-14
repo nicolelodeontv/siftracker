@@ -1,0 +1,74 @@
+/* SIF Tracker — design tokens
+   One neutral scale + one accent (blue). Nothing else gets a color.
+   Drop this near the top of globals.css, after your @tailwind/@import
+   directives but before any component-specific CSS. */
+
+:root {
+  /* surfaces — light */
+  --surface-0: #FFFFFF; /* page background */
+  --surface-1: #F5F5F4; /* card / metric tile */
+  --surface-2: #FFFFFF; /* raised card, e.g. live shift */
+  --border: #E5E5E3;
+  --border-strong: #D4D4D1;
+
+  /* text — light */
+  --text-primary: #0A0A0B;
+  --text-secondary: #5F5E5A;
+  --text-muted: #8A8983;
+
+  /* accent — the one color. primary buttons, active icons, links only. */
+  --accent: #2563EB;
+  --accent-hover: #1D4ED8;
+  --accent-fg: #FFFFFF;      /* text/icon on solid accent fill */
+  --accent-tint: #EFF6FF;    /* faint bg for icon chips, badges */
+  --accent-tint-fg: #1D4ED8; /* text on accent-tint */
+
+  --radius-sm: 8px;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+
+.dark {
+  /* surfaces — dark */
+  --surface-0: #0A0A0B;
+  --surface-1: #151517;
+  --surface-2: #19191C;
+  --border: #26262A;
+  --border-strong: #34343A;
+
+  /* text — dark */
+  --text-primary: #F5F5F4;
+  --text-secondary: #9B9B96;
+  --text-muted: #6E6E69;
+
+  /* accent — brighter in dark mode to hold contrast against near-black */
+  --accent: #3B82F6;
+  --accent-hover: #60A5FA;
+  --accent-tint: #142238;
+  --accent-tint-fg: #8FC1FF;
+}
+
+/* --- component classes, requires @tailwind base/components/utilities above --- */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 h-10 px-4 rounded text-sm font-medium transition-colors duration-150 active:scale-[0.98];
+  }
+  .btn-primary {
+    @apply btn bg-accent text-accent-fg hover:bg-accent-hover;
+  }
+  .btn-secondary {
+    @apply btn bg-transparent text-ink border border-border-strong hover:bg-surface-1;
+  }
+  .btn-icon {
+    @apply inline-flex items-center justify-center w-9 h-9 rounded text-ink-secondary hover:bg-surface-1 hover:text-ink transition-colors duration-150;
+  }
+  .icon-chip {
+    @apply inline-flex items-center justify-center w-8 h-8 rounded-sm bg-accent-tint text-accent-tint-fg;
+  }
+  .status-pill {
+    @apply inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded border border-border bg-surface-1 text-ink-secondary;
+  }
+  .metric-card {
+    @apply bg-surface-1 rounded p-4;
+  }
+}
