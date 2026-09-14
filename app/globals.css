@@ -40,6 +40,15 @@ body { min-height:100%; margin:0; overflow-x:hidden; overflow-y:auto; background
 html { scroll-behavior:smooth; }
 * { box-sizing:border-box; }
 ::selection { background:var(--primary); color:var(--primary-foreground); }
+
+/* Legacy Live Shift inline colors are deliberately remapped to the single accent. */
+[style*="#22D3EE"], [style*="#FACC15"], [style*="#A78BFA"], [style*="#34D399"], [style*="#60A5FA"], [style*="#F472B6"], [style*="#F59E0B"], [style*="#FB7185"], [style*="#F87171"] {
+  color:var(--primary) !important;
+  border-color:color-mix(in srgb, var(--primary) 30%, var(--border)) !important;
+  background-color:color-mix(in srgb, var(--primary) 6%, transparent) !important;
+  box-shadow:none !important;
+}
+
 @layer base {
   * { @apply border-border outline-ring/50; }
   body { @apply bg-background text-foreground; font-family:var(--font-geist), system-ui, sans-serif; }
