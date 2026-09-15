@@ -154,7 +154,7 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <header className="sticky top-0 z-40 -mx-4 border-b border-border/70 bg-background/95 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="flex min-h-14 items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-2.5">
@@ -183,52 +183,56 @@ export default function Page() {
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Enter today&apos;s workload, then use the shift result below to see when you are expected to finish.</p>
         </section>
 
-        <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p>
-              <h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2>
-              <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p>
+        <div className="lg:grid lg:grid-cols-[1.65fr_1fr] lg:items-start lg:gap-12">
+          <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p>
+                <h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2>
+                <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button type="button" onClick={clearAllWorkloads} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Clear all workload inputs">
+                  <Eraser className="size-3" />
+                  Clear all
+                </button>
+                <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-expanded={settingsOpen} aria-controls="settings">
+                  <Settings2 className="size-3" />
+                  Settings
+                  {unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}
+                </button>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button type="button" onClick={clearAllWorkloads} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Clear all workload inputs">
-                <Eraser className="size-3" />
-                Clear all
-              </button>
-              <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-expanded={settingsOpen} aria-controls="settings">
-                <Settings2 className="size-3" />
-                Settings
-                {unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}
-              </button>
-            </div>
+
+            {settingsOpen && (
+              <div className="mb-6">
+                <WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} />
+              </div>
+            )}
+
+            <WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} />
+          </section>
+
+          <div className="my-12 h-px bg-border lg:hidden" />
+
+          <div className="lg:sticky lg:top-20 lg:self-start">
+            <TodaySnapshot totalSeconds={totalSeconds} totalUnits={totalUnits} activeWorkloads={workloads.length} activeWorkloadCount={activeWorkloadCount} clockInTime={clockInTime} calculatedValues={calculatedValues} onClockInChange={setClockInTime} />
+
+            <section id="tools" className="mt-12 scroll-mt-20 border-t border-border pt-8" aria-labelledby="tools-heading">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p>
+                  <h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2>
+                  <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Reset inputs and Clock In without changing saved rates.</p>
+                </div>
+                <button type="button" onClick={() => setConfirmReset(true)} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <RotateCcw className="size-3" />
+                  Reset today&apos;s workload
+                </button>
+              </div>
+            </section>
           </div>
-
-          {settingsOpen && (
-            <div className="mb-6">
-              <WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} />
-            </div>
-          )}
-
-          <WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} />
-        </section>
-
-        <div className="my-12 h-px bg-border" />
-
-        <TodaySnapshot totalSeconds={totalSeconds} totalUnits={totalUnits} activeWorkloads={workloads.length} activeWorkloadCount={activeWorkloadCount} clockInTime={clockInTime} calculatedValues={calculatedValues} onClockInChange={setClockInTime} />
-
-        <section id="tools" className="mt-12 scroll-mt-20 border-t border-border pt-8" aria-labelledby="tools-heading">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p>
-              <h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2>
-              <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Reset inputs and Clock In without changing saved rates.</p>
-            </div>
-            <button type="button" onClick={() => setConfirmReset(true)} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <RotateCcw className="size-3" />
-              Reset today&apos;s workload
-            </button>
-          </div>
-        </section>
+        </div>
 
         <footer className="mt-12 flex flex-col gap-1 border-t border-border pt-5 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span>SIF Tracker</span>
