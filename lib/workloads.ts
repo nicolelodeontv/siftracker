@@ -38,8 +38,8 @@ export function validateRates(input: unknown) {
 
   for (const workload of DEFAULT_WORKLOADS) {
     const raw = source[workload.id]
-    const rate = typeof raw === 'number' ? raw : Number(raw)
-    if (!Number.isFinite(rate) || rate < 1 || rate > 240) return null
+    if (typeof raw !== 'number' || !Number.isFinite(raw) || raw < 1 || raw > 240) return null
+    const rate = raw
     next[workload.id] = Math.round(rate)
   }
 
