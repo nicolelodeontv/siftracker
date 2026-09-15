@@ -16,6 +16,7 @@ import { DEFAULT_RATES, DEFAULT_WORKLOADS } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
 type Feedback = 'saved' | 'cleared' | 'reset' | null
+type ApiStatus = 'checking' | 'ready' | 'error'
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
 const CARD_CLASS = 'rounded-2xl border border-border bg-card/60'
@@ -27,6 +28,7 @@ export default function Page() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
+  const [apiStatus, setApiStatus] = useState<ApiStatus>('checking')
   const [clockInTime, setClockInTime] = useState('')
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
@@ -41,6 +43,27 @@ export default function Page() {
       setClockInTime(getCurrentClockIn())
     }, 0)
     return () => window.clearTimeout(hydrate)
+  }, [])
+
+  useEffect(() => {
+    let active = true
+
+    const checkWorkloadApi = async () => {
+      try {
+        const response = await fetch('/api/workloads', { cache: 'no-store' })
+        if (!response.ok) throw new Error(`Workload API returned ${response.status}`)
+        const payload = await response.json()
+        if (!payload?.ok || !payload?.rates) throw new Error('Invalid workload API response')
+        if (active) setApiStatus('ready')
+      } catch {
+        if (active) setApiStatus('error')
+      }
+    }
+
+    checkWorkloadApi()
+    return () => {
+      active = false
+    }
   }, [])
 
   useEffect(() => {
@@ -173,6 +196,12 @@ export default function Page() {
             </div>
           </div>
         </header>
+
+        {apiStatus === 'error' && (
+          <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">
+            Live workload configuration is unavailable. SIF Tracker is using your local saved rates.
+          </div>
+        )}
 
         <section id="shift-summary" className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Shift summary">
           <SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} />
