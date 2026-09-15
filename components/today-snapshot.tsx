@@ -3,6 +3,7 @@
 import { formatMilitaryTime } from '@/lib/calculator'
 import { calculateShift } from '@/lib/shift'
 import { usePhilippineClock } from '@/lib/use-philippine-clock'
+import type { Workload } from '@/lib/workloads'
 
 type Props = {
   totalSeconds: number
@@ -10,15 +11,15 @@ type Props = {
   activeWorkloads: number
   activeWorkloadCount: number
   clockInTime: string
-  calculatedValues: Array<{ workload: import('@/lib/workloads').Workload; input: string; value: number | null }>
+  calculatedValues: Array<{ workload: Workload; input: string; value: number | null }>
   onClockInChange?: (value: string) => void
 }
 
 const CARD_CLASS = 'rounded-2xl border border-border bg-card/60'
 
 export function TodaySnapshot({ totalSeconds, totalUnits, clockInTime, onClockInChange }: Props) {
-  const { time } = usePhilippineClock()
-  const shift = calculateShift(clockInTime, totalSeconds, totalUnits, undefined)
+  const { seconds: nowSeconds, time } = usePhilippineClock()
+  const shift = calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds)
   const clockOutText = formatMilitaryTime(shift.estimatedClockOutSeconds)
 
   const setClockInNow = () => {
