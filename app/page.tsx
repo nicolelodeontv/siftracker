@@ -27,7 +27,7 @@ export default function Page() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
-  const [clockInTime, setClockInTime] = useState('00:00:00')
+  const [clockInTime, setClockInTime] = useState('')
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
@@ -75,6 +75,7 @@ export default function Page() {
     () => calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds),
     [clockInTime, nowSeconds, totalSeconds, totalUnits],
   )
+  const hasClockIn = clockInTime !== ''
   const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
   const clockOut = formatMilitaryTime(shift.estimatedClockOutSeconds)
 
@@ -173,10 +174,10 @@ export default function Page() {
           </div>
         </header>
 
-        <section className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Shift summary">
-          <SummaryTile label="Progress" value={`${progress}%`} />
-          <SummaryTile label="Worked" value={formatDuration(shift.elapsedShiftSeconds)} />
-          <SummaryTile label="Break" value="01:00:00" />
+        <section id="shift-summary" className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Shift summary">
+          <SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} />
+          <SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} />
+          <SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} />
           <SummaryTile label="Clock Out" value={clockOut} accent />
         </section>
 
