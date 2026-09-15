@@ -208,7 +208,7 @@ export default function Page() {
           <SummaryTile label="Clock Out" value={clockOut} accent />
         </section>
 
-        <div className="mx-auto mt-10 w-full max-w-6xl">
+        <div className="mx-auto mt-10 w-full max-w-7xl space-y-6">
           <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p><h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p></div>
@@ -222,7 +222,7 @@ export default function Page() {
             <WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} />
           </section>
 
-          <section id="clock-in" className={`${CARD_CLASS} mt-8 scroll-mt-20 p-4 sm:p-5`} aria-labelledby="clock-in-heading">
+          <section id="clock-in" className={`${CARD_CLASS} scroll-mt-20 p-4 sm:p-5`} aria-labelledby="clock-in-heading">
             <div>
               <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">02 / Clock In</p>
               <h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2>
@@ -238,7 +238,7 @@ export default function Page() {
             </div>
           </section>
 
-          <section id="tools" className={`${CARD_CLASS} mt-8 scroll-mt-20 p-4 sm:p-5`} aria-labelledby="tools-heading">
+          <section id="tools" className={`${CARD_CLASS} scroll-mt-20 p-4 sm:p-5`} aria-labelledby="tools-heading">
             <div>
               <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p>
               <h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2>
