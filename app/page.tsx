@@ -183,7 +183,7 @@ export default function Page() {
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Enter today&apos;s workload, then use the shift result below to see when you are expected to finish.</p>
         </section>
 
-        <div className="lg:grid lg:grid-cols-[1.65fr_1fr] lg:items-start lg:gap-12">
+        <div className="lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-8">
           <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div>
