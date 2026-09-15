@@ -208,7 +208,7 @@ export default function Page() {
           <SummaryTile label="Clock Out" value={clockOut} accent />
         </section>
 
-        <div className="mx-auto mt-10 w-full max-w-4xl">
+        <div className="mx-auto mt-10 w-full max-w-6xl">
           <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p><h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p></div>
@@ -222,8 +222,12 @@ export default function Page() {
             <WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} />
           </section>
 
-          <section id="tools" className={`${CARD_CLASS} mt-8 scroll-mt-20 p-4 sm:p-5`} aria-labelledby="tools-heading">
-            <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p><h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit Clock In, then manage today&apos;s workload.</p></div>
+          <section id="clock-in" className={`${CARD_CLASS} mt-8 scroll-mt-20 p-4 sm:p-5`} aria-labelledby="clock-in-heading">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">02 / Clock In</p>
+              <h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2>
+              <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit your start time for today&apos;s shift.</p>
+            </div>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>
                 Edit Clock In · {clockInTime || 'Choose time'}
@@ -232,7 +236,15 @@ export default function Page() {
                 NOW · {currentTime}
               </button>
             </div>
-            <button type="button" onClick={() => setConfirmReset(true)} className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button>
+          </section>
+
+          <section id="tools" className={`${CARD_CLASS} mt-8 scroll-mt-20 p-4 sm:p-5`} aria-labelledby="tools-heading">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p>
+              <h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2>
+              <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Manage today&apos;s workload.</p>
+            </div>
+            <button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button>
           </section>
         </div>
 
