@@ -6,7 +6,7 @@ import { Command, Gauge, HelpCircle, LayoutDashboard, RotateCcw, Search, Setting
 const ACTIONS = [
   { id: 'dashboard', label: 'Go to Live Shift', hint: 'Dashboard overview', icon: LayoutDashboard },
   { id: 'workload', label: 'Go to Workload', hint: 'Enter today\'s workload', icon: Gauge },
-  { id: 'summary', label: 'Go to Summary', hint: 'Review shift totals', icon: TimerReset },
+  { id: 'summary', label: 'Go to Shift Summary', hint: 'Review progress and clock-out time', icon: TimerReset },
   { id: 'tools', label: 'Go to Tools', hint: 'Shift utilities', icon: Wrench },
   { id: 'settings', label: 'Open Settings', hint: 'Edit workload rates', icon: Settings2 },
   { id: 'guide', label: 'Open Quick Guide', hint: 'Keyboard shortcuts & help', icon: HelpCircle },
@@ -23,7 +23,7 @@ function clickButton(selector: string) {
 function runAction(id: ActionId) {
   if (id === 'dashboard') document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   if (id === 'workload') document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  if (id === 'summary') document.getElementById('workflow')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  if (id === 'summary') document.getElementById('shift-summary')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   if (id === 'tools') document.getElementById('tools')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   if (id === 'settings') clickButton('button[aria-controls="settings"]')
   if (id === 'guide') window.dispatchEvent(new Event('sif:open-welcome'))
