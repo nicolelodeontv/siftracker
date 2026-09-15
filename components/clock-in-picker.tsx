@@ -69,12 +69,12 @@ export function ClockInPicker({ value, onChange }: Props) {
       handleOpen()
     }
 
-    document.addEventListener('sif:edit-clock-in', handleOpen as EventListener)
-    document.addEventListener('sif:set-clock-in-now', handleSetNow as EventListener)
+    window.addEventListener('sif:edit-clock-in', handleOpen as EventListener)
+    window.addEventListener('sif:set-clock-in-now', handleSetNow as EventListener)
     document.addEventListener('click', handleClickCapture, true)
     return () => {
-      document.removeEventListener('sif:edit-clock-in', handleOpen as EventListener)
-      document.removeEventListener('sif:set-clock-in-now', handleSetNow as EventListener)
+      window.removeEventListener('sif:edit-clock-in', handleOpen as EventListener)
+      window.removeEventListener('sif:set-clock-in-now', handleSetNow as EventListener)
       document.removeEventListener('click', handleClickCapture, true)
     }
   }, [onChange, value])
