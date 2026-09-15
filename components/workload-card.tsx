@@ -1,5 +1,3 @@
-'use client'
-
 import type { RefObject } from 'react'
 import { Minus, Plus, X } from 'lucide-react'
 import { calculateValue, formatDuration, isIncompleteExpression } from '@/lib/calculator'
@@ -101,12 +99,12 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                         onAdjust(workload.id, event.key === 'ArrowUp' ? 1 : -1)
                       }
                     }}
-                    className={`h-11 w-full rounded-xl border bg-input-background px-3 pr-12 font-mono text-[15px] font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                    className={`h-12 w-full rounded-xl border bg-input-background px-3 pr-12 font-mono text-base font-medium tabular-nums text-foreground outline-none transition ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
                     aria-invalid={invalid}
                     aria-label={`Number of ${workload.unit} for ${workload.label}`}
                   />
                   {value !== null && hasInput && (
-                    <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-[13px] font-semibold tabular-nums text-muted-foreground opacity-60" aria-hidden="true">{value}</output>
+                    <output className="pointer-events-none absolute inset-y-0 right-3 flex items-center font-mono text-sm font-semibold tabular-nums text-muted-foreground opacity-60" aria-hidden="true">{value}</output>
                   )}
                 </div>
                 <button type="button" onClick={() => onAdjust(workload.id, 1)} className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Increase ${workload.label} quantity`}>
