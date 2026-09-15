@@ -228,11 +228,11 @@ export default function Page() {
               <h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2>
               <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit your start time for today&apos;s shift.</p>
             </div>
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              <button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>
+            <div className="mt-4 flex flex-col gap-2">
+              <button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex w-full items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>
                 Edit Clock In · {clockInTime || 'Choose time'}
               </button>
-              <button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>
+              <button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>
                 NOW · {currentTime}
               </button>
             </div>
