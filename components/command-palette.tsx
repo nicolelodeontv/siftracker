@@ -79,10 +79,6 @@ export function CommandPalette() {
   }, [activeIndex, filtered, open])
 
   useEffect(() => {
-    setActiveIndex(0)
-  }, [query])
-
-  useEffect(() => {
     if (!open) return
     const timer = window.setTimeout(() => document.getElementById('sif-command-search')?.focus(), 0)
     return () => window.clearTimeout(timer)
