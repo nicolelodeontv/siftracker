@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Check, Eraser, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ClockInPicker } from '@/components/clock-in-picker'
-import { TodaySnapshot } from '@/components/today-snapshot'
 import { PhtClockDisplay } from '@/components/pht-clock-display'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { WorkloadCard } from '@/components/workload-card'
@@ -33,7 +32,7 @@ export default function Page() {
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
-  const { seconds: nowSeconds } = usePhilippineClock()
+  const { seconds: nowSeconds, time: currentTime } = usePhilippineClock()
 
   useEffect(() => {
     const hydrate = window.setTimeout(() => {
@@ -89,7 +88,6 @@ export default function Page() {
     () => calculateWorkloads(workloads, values),
     [values, workloads],
   )
-  const activeWorkloadCount = calculatedValues.filter(({ value }) => Math.max(0, value ?? 0) > 0).length
   const unsavedRates = useMemo(
     () => DEFAULT_WORKLOADS.some(({ id }) => rates[id] !== savedRates[id]),
     [rates, savedRates],
@@ -210,7 +208,7 @@ export default function Page() {
           <SummaryTile label="Clock Out" value={clockOut} accent />
         </section>
 
-        <div className="mt-10 lg:grid lg:grid-cols-[1.62fr_1fr] lg:items-start lg:gap-8">
+        <div className="mx-auto mt-10 w-full max-w-4xl">
           <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p><h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p></div>
@@ -224,15 +222,18 @@ export default function Page() {
             <WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} />
           </section>
 
-          <div className="my-12 h-px bg-border lg:hidden" />
-
-          <div className="lg:sticky lg:top-20 lg:self-start">
-            <TodaySnapshot totalSeconds={totalSeconds} totalUnits={totalUnits} activeWorkloads={workloads.length} activeWorkloadCount={activeWorkloadCount} clockInTime={clockInTime} calculatedValues={calculatedValues} onClockInChange={setClockInTime} />
-            <section id="tools" className={`${CARD_CLASS} mt-8 scroll-mt-20 p-4 sm:p-5`} aria-labelledby="tools-heading">
-              <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p><h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Reset inputs and Clock In without changing saved rates.</p></div>
-              <button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button>
-            </section>
-          </div>
+          <section id="tools" className={`${CARD_CLASS} mt-8 scroll-mt-20 p-4 sm:p-5`} aria-labelledby="tools-heading">
+            <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p><h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit Clock In, then manage today&apos;s workload.</p></div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>
+                Edit Clock In · {clockInTime || 'Choose time'}
+              </button>
+              <button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>
+                NOW · {currentTime}
+              </button>
+            </div>
+            <button type="button" onClick={() => setConfirmReset(true)} className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button>
+          </section>
         </div>
 
         <footer className="mt-12 flex flex-col gap-1 border-t border-border pt-5 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
