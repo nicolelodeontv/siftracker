@@ -8,20 +8,16 @@ import { PhtClockDisplay } from '@/components/pht-clock-display'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { WorkloadCard } from '@/components/workload-card'
 import { WorkloadSettings } from '@/components/workload-settings'
-import { calculateValue } from '@/lib/calculator'
+import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { loadSavedRates, persistSavedRates } from '@/lib/rates-storage'
-import { calculateWorkloads } from '@/lib/shift'
-import { getCurrentClockIn } from '@/lib/use-philippine-clock'
+import { calculateShift, calculateWorkloads } from '@/lib/shift'
+import { getCurrentClockIn, usePhilippineClock } from '@/lib/use-philippine-clock'
 import { DEFAULT_RATES, DEFAULT_WORKLOADS } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
 type Feedback = 'saved' | 'cleared' | 'reset' | null
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
-
-function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
 
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
@@ -34,6 +30,7 @@ export default function Page() {
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
+  const { seconds: nowSeconds } = usePhilippineClock()
 
   useEffect(() => {
     const hydrate = window.setTimeout(() => {
@@ -73,6 +70,12 @@ export default function Page() {
     () => DEFAULT_WORKLOADS.some(({ id }) => rates[id] !== savedRates[id]),
     [rates, savedRates],
   )
+  const shift = useMemo(
+    () => calculateShift(clockInTime, totalSeconds, totalUnits, nowSeconds),
+    [clockInTime, nowSeconds, totalSeconds, totalUnits],
+  )
+  const progress = shift.shiftSeconds > 0 ? Math.min(100, Math.round((shift.elapsedShiftSeconds / shift.shiftSeconds) * 100)) : 0
+  const clockOut = formatMilitaryTime(shift.estimatedClockOutSeconds)
 
   function updateValue(id: string, nextValue: string) {
     if (/^[\d+*/().=\s-]*$/.test(nextValue)) {
@@ -177,13 +180,14 @@ export default function Page() {
           </div>
         </header>
 
-        <section className="py-10 sm:py-14">
-          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">SIF / Production</p>
-          <h1 className="mt-2 text-4xl font-bold tracking-[-0.06em] sm:text-5xl">Plan your shift.</h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Enter today&apos;s workload, then use the shift result below to see when you are expected to finish.</p>
+        <section className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Shift summary">
+          <SummaryTile label="Progress" value={`${progress}%`} />
+          <SummaryTile label="Worked" value={formatDuration(shift.elapsedShiftSeconds)} />
+          <SummaryTile label="Break" value="01:00:00" />
+          <SummaryTile label="Clock Out" value={clockOut} accent />
         </section>
 
-        <div className="lg:grid lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-8">
+        <div className="mt-10 lg:grid lg:grid-cols-[1.62fr_1fr] lg:items-start lg:gap-8">
           <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
             <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
               <div>
@@ -268,5 +272,14 @@ export default function Page() {
 
       <ClockInPicker value={clockInTime} onChange={setClockInTime} />
     </main>
+  )
+}
+
+function SummaryTile({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className={`rounded-xl border p-3 sm:p-3.5 ${accent ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card'}`}>
+      <span className={`block text-[8px] font-bold uppercase tracking-[0.18em] ${accent ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{label}</span>
+      <strong className="mt-1 block truncate font-mono text-lg font-bold tabular-nums tracking-[-0.03em]">{value}</strong>
+    </div>
   )
 }
