@@ -44,7 +44,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
             data-workload-id={workload.id}
             data-workload-label={workload.label}
             data-duration-seconds={duration}
-            className="grid gap-3 border-b border-border px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,1.35fr)_minmax(10rem,1fr)_7rem] sm:items-center sm:gap-4"
+            className="grid gap-3 border-b border-border px-4 py-3 last:border-b-0 sm:grid-cols-[minmax(0,1.35fr)_minmax(10rem,1fr)_7rem] sm:items-center sm:gap-4"
             role="row"
           >
             <div className="min-w-0" role="cell">
