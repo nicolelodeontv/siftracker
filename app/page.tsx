@@ -46,7 +46,6 @@ export default function Page() {
 
   useEffect(() => {
     let active = true
-
     const checkWorkloadApi = async () => {
       try {
         const response = await fetch('/api/workloads', { cache: 'no-store' })
@@ -58,11 +57,8 @@ export default function Page() {
         if (active) setApiStatus('error')
       }
     }
-
     checkWorkloadApi()
-    return () => {
-      active = false
-    }
+    return () => { active = false }
   }, [])
 
   useEffect(() => {
@@ -101,161 +97,61 @@ export default function Page() {
   const clockOut = formatMilitaryTime(shift.estimatedClockOutSeconds)
 
   function updateValue(id: string, nextValue: string) {
-    if (/^[\d+*/().=\s-]*$/.test(nextValue)) {
-      setValues((current) => ({ ...current, [id]: nextValue }))
-    }
+    if (/^[\d+*/().=\s-]*$/.test(nextValue)) setValues((current) => ({ ...current, [id]: nextValue }))
   }
-
   function adjustQuantity(id: string, delta: number) {
     const current = calculateValue(values[id] ?? '') ?? 0
     const next = Math.max(0, Math.round((current + delta) * 100) / 100)
     setValues((currentValues) => ({ ...currentValues, [id]: String(next) }))
   }
-
-  function clearWorkload(id: string) {
-    setValues((currentValues) => ({ ...currentValues, [id]: '' }))
-  }
-
-  function clearAllWorkloads() {
-    setValues({ ...EMPTY_VALUES })
-    setFeedback('cleared')
-    inputRefs.current[0]?.focus()
-  }
-
-  function adjustRate(id: string, delta: number) {
-    setRates((current) => ({
-      ...current,
-      [id]: Math.max(1, Math.min(240, (current[id] ?? DEFAULT_RATES[id]) + delta)),
-    }))
-  }
-
-  function beginRateEdit(id: string) {
-    setEditingRate(id)
-    setRateDraft(String(rates[id] ?? DEFAULT_RATES[id]))
-  }
-
+  function clearWorkload(id: string) { setValues((currentValues) => ({ ...currentValues, [id]: '' })) }
+  function clearAllWorkloads() { setValues({ ...EMPTY_VALUES }); setFeedback('cleared'); inputRefs.current[0]?.focus() }
+  function adjustRate(id: string, delta: number) { setRates((current) => ({ ...current, [id]: Math.max(1, Math.min(240, (current[id] ?? DEFAULT_RATES[id]) + delta)) })) }
+  function beginRateEdit(id: string) { setEditingRate(id); setRateDraft(String(rates[id] ?? DEFAULT_RATES[id])) }
   function commitRateEdit(id: string) {
     const parsed = Number(rateDraft.replace(/m/gi, '').trim())
-    if (Number.isFinite(parsed)) {
-      setRates((current) => ({
-        ...current,
-        [id]: Math.max(1, Math.min(240, Math.round(parsed))),
-      }))
-    }
-    setEditingRate(null)
-    setRateDraft('')
+    if (Number.isFinite(parsed)) setRates((current) => ({ ...current, [id]: Math.max(1, Math.min(240, Math.round(parsed))) }))
+    setEditingRate(null); setRateDraft('')
   }
-
-  function cancelRateEdit() {
-    setEditingRate(null)
-    setRateDraft('')
-  }
-
-  function resetRates() {
-    const defaults = { ...DEFAULT_RATES }
-    setRates(defaults)
-    setSavedRates(defaults)
-    persistSavedRates(defaults)
-    setFeedback('saved')
-  }
-
-  function saveRates() {
-    if (!persistSavedRates(rates)) return
-    setSavedRates({ ...rates })
-    setSettingsOpen(false)
-    setFeedback('saved')
-  }
-
-  function performReset() {
-    setValues({ ...EMPTY_VALUES })
-    setClockInTime(getCurrentClockIn())
-    setConfirmReset(false)
-    setFeedback('reset')
-    inputRefs.current[0]?.focus()
-  }
-
-  function openQuickGuide() {
-    window.dispatchEvent(new Event('sif:open-welcome'))
-  }
+  function cancelRateEdit() { setEditingRate(null); setRateDraft('') }
+  function resetRates() { const defaults = { ...DEFAULT_RATES }; setRates(defaults); setSavedRates(defaults); persistSavedRates(defaults); setFeedback('saved') }
+  function saveRates() { if (!persistSavedRates(rates)) return; setSavedRates({ ...rates }); setSettingsOpen(false); setFeedback('saved') }
+  function performReset() { setValues({ ...EMPTY_VALUES }); setClockInTime(getCurrentClockIn()); setConfirmReset(false); setFeedback('reset'); inputRefs.current[0]?.focus() }
+  function openQuickGuide() { window.dispatchEvent(new Event('sif:open-welcome')) }
 
   return (
     <main className="min-h-screen bg-background text-foreground">
       <div className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <header className="sticky top-0 z-40 -mx-4 border-b border-border/70 bg-background/95 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="flex min-h-14 items-center justify-between gap-4">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground"><TimerReset className="size-3.5" /></div>
-              <div className="min-w-0"><p className="truncate text-sm font-bold tracking-tight">SIF Tracker</p><p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Daily workload</p></div>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden sm:block"><PhtClockDisplay /></div>
-              <button type="button" onClick={openQuickGuide} className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Open Quick Guide"><HelpCircle className="size-3" /><span className="hidden sm:inline">Quick Guide</span></button>
-              <ThemeToggle />
-            </div>
+            <div className="flex min-w-0 items-center gap-2.5"><div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground"><TimerReset className="size-3.5" /></div><div className="min-w-0"><p className="truncate text-sm font-bold tracking-tight">SIF Tracker</p><p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Daily workload</p></div></div>
+            <div className="flex items-center gap-2 sm:gap-3"><div className="hidden sm:block"><PhtClockDisplay /></div><button type="button" onClick={openQuickGuide} className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Open Quick Guide"><HelpCircle className="size-3" /><span className="hidden sm:inline">Quick Guide</span></button><ThemeToggle /></div>
           </div>
         </header>
-
-        {apiStatus === 'error' && (
-          <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">
-            Live workload configuration is unavailable. SIF Tracker is using your local saved rates.
-          </div>
-        )}
+        {apiStatus === 'error' && <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">Live workload configuration is unavailable. SIF Tracker is using your local saved rates.</div>}
 
         <div className="mx-auto mt-6 w-full max-w-7xl space-y-5">
-          <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary">
-            <SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} />
-            <SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} />
-            <SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} />
-            <SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} />
-            <SummaryTile label="Clock Out" value={clockOut} accent />
-          </section>
+          <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary"><SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} /><SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} /><SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} /><SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} /><SummaryTile label="Clock Out" value={clockOut} accent /></section>
 
-          <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-              <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p><h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p></div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={clearAllWorkloads} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Clear all workload inputs"><Eraser className="size-3" />Clear all</button>
-                <button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-expanded={settingsOpen} aria-controls="settings"><Settings2 className="size-3" />Settings{unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}</button>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_1fr] lg:items-stretch">
+            <section id="calculator" className="flex scroll-mt-20 flex-col" aria-labelledby="workload-heading">
+              <div className="mb-4 flex flex-wrap items-end justify-between gap-4"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p><h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p></div><div className="flex flex-wrap items-center gap-2"><button type="button" onClick={clearAllWorkloads} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Clear all workload inputs"><Eraser className="size-3" />Clear all</button><button type="button" onClick={() => setSettingsOpen((open) => !open)} className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-expanded={settingsOpen} aria-controls="settings"><Settings2 className="size-3" />Settings{unsavedRates && <span className="size-1.5 rounded-full bg-primary" aria-label="Unsaved changes" />}</button></div></div>
+              {settingsOpen && <div className="mb-5"><WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} /></div>}
+              <div className="flex-1"><WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} /></div>
+            </section>
 
-            {settingsOpen && <div className="mb-5"><WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} /></div>}
-            <WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} />
-          </section>
+            <section id="clock-in" className={`${CARD_CLASS} scroll-mt-20 flex flex-col p-4`} aria-labelledby="clock-in-heading">
+              <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">02 / Clock In</p><h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit your start time for today&apos;s shift.</p></div>
+              <div className="mt-4 flex flex-col gap-2 lg:mt-auto"><button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex w-full items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>Edit Clock In · {clockInTime || 'Choose time'}</button><button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>NOW · {currentTime}</button></div>
+            </section>
+          </div>
 
-          <section id="clock-in" className={`${CARD_CLASS} scroll-mt-20 p-4`} aria-labelledby="clock-in-heading">
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">02 / Clock In</p>
-              <h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2>
-              <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit your start time for today&apos;s shift.</p>
-            </div>
-            <div className="mt-4 flex flex-col gap-2">
-              <button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex w-full items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>
-                Edit Clock In · {clockInTime || 'Choose time'}
-              </button>
-              <button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>
-                NOW · {currentTime}
-              </button>
-            </div>
-          </section>
-
-          <section id="tools" className={`${CARD_CLASS} scroll-mt-20 p-4`} aria-labelledby="tools-heading">
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p>
-              <h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2>
-              <p className="mt-1 text-[9px] leading-4 text-muted-foreground">Manage today&apos;s workload.</p>
-            </div>
-            <button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button>
-          </section>
-
+          <section id="tools" className={`${CARD_CLASS} scroll-mt-20 p-4`} aria-labelledby="tools-heading"><div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p><h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Manage today&apos;s workload.</p></div><button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button></section>
           <footer className="flex flex-col gap-1 border-t border-border pt-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
         </div>
       </div>
-
       {feedback && <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status"><Check className="size-3 text-primary" />{feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'All workloads cleared'}</div>}
-
       {confirmReset && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="reset-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setConfirmReset(false) }}><div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl"><div className="flex items-start justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Confirm reset</p><h3 id="reset-title" className="mt-1 text-sm font-semibold">Reset today&apos;s workload?</h3><p className="mt-2 text-[10px] leading-5 text-muted-foreground">This clears all quantities and resets Clock In to the current PHT time.</p></div><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground" aria-label="Close reset confirmation"><X className="size-4" /></button></div><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full border border-border px-4 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground">Cancel</button><button type="button" onClick={performReset} className="rounded-full bg-primary px-4 py-2 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90">Reset</button></div></div></div>}
-
       <ClockInPicker value={clockInTime} onChange={setClockInTime} />
     </main>
   )
