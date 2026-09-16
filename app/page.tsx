@@ -130,7 +130,7 @@ export default function Page() {
         </header>
         {apiStatus === 'error' && <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">Live workload configuration is unavailable. SIF Tracker is using your local saved rates.</div>}
 
-        <div className="mx-auto mt-6 w-full max-w-7xl space-y-5 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
+        <div className="mx-auto mt-6 w-full max-w-7xl space-y-7 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
           <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary"><SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} /><SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} /><SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} /><SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} /><SummaryTile label="Clock Out" value={clockOut} accent /></section>
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_1fr] lg:items-stretch">
@@ -140,7 +140,7 @@ export default function Page() {
               <div className="flex-1"><WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} /></div>
             </section>
 
-            <section id="clock-in" className={`${CARD_CLASS} scroll-mt-20 flex flex-col p-4`} aria-labelledby="clock-in-heading">
+            <section id="clock-in" className={`${CARD_CLASS} scroll-mt-20 flex flex-col p-5`} aria-labelledby="clock-in-heading">
               <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">02 / Clock In</p><h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit your start time for today&apos;s shift.</p></div>
               <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
                 <time className="font-mono text-5xl font-bold tabular-nums tracking-tight text-foreground" suppressHydrationWarning>{currentTime}</time>
@@ -167,5 +167,5 @@ export default function Page() {
 }
 
 function SummaryTile({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
-  return <div className="rounded-xl border border-border bg-card/60 px-3 py-2.5"><p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className={`mt-1 font-mono text-sm font-bold tabular-nums tracking-tight ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p></div>
+  return <div className="rounded-xl border border-border bg-card/60 px-3.5 py-3"><p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className={`mt-1 font-mono text-sm font-bold tabular-nums tracking-tight ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p></div>
 }
