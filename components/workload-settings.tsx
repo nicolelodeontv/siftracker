@@ -23,7 +23,7 @@ export function WorkloadSettings({ workloads, rates, savedRates, editingRate, ra
   const unsavedRates = workloads.some(({ id }) => rates[id] !== savedRates[id])
 
   return (
-    <section id="settings" className="border-y border-border py-5" aria-label="Workload settings">
+    <section id="settings" className="border-y border-border px-4 py-5 sm:px-5" aria-label="Workload settings">
       <div className="mb-4 flex items-center justify-between gap-4">
         <div>
           <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Settings</p>
