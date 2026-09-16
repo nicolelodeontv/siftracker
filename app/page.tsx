@@ -202,9 +202,10 @@ export default function Page() {
         )}
 
         <div className="mx-auto mt-6 w-full max-w-7xl space-y-5">
-          <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-4" aria-label="Shift summary">
+          <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary">
             <SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} />
             <SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} />
+            <SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} />
             <SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} />
             <SummaryTile label="Clock Out" value={clockOut} accent />
           </section>
@@ -253,7 +254,7 @@ export default function Page() {
 
       {feedback && <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status"><Check className="size-3 text-primary" />{feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'All workloads cleared'}</div>}
 
-      {confirmReset && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="reset-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setConfirmReset(false) }}><div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl"><div className="flex items-start justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Confirm reset</p><h3 id="reset-title" className="mt-1 text-sm font-semibold">Reset workload?</h3><p className="mt-1.5 text-[10px] leading-4 text-muted-foreground">This clears today&apos;s workload inputs and resets Clock In to the current PHT time. Saved rates stay unchanged.</p></div><button type="button" onClick={() => setConfirmReset(false)} className="rounded-lg p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Close reset confirmation"><X className="size-3.5" /></button></div><div className="mt-5 grid grid-cols-2 gap-2"><button type="button" onClick={() => setConfirmReset(false)} className="rounded-lg border border-border px-3 py-2 text-[10px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground">Cancel</button><button type="button" onClick={performReset} className="rounded-lg bg-primary px-3 py-2 text-[10px] font-bold text-primary-foreground transition hover:opacity-90">Reset</button></div></div></div>}
+      {confirmReset && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="reset-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setConfirmReset(false) }}><div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl"><div className="flex items-start justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Confirm reset</p><h3 id="reset-title" className="mt-1 text-sm font-semibold">Reset today&apos;s workload?</h3><p className="mt-2 text-[10px] leading-5 text-muted-foreground">This clears all quantities and resets Clock In to the current PHT time.</p></div><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground" aria-label="Close reset confirmation"><X className="size-4" /></button></div><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full border border-border px-4 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground">Cancel</button><button type="button" onClick={performReset} className="rounded-full bg-primary px-4 py-2 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90">Reset</button></div></div></div>}
 
       <ClockInPicker value={clockInTime} onChange={setClockInTime} />
     </main>
@@ -261,5 +262,5 @@ export default function Page() {
 }
 
 function SummaryTile({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
-  return <div className={`${CARD_CLASS} p-3 sm:p-3.5 ${accent ? 'border-primary bg-primary text-primary-foreground' : ''}`}><span className={`block text-[8px] font-bold uppercase tracking-[0.18em] ${accent ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{label}</span><strong className="mt-1 block truncate font-mono text-lg font-bold tabular-nums tracking-[-0.03em]">{value}</strong></div>
+  return <div className="rounded-xl border border-border bg-card/60 px-3 py-2.5"><p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className={`mt-1 font-mono text-sm font-bold tabular-nums tracking-tight ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p></div>
 }
