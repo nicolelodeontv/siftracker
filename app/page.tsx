@@ -142,7 +142,16 @@ export default function Page() {
 
             <section id="clock-in" className={`${CARD_CLASS} scroll-mt-20 flex flex-col p-4`} aria-labelledby="clock-in-heading">
               <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">02 / Clock In</p><h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit your start time for today&apos;s shift.</p></div>
-              <div className="mt-4 flex flex-col gap-2 lg:mt-auto"><button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex w-full items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>Edit Clock In · {clockInTime || 'Choose time'}</button><button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>NOW · {currentTime}</button></div>
+              <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
+                <time className="font-mono text-5xl font-bold tabular-nums tracking-tight text-foreground" suppressHydrationWarning>{currentTime}</time>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Philippine Standard Time</p>
+                <div className={`mt-2 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[9px] font-semibold ${hasClockIn ? 'border-primary/30 bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>
+                  <span className={`size-1.5 rounded-full ${hasClockIn ? 'bg-primary' : 'bg-muted-foreground'}`} aria-hidden="true" />
+                  {hasClockIn ? `Clocked in at ${clockInTime} · ${formatDuration(shift.elapsedShiftSeconds)} elapsed` : 'Not clocked in yet'}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2"><button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex w-full items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>Edit Clock In · {clockInTime || 'Choose time'}</button><button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>NOW · {currentTime}</button></div>
             </section>
           </div>
 
