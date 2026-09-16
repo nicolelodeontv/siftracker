@@ -121,7 +121,7 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
         <header className="sticky top-0 z-40 -mx-4 border-b border-border/70 bg-background/95 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="flex min-h-14 items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-2.5"><div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground"><TimerReset className="size-3.5" /></div><div className="min-w-0"><p className="truncate text-sm font-bold tracking-tight">SIF Tracker</p><p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Daily workload</p></div></div>
@@ -130,7 +130,7 @@ export default function Page() {
         </header>
         {apiStatus === 'error' && <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">Live workload configuration is unavailable. SIF Tracker is using your local saved rates.</div>}
 
-        <div className="mx-auto mt-6 w-full max-w-7xl space-y-5">
+        <div className="mx-auto mt-6 w-full max-w-7xl space-y-5 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
           <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary"><SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} /><SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} /><SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} /><SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} /><SummaryTile label="Clock Out" value={clockOut} accent /></section>
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_1fr] lg:items-stretch">
