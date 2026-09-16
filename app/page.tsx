@@ -201,14 +201,14 @@ export default function Page() {
           </div>
         )}
 
-        <section id="shift-summary" className="mt-3 grid grid-cols-2 gap-1 sm:grid-cols-4" aria-label="Shift summary">
-          <SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} />
-          <SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} />
-          <SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} />
-          <SummaryTile label="Clock Out" value={clockOut} accent />
-        </section>
+        <div className="mx-auto mt-6 w-full max-w-7xl space-y-5">
+          <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-4" aria-label="Shift summary">
+            <SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} />
+            <SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} />
+            <SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} />
+            <SummaryTile label="Clock Out" value={clockOut} accent />
+          </section>
 
-        <div className="mx-auto mt-6 w-full max-w-7xl space-y-4">
           <section id="calculator" className="scroll-mt-20" aria-labelledby="workload-heading">
             <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
               <div><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">01 / Workload</p><h2 id="workload-heading" className="mt-1 text-xl font-semibold tracking-tight">Today&apos;s workload</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Enter a quantity or expression. Enter → next · ↑ ↓ adjust.</p></div>
@@ -218,7 +218,7 @@ export default function Page() {
               </div>
             </div>
 
-            {settingsOpen && <div className="mb-4"><WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} /></div>}
+            {settingsOpen && <WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} />}
             <WorkloadCard calculatedValues={calculatedValues} totalSeconds={totalSeconds} inputRefs={inputRefs} onChange={updateValue} onAdjust={adjustQuantity} onClear={clearWorkload} onNext={(index) => inputRefs.current[index + 1]?.focus()} />
           </section>
 
@@ -246,9 +246,9 @@ export default function Page() {
             </div>
             <button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button>
           </section>
-        </div>
 
-        <footer className="mt-4 flex flex-col gap-1 border-t border-border pt-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
+          <footer className="flex flex-col gap-1 border-t border-border pt-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
+        </div>
       </div>
 
       {feedback && <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status"><Check className="size-3 text-primary" />{feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'All workloads cleared'}</div>}
