@@ -100,10 +100,10 @@ const themeBootstrap = `(() => {
 
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'WebApplication',
+  '@type': 'SoftwareApplication',
   name: 'SIF Tracker',
   url: siteUrl,
-  description: 'A production workload calculator for estimating work time and clock-out time.',
+  description: 'SIF Tracker is a fast production workload calculator that estimates work time and clock-out time for edits, clips, builds, and late orders.',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Any',
   browserRequirements: 'Requires JavaScript',
