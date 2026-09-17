@@ -2,7 +2,6 @@ import type { RefObject } from 'react'
 import { Minus, Plus, X } from 'lucide-react'
 import { calculateValue, formatDuration, isIncompleteExpression } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
-import { getUnitLabel } from '@/lib/workloads'
 
 type CalculatedValue = {
   workload: Workload
@@ -61,7 +60,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                 ) : incomplete ? (
                   <p className="text-[9px] font-medium text-muted-foreground">Waiting for expression…</p>
                 ) : hasInput ? (
-                  <p className="truncate font-mono text-[9px] font-medium text-muted-foreground">{input} = {value} {getUnitLabel(workload.unit, value ?? 0)} · {formatDuration(duration)} · {share}%</p>
+                  null
                 ) : (
                   <p className="text-[9px] leading-4 text-muted-foreground/70">5+5 · 10*3 · (5+5)*2</p>
                 )}
