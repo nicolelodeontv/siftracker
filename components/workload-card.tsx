@@ -22,10 +22,10 @@ type Props = {
 export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChange, onAdjust, onClear, onNext }: Props) {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/60" role="table" aria-label="Today's workload">
-      <div className="hidden grid-cols-[minmax(0,1.2fr)_minmax(10rem,1.2fr)_6.5rem] items-center gap-4 border-b border-border px-4 py-2.5 text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
+      <div className="hidden grid-cols-3 items-center gap-4 border-b border-border px-4 py-2.5 text-center text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
         <span role="columnheader">Workload</span>
         <span className="text-center" role="columnheader">Quantity</span>
-        <span className="text-right" role="columnheader">Work time</span>
+        <span role="columnheader">Work time</span>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col">
@@ -43,12 +43,12 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
               data-workload-id={workload.id}
               data-workload-label={workload.label}
               data-duration-seconds={duration}
-              className="grid flex-[1_1_auto] gap-3 border-b border-border px-4 py-2 last:border-b-0 sm:grid-cols-[minmax(0,1.2fr)_minmax(10rem,1.2fr)_6.5rem] sm:items-center sm:gap-4"
+              className="grid flex-[1_1_auto] gap-3 border-b border-border px-4 py-2 text-center last:border-b-0 sm:grid-cols-3 sm:items-center sm:gap-4"
               role="row"
             >
-              <div className="min-w-0 self-stretch flex flex-col justify-center" role="cell">
-                <div className="flex items-baseline justify-between gap-3 sm:justify-start">
-                  <div className="min-w-0">
+              <div className="min-w-0 self-stretch flex flex-col items-center justify-center" role="cell">
+                <div className="flex items-baseline justify-center gap-3">
+                  <div className="min-w-0 text-center">
                     <h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3>
                     <p className="mt-0.5 text-[9px] text-muted-foreground">{workload.minutesPerUnit} min / {workload.unit.slice(0, -1)}</p>
                   </div>
@@ -102,9 +102,9 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                 </div>
               </div>
 
-              <div className="hidden text-right sm:block" role="cell">
+              <div className="hidden text-center sm:block" role="cell">
                 <output className="font-mono text-sm font-bold tabular-nums">{formatDuration(duration)}</output>
-                <div className="mt-1.5 ml-auto h-1 w-16 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+                <div className="mx-auto mt-1.5 h-1 w-16 overflow-hidden rounded-full bg-muted" aria-hidden="true">
                   <div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${share}%` }} />
                 </div>
               </div>
