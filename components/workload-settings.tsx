@@ -36,7 +36,7 @@ export function WorkloadSettings({ workloads, rates, savedRates, editingRate, ra
 
       <div className="divide-y divide-border border-y border-border">
         {workloads.map((workload) => (
-          <div key={workload.id} className="flex min-w-0 items-center justify-between gap-4 py-3">
+          <div key={workload.id} className="flex min-w-0 items-center justify-between gap-4 py-2">
             <div className="min-w-0">
               <span className="block truncate text-[10px] font-semibold">{workload.label}</span>
               <span className="text-[8px] text-muted-foreground">Minutes per {workload.unit.slice(0, -1)}</span>
