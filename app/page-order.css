@@ -1,5 +1,0 @@
-/* Deprecated: this stylesheet targeted an older page structure
-   (nav / div.relative / #dashboard) that no longer exists. It has been
-   emptied because its ID-based `order` rules (#calculator, #tools) were
-   colliding with unrelated elements sharing those IDs in the current
-   layout, silently reordering the Workload/Clock In grid. */
