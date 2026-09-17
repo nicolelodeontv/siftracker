@@ -4,7 +4,7 @@ import { fetchCurrentWeather } from "@/lib/weather";
 export const dynamic = "force-dynamic";
 
 const LOCAL_DEFAULT_LOCATION = {
-  name: "Cebu City, Philippines",
+  location: "Cebu City, Philippines",
   lat: 10.3157,
   lon: 123.8854,
   timezone: "Asia/Manila",
