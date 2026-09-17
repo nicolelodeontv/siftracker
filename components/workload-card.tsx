@@ -25,7 +25,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
     <div className="overflow-hidden rounded-2xl border border-border bg-card/60" role="table" aria-label="Today's workload">
       <div className="hidden grid-cols-[minmax(0,1.2fr)_minmax(10rem,1.2fr)_6.5rem] items-center gap-4 border-b border-border px-4 py-2.5 text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
         <span role="columnheader">Workload</span>
-        <span role="columnheader">Quantity</span>
+        <span className="text-center" role="columnheader">Quantity</span>
         <span className="text-right" role="columnheader">Work time</span>
       </div>
 
