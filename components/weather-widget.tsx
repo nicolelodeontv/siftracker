@@ -34,8 +34,9 @@ const WEATHER_ICONS: Record<string, LucideIcon> = {
 };
 
 const LABEL_CLASS =
-  "text-[10px] font-semibold uppercase tracking-wider text-muted-foreground";
-const VALUE_CLASS = "text-sm font-mono text-foreground";
+  "block whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.16em]";
+const VALUE_TEXT_CLASS =
+  "font-mono text-[8px] font-bold tabular-nums sm:text-[10px]";
 
 export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
@@ -72,36 +73,47 @@ export function WeatherWidget() {
 
   return (
     <>
-      {/* Below sm: compact chip, inline with Quick Guide / Dark */}
+      {/* Below sm: compact chip, same tiny type scale as PST */}
       <div className="flex shrink-0 items-center gap-1 rounded-md border border-border px-2 py-1.5 sm:hidden">
         <Icon
-          className={`h-3.5 w-3.5 shrink-0 ${!weather ? "animate-pulse" : ""}`}
+          className={`h-2.5 w-2.5 shrink-0 ${!weather ? "animate-pulse" : ""}`}
         />
-        <span className="font-mono text-xs font-medium text-foreground">
+        <span className={VALUE_TEXT_CLASS}>
           {weather ? `${Math.round(weather.tempC)}°C` : "—"}
         </span>
       </div>
 
-      {/* sm and up: full label + value block, unchanged */}
-      <div className="hidden min-w-0 flex-col items-end text-right sm:flex">
+      {/* sm and up: exact PhtClockDisplay typography */}
+      <div
+        className="hidden min-w-0 text-right leading-tight sm:block"
+        aria-label={
+          weather
+            ? `Weather in ${weather.location}: ${Math.round(weather.tempC)}°C, ${weather.label}`
+            : "Weather loading"
+        }
+      >
         <span className={`${LABEL_CLASS} truncate`}>
           {weather ? weather.location : "Weather"}
         </span>
-        <span className={`${VALUE_CLASS} flex items-center gap-1.5`}>
+        <span
+          className={`${VALUE_TEXT_CLASS} flex items-center justify-end gap-1 whitespace-nowrap`}
+        >
           <Icon
-            className={`h-4 w-4 shrink-0 ${!weather ? "animate-pulse" : ""}`}
+            className={`h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3 ${!weather ? "animate-pulse" : ""}`}
           />
           {weather ? (
             <>
               <span className="truncate">
                 {Math.round(weather.tempC)}°C · {weather.label}
               </span>
-              <span className="hidden shrink-0 text-muted-foreground sm:inline">
+              <span
+                className={`${VALUE_TEXT_CLASS} shrink-0 text-muted-foreground`}
+              >
                 · feels {Math.round(weather.feelsLikeC)}°C
               </span>
             </>
           ) : (
-            <span className="hidden sm:inline">Loading…</span>
+            <span>Loading…</span>
           )}
         </span>
       </div>
