@@ -2,7 +2,6 @@
 
 :root {
   --readable-muted: var(--muted-foreground);
-  --readable-subtle: color-mix(in srgb, var(--foreground) 76%, var(--muted-foreground));
 }
 
 /* Keep muted copy readable in both themes. */
@@ -53,38 +52,6 @@ main .tracking-\[0\.14em\] {
 /* Make important operational values visually dominant. */
 main .font-mono.tabular-nums {
   font-variant-numeric: tabular-nums;
-}
-
-.top-summary strong,
-#workflow strong,
-.shift-clockout-card strong,
-.workload-card output {
-  font-weight: 750;
-}
-
-.top-summary strong,
-.workload-card output {
-  font-size: 1.05em;
-}
-
-/* Workload labels and helper copy. */
-.workload-card__label {
-  font-size: 11px;
-  line-height: 1.35;
-  color: var(--readable-muted);
-}
-
-.workload-card__feedback > p,
-.workload-card__examples span {
-  color: color-mix(in srgb, var(--foreground) 80%, var(--muted-foreground));
-}
-
-.workload-card__feedback > p.text-destructive {
-  color: var(--destructive);
-}
-
-.workload-card__feedback > p.font-mono {
-  color: color-mix(in srgb, var(--foreground) 86%, var(--muted-foreground));
 }
 
 /* Form controls should be clearly legible and comfortable to read. */
