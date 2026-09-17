@@ -99,7 +99,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                         onAdjust(workload.id, event.key === 'ArrowUp' ? 1 : -1)
                       }
                     }}
-                    className={`h-10 w-32 shrink-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground outline-none transition sm:w-64 ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                    className={`h-10 w-32 shrink-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground outline-none transition-colors sm:w-80 ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
                     aria-invalid={invalid}
                     aria-label={`Number of ${workload.unit} for ${workload.label}`}
                   />
@@ -107,11 +107,9 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                 <button type="button" onClick={() => onAdjust(workload.id, 1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Increase ${workload.label} quantity`}>
                   <Plus className="size-3.5" />
                 </button>
-                {hasInput && (
-                  <button type="button" onClick={() => onClear(workload.id)} className="flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Clear ${workload.label}`} title="Clear">
-                    <X className="size-3.5" />
-                  </button>
-                )}
+                <button type="button" onClick={() => onClear(workload.id)} className={`flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${hasInput ? '' : 'invisible pointer-events-none'}`} aria-label={`Clear ${workload.label}`} aria-hidden={!hasInput} tabIndex={hasInput ? 0 : -1} title="Clear">
+                  <X className="size-3.5" />
+                </button>
               </div>
             </div>
 
