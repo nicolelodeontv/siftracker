@@ -149,6 +149,16 @@ export default function Page() {
                   <span className={`size-1.5 rounded-full ${hasClockIn ? 'bg-primary' : 'bg-muted-foreground'}`} aria-hidden="true" />
                   {hasClockIn ? `Clocked in at ${clockInTime} · ${formatDuration(shift.elapsedShiftSeconds)} elapsed` : 'Not clocked in yet'}
                 </div>
+                <div className="grid w-full max-w-sm grid-cols-2 gap-2 pt-2">
+                  <div className="rounded-xl border border-border/70 bg-card/40 px-3 py-2 text-left">
+                    <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Worked so far</p>
+                    <p className="mt-1 font-mono text-sm font-bold tabular-nums">{hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'}</p>
+                  </div>
+                  <div className="rounded-xl border border-border/70 bg-card/40 px-3 py-2 text-left">
+                    <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Time remaining</p>
+                    <p className="mt-1 font-mono text-sm font-bold tabular-nums">{hasClockIn && totalUnits > 0 ? formatDuration(shift.timeLeftSeconds) : '—'}</p>
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-col gap-2"><button type="button" onClick={() => window.dispatchEvent(new Event('sif:edit-clock-in'))} className="inline-flex w-full items-center justify-center rounded-full border border-border px-4 py-2.5 text-[9px] font-bold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit Clock In time, currently ${clockInTime || 'Choose time'}`}>Edit Clock In · {clockInTime || 'Choose time'}</button><button type="button" onClick={() => setClockInTime(getCurrentClockIn())} className="inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Set Clock In to current PHT time ${currentTime}`}>NOW · {currentTime}</button></div>
