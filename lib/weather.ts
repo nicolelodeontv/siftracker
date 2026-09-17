@@ -1,6 +1,5 @@
-// Pure weather fetch + formatting, kept independent from the UI —
-// same separation as lib/calculator.ts.
-// Uses Open-Meteo (https://open-meteo.com): free, no API key, no signup.
+// Pure weather fetch + formatting, kept independent from the UI.
+// Uses Open-Meteo for current conditions; timezone=auto follows the coordinates.
 
 export type WeatherSnapshot = {
   location: string;
@@ -9,7 +8,7 @@ export type WeatherSnapshot = {
   code: number;
   isDay: boolean;
   label: string;
-  icon: string; // key into WEATHER_ICONS in the component
+  icon: string;
   fetchedAt: string;
 };
 
@@ -52,7 +51,7 @@ export async function fetchCurrentWeather(
   lat: number,
   lon: number,
   locationName: string,
-  timezone = "Asia/Manila"
+  timezone = "auto"
 ): Promise<WeatherSnapshot> {
   const url = new URL("https://api.open-meteo.com/v1/forecast");
   url.searchParams.set("latitude", String(lat));
@@ -67,7 +66,9 @@ export async function fetchCurrentWeather(
   if (!res.ok) throw new Error(`Open-Meteo request failed: ${res.status}`);
 
   const data = await res.json();
-  const current = data.current;
+  const current = data?.current;
+  if (!current) throw new Error("Open-Meteo response missing current weather");
+
   const { label, icon } = describeWeatherCode(current.weather_code);
 
   return {

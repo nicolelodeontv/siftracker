@@ -22,6 +22,11 @@ type WeatherResponse = {
   isDay: boolean;
 };
 
+type CachedWeather = {
+  weather: WeatherResponse;
+  cachedAt: number;
+};
+
 const WEATHER_ICONS: Record<string, LucideIcon> = {
   sun: Sun,
   "cloud-sun": CloudSun,
@@ -33,10 +38,78 @@ const WEATHER_ICONS: Record<string, LucideIcon> = {
   "cloud-storm": CloudLightning,
 };
 
+const CACHE_KEY = "sif-weather-v2";
+const CACHE_TTL = 15 * 60 * 1000;
+const LOCATION_TIMEOUT = 5000;
+
 const LABEL_CLASS =
   "block whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.16em]";
 const VALUE_TEXT_CLASS =
   "font-mono text-[8px] font-bold tabular-nums sm:text-[10px]";
+
+function readCachedWeather() {
+  try {
+    const raw = window.localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw) as CachedWeather;
+    if (!cached?.weather || Date.now() - cached.cachedAt >= CACHE_TTL) return null;
+    return cached.weather;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedWeather(weather: WeatherResponse) {
+  try {
+    window.localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({ weather, cachedAt: Date.now() } satisfies CachedWeather)
+    );
+  } catch {
+    // Storage can be unavailable in private/restricted browsing modes.
+  }
+}
+
+async function getBrowserCoordinates() {
+  if (!navigator.geolocation) throw new Error("Geolocation unsupported");
+
+  try {
+    if (navigator.permissions?.query) {
+      const permission = await navigator.permissions.query({ name: "geolocation" });
+      if (permission.state === "denied") throw new Error("Geolocation denied");
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message === "Geolocation denied") throw error;
+  }
+
+  return new Promise<{ lat: number; lon: number }>((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => resolve({
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+      }),
+      () => reject(new Error("Geolocation unavailable")),
+      {
+        enableHighAccuracy: false,
+        timeout: LOCATION_TIMEOUT,
+        maximumAge: CACHE_TTL,
+      }
+    );
+  });
+}
+
+async function fetchWeather(path: string) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), LOCATION_TIMEOUT);
+
+  try {
+    const res = await fetch(path, { cache: "no-store", signal: controller.signal });
+    if (!res.ok) throw new Error("Weather request failed");
+    return (await res.json()) as WeatherResponse;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
 
 export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
@@ -46,24 +119,42 @@ export function WeatherWidget() {
     let cancelled = false;
 
     async function load() {
+      const cached = readCachedWeather();
+      if (cached) {
+        setWeather(cached);
+        setError(false);
+        return;
+      }
+
       try {
-        const res = await fetch("/api/weather");
-        if (!res.ok) throw new Error("bad response");
-        const data: WeatherResponse = await res.json();
-        if (!cancelled) {
-          setWeather(data);
-          setError(false);
+        let data: WeatherResponse;
+
+        try {
+          const coords = await getBrowserCoordinates();
+          const params = new URLSearchParams({
+            lat: String(Math.round(coords.lat * 1000) / 1000),
+            lon: String(Math.round(coords.lon * 1000) / 1000),
+            location: "Current location",
+          });
+          data = await fetchWeather(`/api/weather?${params.toString()}`);
+        } catch {
+          data = await fetchWeather("/api/weather");
         }
+
+        if (cancelled) return;
+        setWeather(data);
+        setError(false);
+        writeCachedWeather(data);
       } catch {
         if (!cancelled) setError(true);
       }
     }
 
     load();
-    const interval = setInterval(load, 15 * 60 * 1000);
+    const interval = window.setInterval(load, CACHE_TTL);
     return () => {
       cancelled = true;
-      clearInterval(interval);
+      window.clearInterval(interval);
     };
   }, []);
 
@@ -73,7 +164,6 @@ export function WeatherWidget() {
 
   return (
     <>
-      {/* Below sm: compact 40px icon-only circle, matching the other header controls */}
       <div
         className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card/80 text-foreground shadow-sm backdrop-blur sm:hidden"
         aria-label={
@@ -88,7 +178,6 @@ export function WeatherWidget() {
         />
       </div>
 
-      {/* sm and up: exact PhtClockDisplay typography */}
       <div
         className="hidden min-w-0 text-right leading-tight sm:block"
         aria-label={
