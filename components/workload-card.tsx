@@ -62,7 +62,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                 ) : hasInput ? (
                   null
                 ) : (
-                  <p className="text-[9px] leading-4 text-muted-foreground/70">5+5 · 10*3 · (5+5)*2</p>
+                  null
                 )}
               </div>
             </div>
