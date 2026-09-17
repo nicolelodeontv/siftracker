@@ -1,8 +1,3 @@
-export type ParsedWorkload = {
-  value: number | null
-  incomplete: boolean
-}
-
 export const DAY_SECONDS = 24 * 60 * 60
 
 export function formatDuration(totalSeconds: number) {
@@ -11,15 +6,6 @@ export function formatDuration(totalSeconds: number) {
   const minutes = Math.floor((seconds % 3600) / 60)
   const remaining = seconds % 60
   return [hours, minutes, remaining].map((value) => String(value).padStart(2, '0')).join(':')
-}
-
-export function formatCompactDuration(totalMinutes: number) {
-  const minutes = Math.max(0, Math.round(totalMinutes))
-  const hours = Math.floor(minutes / 60)
-  const remaining = minutes % 60
-  if (hours === 0) return `${remaining}m`
-  if (remaining === 0) return `${hours}h`
-  return `${hours}h ${remaining}m`
 }
 
 export function formatMilitaryTime(totalSeconds: number | null) {

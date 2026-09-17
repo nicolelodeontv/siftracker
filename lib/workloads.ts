@@ -20,17 +20,6 @@ export const DEFAULT_RATES = Object.fromEntries(
 
 export const WORKLOAD_CONFIG_VERSION = 2
 
-export function getExampleAmounts(workload: Workload) {
-  if (workload.unit === 'teams') return [1, 4, 16, 32]
-  if (workload.unit === 'indis') return [1, 12, 48, 96]
-  return [1, 15, 60, 120]
-}
-
-export function getUnitLabel(unit: Workload['unit'], amount: number) {
-  const singular = unit.slice(0, -1)
-  return `${amount} ${amount === 1 ? singular : unit}`
-}
-
 export function validateRates(input: unknown) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return null
   const source = input as Record<string, unknown>
