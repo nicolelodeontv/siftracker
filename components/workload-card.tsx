@@ -21,7 +21,7 @@ type Props = {
 
 export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChange, onAdjust, onClear, onNext }: Props) {
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/60" role="table" aria-label="Today's workload">
+    <div className="mx-auto flex h-full w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-card/60" role="table" aria-label="Today's workload">
       <div className="hidden grid-cols-3 items-center gap-4 border-b border-border px-4 py-2.5 text-center text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
         <span role="columnheader">Workload</span>
         <span className="text-center" role="columnheader">Quantity</span>
