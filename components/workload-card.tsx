@@ -23,7 +23,7 @@ type Props = {
 export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChange, onAdjust, onClear, onNext }: Props) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card/60" role="table" aria-label="Today's workload">
-      <div className="hidden grid-cols-[minmax(0,1.35fr)_minmax(10rem,1fr)_7rem] items-center gap-4 border-b border-border px-4 py-2.5 text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
+      <div className="hidden grid-cols-[minmax(0,1.2fr)_minmax(10rem,1.2fr)_6.5rem] items-center gap-4 border-b border-border px-4 py-2.5 text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
         <span role="columnheader">Workload</span>
         <span role="columnheader">Quantity</span>
         <span className="text-right" role="columnheader">Work time</span>
@@ -44,7 +44,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
             data-workload-id={workload.id}
             data-workload-label={workload.label}
             data-duration-seconds={duration}
-            className="grid gap-3 border-b border-border px-4 py-2 last:border-b-0 sm:grid-cols-[minmax(0,1.35fr)_minmax(10rem,1fr)_7rem] sm:items-center sm:gap-4"
+            className="grid gap-3 border-b border-border px-4 py-2 last:border-b-0 sm:grid-cols-[minmax(0,1.2fr)_minmax(10rem,1.2fr)_6.5rem] sm:items-center sm:gap-4"
             role="row"
           >
             <div className="min-w-0" role="cell">
@@ -99,7 +99,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                         onAdjust(workload.id, event.key === 'ArrowUp' ? 1 : -1)
                       }
                     }}
-                    className={`h-10 w-32 shrink-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground outline-none transition sm:w-40 ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                    className={`h-10 w-32 shrink-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground outline-none transition sm:w-48 ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
                     aria-invalid={invalid}
                     aria-label={`Number of ${workload.unit} for ${workload.label}`}
                   />
