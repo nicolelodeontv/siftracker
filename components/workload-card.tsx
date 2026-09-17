@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 import { Minus, Plus, X } from 'lucide-react'
-import { calculateValue, formatDuration, isIncompleteExpression } from '@/lib/calculator'
+import { calculateValue, formatDuration } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 
 type CalculatedValue = {
@@ -31,8 +31,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
       {calculatedValues.map(({ workload, input }, index) => {
         const hasInput = input.trim() !== ''
         const value = calculateValue(input)
-        const incomplete = hasInput && isIncompleteExpression(input)
-        const invalid = hasInput && value === null && !incomplete
+        const invalid = hasInput && value === null
         const safeValue = Math.max(0, value ?? 0)
         const duration = safeValue * workload.minutesPerUnit * 60
         const share = totalSeconds > 0 && value !== null ? Math.min(100, Math.round((duration / totalSeconds) * 100)) : 0
@@ -53,17 +52,6 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                   <p className="mt-0.5 text-[9px] text-muted-foreground">{workload.minutesPerUnit} min / {workload.unit.slice(0, -1)}</p>
                 </div>
                 <span className="shrink-0 font-mono text-[10px] font-semibold text-muted-foreground sm:hidden">{formatDuration(duration)}</span>
-              </div>
-              <div className="mt-1.5 min-h-4" aria-live="polite">
-                {invalid ? (
-                  <p className="text-[9px] font-medium text-muted-foreground">Invalid expression</p>
-                ) : incomplete ? (
-                  <p className="text-[9px] font-medium text-muted-foreground">Waiting for expression…</p>
-                ) : hasInput ? (
-                  null
-                ) : (
-                  null
-                )}
               </div>
             </div>
 
