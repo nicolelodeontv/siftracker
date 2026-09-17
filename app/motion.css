@@ -1,12 +1,9 @@
 /* Interaction and entrance motion only. Layout lives in Tailwind + ui-overrides.css. */
 :root { --motion-fast:140ms; --motion-base:220ms; --motion-ease:cubic-bezier(.22,1,.36,1); }
-@keyframes sif-page-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
 @keyframes sif-card-in { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:none; } }
 @keyframes sif-toast-in { from { opacity:0; transform:translate(-50%,6px); } to { opacity:1; transform:translate(-50%,0); } }
 @keyframes sif-dialog-in { from { opacity:0; transform:translateY(6px) scale(.99); } to { opacity:1; transform:none; } }
-main nav, main > div.relative > section:first-of-type { animation:sif-page-in 260ms var(--motion-ease) both; }
-#calculator > .grid > article, #workflow, #shift, #tools, #settings { animation:sif-card-in 260ms var(--motion-ease) both; }
-#calculator > .grid > article:nth-child(1){animation-delay:20ms;} #calculator > .grid > article:nth-child(2){animation-delay:40ms;} #calculator > .grid > article:nth-child(3){animation-delay:60ms;} #calculator > .grid > article:nth-child(4){animation-delay:80ms;} #calculator > .grid > article:nth-child(5){animation-delay:100ms;} #workflow{animation-delay:120ms;} #shift{animation-delay:140ms;} #tools{animation-delay:160ms;}
+#tools, #settings { animation:sif-card-in 260ms var(--motion-ease) both; }
 button { transition:transform var(--motion-fast) var(--motion-ease),background-color var(--motion-fast) ease,border-color var(--motion-fast) ease,color var(--motion-fast) ease,box-shadow var(--motion-fast) ease,opacity var(--motion-fast) ease; }
 button:hover { transform:translateY(-1px); } button:active { transform:scale(.98); }
 input,textarea,select { transition:border-color var(--motion-fast) ease,box-shadow var(--motion-fast) ease,background-color var(--motion-fast) ease; }
@@ -40,20 +37,6 @@ input,textarea,select { transition:border-color var(--motion-fast) ease,box-shad
   box-shadow: 0 18px 44px color-mix(in srgb, var(--popup-accent) 14%, transparent) !important;
 }
 [role="dialog"]:has(#welcome-popup-title) .bg-primary { background: var(--popup-accent) !important; }
-[role="dialog"]:has(#welcome-popup-title) .text-primary { color: var(--popup-accent) !important; }
-[role="dialog"]:has(#welcome-popup-title) .bg-primary\/10 { background: color-mix(in srgb, var(--popup-accent) 10%, transparent) !important; }
-[role="dialog"]:has(#welcome-popup-title) .border-primary\/15 { border-color: color-mix(in srgb, var(--popup-accent) 20%, var(--border)) !important; }
-[role="dialog"]:has(#welcome-popup-title) .bg-primary\/5 { background: color-mix(in srgb, var(--popup-accent) 7%, var(--card)) !important; }
-
-/* Clock Out copy control never participates in global button motion. */
-.clock-out-copy,
-.clock-out-copy:hover,
-.clock-out-copy:active,
-.clock-out-copy:focus,
-.clock-out-copy:focus-visible {
-  transform: none !important;
-  transition: none !important;
-}
 
 @media (max-width:767px){button:hover{transform:none;}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
