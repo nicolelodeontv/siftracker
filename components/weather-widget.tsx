@@ -33,6 +33,10 @@ const WEATHER_ICONS: Record<string, LucideIcon> = {
   "cloud-storm": CloudLightning,
 };
 
+const LABEL_CLASS =
+  "text-[10px] font-semibold uppercase tracking-wider text-muted-foreground";
+const VALUE_CLASS = "text-sm font-semibold text-foreground";
+
 export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
   const [error, setError] = useState(false);
@@ -63,30 +67,31 @@ export function WeatherWidget() {
   }, []);
 
   if (error && !weather) return null;
-  if (!weather) {
-    return (
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
-        <Cloud className="h-4 w-4 animate-pulse" />
-        <span>Loading weather…</span>
-      </div>
-    );
-  }
 
-  const Icon = WEATHER_ICONS[weather.icon] ?? Cloud;
+  const Icon = weather ? WEATHER_ICONS[weather.icon] ?? Cloud : Cloud;
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2">
-      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-        <Icon className="h-5 w-5 text-primary" />
-      </div>
-      <div className="flex flex-col leading-tight">
-        <span className="text-sm font-semibold text-foreground">
-          {Math.round(weather.tempC)}°C · {weather.label}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {weather.location} · feels {Math.round(weather.feelsLikeC)}°C
-        </span>
-      </div>
+    <div className="flex min-w-0 max-w-[9.5rem] flex-col items-end text-right sm:max-w-none">
+      <span className={`${LABEL_CLASS} truncate`}>
+        {weather ? weather.location : "Weather"}
+      </span>
+      <span className={`${VALUE_CLASS} flex items-center gap-1.5`}>
+        <Icon
+          className={`h-4 w-4 shrink-0 ${!weather ? "animate-pulse" : ""}`}
+        />
+        {weather ? (
+          <>
+            <span className="truncate">
+              {Math.round(weather.tempC)}°C · {weather.label}
+            </span>
+            <span className="hidden shrink-0 text-muted-foreground sm:inline">
+              · feels {Math.round(weather.feelsLikeC)}°C
+            </span>
+          </>
+        ) : (
+          <span className="hidden sm:inline">Loading…</span>
+        )}
+      </span>
     </div>
   );
 }
