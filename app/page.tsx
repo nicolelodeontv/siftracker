@@ -7,6 +7,7 @@ import { PhtClockDisplay } from '@/components/pht-clock-display'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { WorkloadCard } from '@/components/workload-card'
 import { WorkloadSettings } from '@/components/workload-settings'
+import { WeatherWidget } from '@/components/weather-widget'
 import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
 import { loadSavedRates, persistSavedRates } from '@/lib/rates-storage'
 import { calculateShift, calculateWorkloads } from '@/lib/shift'
@@ -127,7 +128,7 @@ export default function Page() {
         <header className="sticky top-0 z-40 -mx-4 border-b border-border/70 bg-background/95 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="flex min-h-14 items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-2.5"><div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground"><TimerReset className="size-3.5" /></div><div className="min-w-0"><p className="truncate text-sm font-bold tracking-tight">SIF Tracker</p><p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Daily workload</p></div></div>
-            <div className="flex items-center gap-2 sm:gap-3"><div className="hidden sm:block"><PhtClockDisplay /></div><button type="button" onClick={openQuickGuide} className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Open Quick Guide"><HelpCircle className="size-3" /><span className="hidden sm:inline">Quick Guide</span></button><ThemeToggle /></div>
+            <div className="flex items-center gap-2 sm:gap-3"><div className="hidden sm:block"><PhtClockDisplay /></div><WeatherWidget /><button type="button" onClick={openQuickGuide} className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1.5 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Open Quick Guide"><HelpCircle className="size-3" /><span className="hidden sm:inline">Quick Guide</span></button><ThemeToggle /></div>
           </div>
         </header>
         {apiStatus === 'error' && <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">Live workload configuration is unavailable. SIF Tracker is using your local saved rates.</div>}
