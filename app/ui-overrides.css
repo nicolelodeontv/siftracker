@@ -27,260 +27,32 @@ img,
 svg,
 video { max-width: 100%; }
 
-main > div.relative {
-  width: min(100%, var(--ui-max-width));
-  max-width: var(--ui-max-width);
-  margin-inline: auto;
-  padding-inline: clamp(14px, 2.2vw, 28px);
-  padding-bottom: clamp(16px, 2.2vw, 28px);
-}
-
-main nav,
 main section,
 main article,
 main footer,
 main button,
 main input { min-width: 0; }
 
-main nav {
-  min-height: clamp(48px, 5vw, 60px);
-  gap: clamp(8px, 1.25vw, 16px);
-  border-bottom: 1px solid var(--border);
-}
-
 input { border-radius: var(--ui-control-radius); }
 button { touch-action: manipulation; }
 
-main > div.relative > section:first-of-type {
-  padding-block: clamp(18px, 2.4vw, 28px) clamp(16px, 2vw, 22px);
-}
-main > div.relative > section:first-of-type h1 {
-  font-size: clamp(2.1rem, 5.6vw, 4.5rem);
-  line-height: .98;
-  letter-spacing: -.045em;
-}
-main > div.relative > section:first-of-type p {
-  max-width: 48rem;
-  font-size: clamp(.8rem, 1.35vw, .95rem);
-}
-
-#calculator > .mb-3,
-#shift > div:first-child { margin-bottom: 12px; }
-
-/* A quieter 12px card system with compact 8px-grid spacing. */
-#calculator > .grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  align-items: stretch;
-}
-
-.workload-card,
-.workload-total-card {
-  width: 100%;
-  min-width: 0;
-  height: 216px;
-  min-height: 216px;
-  box-sizing: border-box;
-  border-radius: var(--ui-card-radius) !important;
-  box-shadow: var(--ui-card-shadow) !important;
-  backdrop-filter: none !important;
-}
-
-.workload-card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  contain: layout paint;
-  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
-}
-.workload-card:hover {
-  transform: none !important;
-  border-color: color-mix(in srgb, var(--foreground) 18%, var(--border)) !important;
-  box-shadow: 0 1px 2px var(--card-shadow), 0 10px 28px rgba(0,0,0,.045) !important;
-}
-
-.workload-card__header { flex: 0 0 40px; min-height: 40px; }
-.workload-card__body {
-  position: relative;
-  flex: 0 0 102px;
-  min-height: 102px;
-  margin-top: 6px;
-}
-
-.workload-card__label {
-  display: block;
-  height: 13px;
-  min-height: 13px;
-  margin-bottom: 4px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 8px;
-  font-weight: 700;
-  line-height: 13px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-}
-
-.workload-card__input-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 44px;
-  min-height: 44px;
-}
-.workload-card__input { width: 100%; }
-
-.workload-card__feedback {
-  position: absolute;
-  inset-inline: 0;
-  top: 64px;
-  height: 28px;
-  min-height: 28px;
-  overflow: hidden;
-}
-.workload-card__feedback > p {
-  width: 100%;
-  height: 28px;
-  min-height: 28px;
-  margin: 0 !important;
-  padding-top: 2px;
-  overflow: hidden;
-  line-height: 14px;
-}
-
-.workload-card__examples {
-  flex: 0 0 39px;
-  min-height: 39px;
-  margin-top: 0;
-  padding-top: 7px;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: 8px;
-  row-gap: 2px;
-  overflow: hidden;
-}
-.workload-card__examples span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.workload-total-card {
-  padding: 14px !important;
-  display: flex;
-  align-items: stretch;
-  border-color: color-mix(in srgb, var(--primary) 28%, var(--border)) !important;
-  background: var(--card) !important;
-}
-.workload-total-card > div {
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
-}
-.workload-total-card > div > div:last-child {
-  border-color: var(--border);
-}
-
-/* Dashboard / shift / tools use the same surface hierarchy as the cards. */
-#dashboard,
-#shift,
 #tools { margin-top: var(--ui-section-gap); }
-#dashboard { margin-bottom: 0; }
-#dashboard > div:first-child > div,
-#dashboard > div:nth-child(2),
-#dashboard > div:last-child { min-width: 0; }
-#dashboard > div:first-child { padding-block: 16px; }
-#dashboard > div:nth-child(2) > div { min-height: 76px; }
-#dashboard > div:last-child > div { min-height: 216px; }
-
-#dashboard > div:first-child,
-#dashboard > div:nth-child(2),
-#dashboard > div:last-child,
-#shift,
 #tools,
 #settings {
   border-radius: var(--ui-card-radius);
 }
 
-#dashboard > div:first-child,
-#dashboard > div:nth-child(2),
-#dashboard > div:last-child,
-#shift,
 #tools {
   border-color: var(--border);
   box-shadow: var(--ui-card-shadow);
-}
-
-#dashboard,
-#shift,
-#tools {
   background: var(--card) !important;
   backdrop-filter: none !important;
+  padding: 16px;
 }
-
-#shift { padding: 16px; }
-.shift-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  align-items: stretch;
-}
-.shift-summary-card,
-.shift-clockout-card {
-  min-width: 0;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--card) 92%, var(--background));
-  padding: 12px;
-}
-
-.clock-in-display {
-  width: 100%;
-  min-height: 44px;
-  margin-top: 6px;
-  border: 1px solid var(--input);
-  background: var(--input-background);
-  box-shadow: 0 1px 2px var(--card-shadow);
-  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -.02em;
-  font-variant-numeric: tabular-nums;
-}
-.clock-in-display:hover {
-  border-color: color-mix(in srgb, var(--primary) 50%, var(--border));
-  background: var(--accent);
-}
-.shift-clockout-card {
-  border-color: color-mix(in srgb, var(--primary) 38%, var(--border));
-  background: color-mix(in srgb, var(--primary) 6%, var(--card));
-  box-shadow: 0 1px 2px var(--card-shadow), 0 8px 22px var(--primary-shadow);
-}
-.shift-clockout-card.is-complete {
-  border-color: color-mix(in srgb, var(--sif-green) 46%, var(--border));
-  background: color-mix(in srgb, var(--sif-green) 7%, var(--card));
-}
-
-#tools { padding: 16px; }
 #tools > button { flex-shrink: 0; }
 #settings { border-radius: 12px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 75%, transparent); }
 #settings .grid { gap: 10px; }
 #settings .grid > div { min-width: 0; }
-
-/* Harmonize the legacy Live Shift accent colors with the warm-neutral palette. */
-#dashboard [style*="#22D3EE"] { color: var(--sif-orange) !important; background-color: color-mix(in srgb, var(--sif-orange) 12%, transparent) !important; border-color: color-mix(in srgb, var(--sif-orange) 30%, var(--border)) !important; }
-#dashboard [style*="#FACC15"] { color: var(--sif-yellow) !important; background-color: transparent !important; }
-#dashboard [style*="#A78BFA"] { color: var(--sif-violet) !important; }
-#dashboard [style*="#FB7185"] { color: var(--sif-red) !important; background-color: color-mix(in srgb, var(--sif-red) 5%, transparent) !important; border-color: color-mix(in srgb, var(--sif-red) 30%, var(--border)) !important; }
-#dashboard [style*="#34D399"] { color: var(--sif-green) !important; }
-#dashboard [style*="#60A5FA"] { color: var(--sif-blue) !important; }
-#dashboard [style*="#F472B6"] { color: var(--sif-violet) !important; }
-#dashboard [style*="#F59E0B"] { color: var(--sif-yellow) !important; }
-#dashboard [style*="#F87171"] { color: var(--sif-red) !important; }
 
 main footer {
   min-height: 34px;
@@ -296,127 +68,10 @@ html.theme-switching *::after {
   animation: none !important;
 }
 
-@media (max-width: 1100px) {
-  #calculator > .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .shift-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 900px) and (min-width: 768px) {
-  #dashboard > div:first-child > div { flex-direction: column; }
-  #dashboard > div:first-child > div > div:last-child { width: 100%; }
-  #dashboard > div:first-child > div > div:last-child > div { min-width: 0; }
-  #dashboard > div:first-child > div > div:last-child { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
 @media (max-width: 767px) {
-  main > div.relative {
-    width: 100%;
-    padding-inline: 14px;
-    padding-bottom: 88px;
-  }
-  main nav { min-height: 56px; gap: 8px; }
-  main nav > div { min-width: 0; }
-  main nav > div:first-child { flex: 1 1 auto; }
-  main nav > div:last-child { flex: 0 1 auto; max-width: 68%; }
-  main > div.relative > section:first-of-type { padding-block: 20px 18px; }
-  main > div.relative > section:first-of-type h1 { line-height: .96; }
-
-  #calculator > .mb-3 {
-    align-items: flex-start;
-    margin-bottom: 12px;
-    gap: 10px;
-  }
-  #calculator > .mb-3 > div:first-child { flex: 1 1 180px; min-width: 0; }
-  #calculator > .mb-3 > div:last-child {
-    width: 100%;
-    justify-content: flex-start;
-    min-width: 0;
-  }
-  #calculator > .grid { grid-template-columns: 1fr; gap: 12px; }
-
-  .workload-card,
-  .workload-total-card {
-    height: 216px;
-    min-height: 216px;
-  }
-  .workload-card { padding: 14px; }
-  .workload-card__input { height: 44px; font-size: 16px; }
-  .workload-card__input-row,
-  .workload-card__input-row > div { min-width: 0; }
-
-  .workload-total-card { padding: 14px !important; display: block; }
-  .workload-total-card > div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-    height: 100%;
-  }
-  .workload-total-card > div > div { width: 100%; text-align: left; min-width: 0; }
-  .workload-total-card > div > div:last-child {
-    padding-top: 9px;
-    border-top: 1px solid var(--border);
-    text-align: left;
-  }
-  .workload-total-card strong { font-size: clamp(1.55rem, 8vw, 2.2rem); }
-
-  #dashboard,
-  #shift,
-  #tools { margin-top: 14px; }
-  #dashboard > div:first-child { padding: 14px; }
-  #dashboard > div:first-child > div { gap: 12px; }
-  #dashboard > div:nth-child(2) > div { min-height: 72px; padding: 10px 12px; }
-  #dashboard > div:last-child > div { min-height: 0; padding: 14px; }
-  #dashboard .grid.grid-cols-2 > div:nth-child(2n) { border-right: 0; }
-
-  #shift,
   #tools { padding: 14px; }
-  #shift > div:first-child { margin-bottom: 12px; }
-  .shift-summary-grid { grid-template-columns: 1fr; gap: 10px; }
-  .shift-summary-card,
-  .shift-clockout-card { padding: 14px; }
-
   #tools > button { width: 100%; }
   main footer { margin-top: 4px; padding-block: 10px 4px; }
-}
-
-@media (max-width: 430px) {
-  main > div.relative { padding-inline: 10px; }
-  main nav { gap: 6px; }
-  main nav > div:first-child { gap: 7px; }
-  main nav > div:first-child > span { font-size: 12px; }
-  main nav > div:last-child { gap: 5px; max-width: 72%; }
-  .pht-clock-display { max-width: 118px; flex: 0 1 auto; }
-  .pht-clock-display > span,
-  .pht-clock-display span { font-size: 6.5px; letter-spacing: .06em; }
-  .pht-clock-display time { font-size: 8px; }
-  #dashboard > div:first-child > div > div:last-child { grid-template-columns: 1fr; }
-  #dashboard > div:nth-child(2) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #dashboard > div:nth-child(2) > div { border-right: 1px solid var(--border); }
-  #dashboard > div:nth-child(2) > div:nth-child(2n) { border-right: 0; }
-}
-
-@media (max-width: 380px) {
-  main > div.relative { padding-inline: 10px; }
-  main nav > div:last-child { gap: 4px; }
-  .pht-clock-display { max-width: 96px; }
-  .pht-clock-display span { font-size: 6px; letter-spacing: .05em; }
-  .pht-clock-display time { font-size: 8px; }
-  #calculator > .mb-3 > div:last-child { width: 100%; justify-content: flex-start; }
-  #calculator > .mb-3 > div:last-child button { flex: 0 1 auto; }
-  .workload-card { padding-inline: 12px; }
-}
-
-@media (max-width: 360px) {
-  main > div.relative { padding-inline: 8px; }
-  #dashboard > div:nth-child(2) > div { padding-inline: 9px; }
-  .workload-card { padding-inline: 10px; }
-  .workload-card__input-row { grid-template-columns: 30px minmax(0, 1fr) 30px; gap: 6px; }
-  .workload-card__quantity-button { width: 30px; min-width: 30px; }
-}
-
-@media (min-width: 1600px) {
-  main > div.relative { padding-inline: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
