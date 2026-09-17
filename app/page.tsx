@@ -122,8 +122,8 @@ export default function Page() {
   function openQuickGuide() { window.dispatchEvent(new Event('sif:open-welcome')) }
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
+    <main className="flex min-h-dvh flex-col bg-background text-foreground">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 sm:px-6 lg:px-8 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
         <header className="sticky top-0 z-40 -mx-4 border-b border-border/70 bg-background/95 px-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="flex min-h-14 items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-2.5"><div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground"><TimerReset className="size-3.5" /></div><div className="min-w-0"><p className="truncate text-sm font-bold tracking-tight">SIF Tracker</p><p className="text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Daily workload</p></div></div>
@@ -132,7 +132,7 @@ export default function Page() {
         </header>
         {apiStatus === 'error' && <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">Live workload configuration is unavailable. SIF Tracker is using your local saved rates.</div>}
 
-        <div className="mx-auto mt-6 w-full max-w-7xl space-y-5 sm:space-y-7 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
+        <div className="mx-auto mt-6 w-full max-w-7xl flex-1 space-y-5 sm:space-y-7 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
           <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary"><SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} progress={hasClockIn ? progress : 0} /><SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} /><SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} /><SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} /><SummaryTile label="Clock Out" value={clockOut} accent /></section>
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_1fr] lg:items-stretch">
@@ -167,8 +167,9 @@ export default function Page() {
           </div>
 
           <section id="tools" className={`${CARD_CLASS} scroll-mt-20 p-4`} aria-labelledby="tools-heading"><div className="text-center sm:text-left"><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p><h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Manage today&apos;s workload.</p></div><button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button></section>
-          <footer className="flex flex-row items-center justify-center gap-4 border-t border-border pt-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:justify-between sm:gap-1"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
         </div>
+
+        <footer className="flex flex-row items-center justify-center gap-4 border-t border-border pt-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:justify-between sm:gap-1"><span>SIF Tracker</span><span>Created by Nicole</span></footer>
       </div>
       {feedback && <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status"><Check className="size-3 text-primary" />{feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'All workloads cleared'}</div>}
       {settingsOpen && <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setSettingsOpen(false) }}><div className="w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl"><p id="settings-modal-title" className="sr-only">Workload rates settings</p><WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} /></div></div>}
