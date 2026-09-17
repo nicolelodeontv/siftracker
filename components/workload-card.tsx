@@ -43,11 +43,11 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
               data-workload-id={workload.id}
               data-workload-label={workload.label}
               data-duration-seconds={duration}
-              className="grid flex-[1_1_auto] gap-3 border-b border-border px-4 py-2 text-center last:border-b-0 sm:grid-cols-[1fr_1.75fr_0.75fr] sm:items-center sm:gap-4"
+              className="grid flex-[1_1_auto] gap-2 border-b border-border px-4 py-2 text-center last:border-b-0 sm:grid-cols-[1fr_1.75fr_0.75fr] sm:items-center sm:gap-4"
               role="row"
             >
               <div className="min-w-0 self-stretch flex flex-col items-center justify-center" role="cell">
-                <div className="flex items-baseline justify-center gap-3">
+                <div className="flex flex-col items-center justify-center gap-0.5 sm:flex-row sm:items-baseline sm:gap-3">
                   <div className="min-w-0 text-center">
                     <h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3>
                     <p className="mt-0.5 text-[9px] text-muted-foreground">{workload.minutesPerUnit} min / {workload.unit.slice(0, -1)}</p>
@@ -58,7 +58,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
 
               <div className="w-full min-w-0" role="cell">
                 <label htmlFor={`workload-${workload.id}`} className="sr-only">Number of {workload.unit} for {workload.label}</label>
-                <div className="flex w-full min-w-0 items-center gap-1.5">
+                <div className="mx-auto flex w-full min-w-0 max-w-sm items-center gap-1.5 sm:mx-0 sm:max-w-none">
                   <button type="button" onClick={() => onAdjust(workload.id, -1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Decrease ${workload.label} quantity`}>
                     <Minus className="size-3.5" />
                   </button>
