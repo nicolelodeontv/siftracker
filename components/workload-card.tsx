@@ -61,7 +61,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                 ) : incomplete ? (
                   <p className="text-[9px] font-medium text-muted-foreground">Waiting for expression…</p>
                 ) : hasInput ? (
-                  <p className="font-mono text-[9px] font-medium text-muted-foreground">{input} = {value} {getUnitLabel(workload.unit, value ?? 0)} · {formatDuration(duration)} · {share}%</p>
+                  <p className="truncate font-mono text-[9px] font-medium text-muted-foreground">{input} = {value} {getUnitLabel(workload.unit, value ?? 0)} · {formatDuration(duration)} · {share}%</p>
                 ) : (
                   <p className="text-[9px] leading-4 text-muted-foreground/70">5+5 · 10*3 · (5+5)*2</p>
                 )}
