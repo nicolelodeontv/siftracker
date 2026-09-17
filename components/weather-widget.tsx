@@ -73,14 +73,19 @@ export function WeatherWidget() {
 
   return (
     <>
-      {/* Below sm: compact chip, same tiny type scale as PST */}
-      <div className="flex shrink-0 items-center gap-1 rounded-md border border-border px-2 py-1.5 sm:hidden">
+      {/* Below sm: compact 40px icon-only circle, matching the other header controls */}
+      <div
+        className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card/80 text-foreground shadow-sm backdrop-blur sm:hidden"
+        aria-label={
+          weather
+            ? `Weather: ${Math.round(weather.tempC)}°C, ${weather.label}`
+            : "Weather loading"
+        }
+        title={weather ? `${Math.round(weather.tempC)}°C · ${weather.label}` : "Weather loading"}
+      >
         <Icon
-          className={`h-2.5 w-2.5 shrink-0 ${!weather ? "animate-pulse" : ""}`}
+          className={`size-3.5 shrink-0 ${!weather ? "animate-pulse" : ""}`}
         />
-        <span className={VALUE_TEXT_CLASS}>
-          {weather ? `${Math.round(weather.tempC)}°C` : "—"}
-        </span>
       </div>
 
       {/* sm and up: exact PhtClockDisplay typography */}
