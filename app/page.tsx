@@ -131,7 +131,7 @@ export default function Page() {
         {apiStatus === 'error' && <div className="mt-3 rounded-xl border border-border bg-card/60 px-3 py-2.5 text-[10px] font-medium text-muted-foreground" role="alert">Live workload configuration is unavailable. SIF Tracker is using your local saved rates.</div>}
 
         <div className="mx-auto mt-6 w-full max-w-7xl space-y-7 2xl:max-w-[100rem] min-[1920px]:max-w-[120rem]">
-          <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary"><SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} /><SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} /><SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} /><SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} /><SummaryTile label="Clock Out" value={clockOut} accent /></section>
+          <section id="shift-summary" className="grid grid-cols-2 gap-1 sm:grid-cols-5" aria-label="Shift summary"><SummaryTile label="Progress" value={hasClockIn ? `${progress}%` : '—'} progress={hasClockIn ? progress : 0} /><SummaryTile label="Worked" value={hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'} /><SummaryTile label="Total Hours" value={totalUnits > 0 ? formatDuration(totalSeconds) : '—'} /><SummaryTile label="Break" value={hasClockIn && totalUnits > 0 ? '01:00:00' : '—'} /><SummaryTile label="Clock Out" value={clockOut} accent /></section>
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_1fr] lg:items-stretch">
             <section id="calculator" className="flex scroll-mt-20 flex-col" aria-labelledby="workload-heading">
@@ -166,6 +166,6 @@ export default function Page() {
   )
 }
 
-function SummaryTile({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
-  return <div className="rounded-xl border border-border bg-card/60 px-3.5 py-3"><p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className={`mt-1 font-mono text-sm font-bold tabular-nums tracking-tight ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p></div>
+function SummaryTile({ label, value, accent = false, progress }: { label: string; value: string; accent?: boolean; progress?: number }) {
+  return <div className="rounded-xl border border-border bg-card/60 px-3.5 py-3"><p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className={`mt-1 font-mono text-sm font-bold tabular-nums tracking-tight ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>{progress !== undefined && <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true"><div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>}</div>
 }
