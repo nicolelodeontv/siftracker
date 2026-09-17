@@ -1,4 +1,4 @@
-import { calculateValue, getElapsedSeconds, timeToSeconds } from '@/lib/calculator'
+import { calculateValue, timeToSeconds } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 
 export const BREAK_SECONDS = 60 * 60

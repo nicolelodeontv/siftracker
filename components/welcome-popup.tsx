@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Calculator, Clock3, TimerReset, X } from 'lucide-react'
+import { TimerReset, X } from 'lucide-react'
 
 const STORAGE_KEY = 'sif-tracker-welcome-seen-v2'
 
