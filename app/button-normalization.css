@@ -36,9 +36,7 @@ main button svg {
 
 /* Icon-only controls stay square and have no artificial text gap. */
 main button[aria-label*="Close"],
-main button[aria-label*="Copy"],
-main .workload-card button[title="Clear"],
-.workload-card__quantity-button {
+main button[aria-label*="Copy"] {
   width: var(--button-height) !important;
   min-width: var(--button-height) !important;
   height: var(--button-height) !important;
@@ -50,38 +48,6 @@ main .workload-card button[title="Clear"],
   gap: 0 !important;
 }
 
-/* Workload +/- controls use the same square button dimensions. */
-.workload-card__input-row {
-  width: min(100%, 320px);
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: var(--button-height) minmax(0, 1fr) var(--button-height);
-  align-items: center;
-  gap: 8px;
-}
-
-.workload-card__quantity-button {
-  flex: 0 0 var(--button-height);
-}
-
-.workload-card__input-row .relative {
-  width: 100%;
-  min-width: 0;
-}
-
-.workload-card__input {
-  width: 100%;
-  height: var(--button-height) !important;
-  min-height: var(--button-height);
-  text-align: center;
-}
-
-.workload-card__input-row .workload-card__input + output {
-  right: 10px;
-}
-
-/* Quick-add and settings actions use the same height and icon/text gap. */
-.workload-card__quick-add > button,
 #settings .flex.gap-2 > button {
   height: var(--button-height);
   min-height: var(--button-height);
@@ -159,23 +125,11 @@ main input:focus-visible {
   color: var(--accent-foreground);
 }
 
-.workload-card__feedback > p {
-  overflow: hidden;
-  white-space: normal;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
 .shift-clockout-card.is-complete {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--sif-green) 28%, transparent), 0 8px 24px var(--primary-shadow);
 }
 
 @media (max-width: 767px) {
-  main nav > div:last-child {
-    gap: 6px;
-  }
-
   .pht-clock-display {
     max-width: min(42vw, 150px);
   }
@@ -197,30 +151,6 @@ main input:focus-visible {
     min-width: 64px;
     padding-inline: 16px;
   }
-
-  .workload-card__quick-add {
-    gap: 4px;
-  }
-
-  .workload-card__examples {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 520px) {
-  #settings .grid > div {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    row-gap: 8px;
-  }
-
-  #settings .grid > div > div:first-child {
-    flex: 1 1 150px;
-  }
-
-  #settings .grid > div > div:last-child {
-    margin-left: auto;
-  }
 }
 
 @media (max-width: 430px) {
@@ -236,10 +166,6 @@ main input:focus-visible {
 
   .theme-toggle__label {
     display: none !important;
-  }
-
-  .workload-card__input-row {
-    width: min(100%, 300px);
   }
 }
 
