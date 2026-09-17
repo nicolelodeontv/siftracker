@@ -58,7 +58,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
 
               <div className="w-full min-w-0" role="cell">
                 <label htmlFor={`workload-${workload.id}`} className="sr-only">Number of {workload.unit} for {workload.label}</label>
-                <div className="mx-auto flex w-full max-w-[28rem] min-w-0 items-center gap-1.5">
+                <div className="flex w-full min-w-0 items-center gap-1.5">
                   <button type="button" onClick={() => onAdjust(workload.id, -1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Decrease ${workload.label} quantity`}>
                     <Minus className="size-3.5" />
                   </button>
