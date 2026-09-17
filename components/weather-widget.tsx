@@ -71,7 +71,7 @@ export function WeatherWidget() {
   const Icon = weather ? WEATHER_ICONS[weather.icon] ?? Cloud : Cloud;
 
   return (
-    <div className="flex min-w-0 max-w-[9.5rem] flex-col items-end text-right sm:max-w-none">
+    <div className="order-last mt-1 flex w-full min-w-0 flex-col items-end text-right sm:order-none sm:mt-0 sm:w-auto">
       <span className={`${LABEL_CLASS} truncate`}>
         {weather ? weather.location : "Weather"}
       </span>
