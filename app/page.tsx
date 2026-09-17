@@ -167,5 +167,5 @@ export default function Page() {
 }
 
 function SummaryTile({ label, value, accent = false, progress }: { label: string; value: string; accent?: boolean; progress?: number }) {
-  return <div className="rounded-xl border border-border bg-card/60 px-3.5 py-3"><p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className={`mt-1 font-mono text-sm font-bold tabular-nums tracking-tight ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>{progress !== undefined && <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true"><div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>}</div>
+  return <div className={`rounded-xl border ${accent ? 'border-primary/40 bg-primary/5' : 'border-border bg-card/60'} px-3.5 py-3`}><p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className={`mt-1 font-mono text-sm font-bold tabular-nums tracking-tight ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>{progress !== undefined && <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true"><div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>}</div>
 }
