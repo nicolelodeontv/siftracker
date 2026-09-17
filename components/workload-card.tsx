@@ -22,7 +22,7 @@ type Props = {
 export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChange, onAdjust, onClear, onNext }: Props) {
   return (
     <div className="mx-auto flex h-full w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-card/60" role="table" aria-label="Today's workload">
-      <div className="hidden grid-cols-3 items-center gap-4 border-b border-border px-4 py-2.5 text-center text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
+      <div className="hidden grid-cols-[1fr_1.75fr_0.75fr] items-center gap-4 border-b border-border px-4 py-2.5 text-center text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
         <span role="columnheader">Workload</span>
         <span className="text-center" role="columnheader">Quantity</span>
         <span role="columnheader">Work time</span>
@@ -43,7 +43,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
               data-workload-id={workload.id}
               data-workload-label={workload.label}
               data-duration-seconds={duration}
-              className="grid flex-[1_1_auto] gap-3 border-b border-border px-4 py-2 text-center last:border-b-0 sm:grid-cols-3 sm:items-center sm:gap-4"
+              className="grid flex-[1_1_auto] gap-3 border-b border-border px-4 py-2 text-center last:border-b-0 sm:grid-cols-[1fr_1.75fr_0.75fr] sm:items-center sm:gap-4"
               role="row"
             >
               <div className="min-w-0 self-stretch flex flex-col items-center justify-center" role="cell">
