@@ -58,45 +58,47 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
 
               <div className="w-full min-w-0" role="cell">
                 <label htmlFor={`workload-${workload.id}`} className="sr-only">Number of {workload.unit} for {workload.label}</label>
-                <div className="mx-auto flex w-full min-w-0 max-w-sm items-center gap-1.5 sm:mx-0 sm:max-w-none">
-                  <button type="button" onClick={() => onAdjust(workload.id, -1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Decrease ${workload.label} quantity`}>
-                    <Minus className="size-3.5" />
-                  </button>
-                  <div className="relative min-w-0 flex-1">
-                    <input
-                      ref={(element) => { inputRefs.current[index] = element }}
-                      id={`workload-${workload.id}`}
-                      type="text"
-                      inputMode="text"
-                      autoComplete="off"
-                      placeholder="0"
-                      value={input}
-                      onChange={(event) => onChange(workload.id, event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Escape') {
-                          event.preventDefault()
-                          onClear(workload.id)
-                          return
-                        }
-                        if (event.key === 'Enter') {
-                          event.preventDefault()
-                          onNext(index)
-                          return
-                        }
-                        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-                          event.preventDefault()
-                          onAdjust(workload.id, event.key === 'ArrowUp' ? 1 : -1)
-                        }
-                      }}
-                      className={`h-10 w-full min-w-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
-                      aria-invalid={invalid}
-                      aria-label={`Number of ${workload.unit} for ${workload.label}`}
-                    />
+                <div className="relative mx-auto flex w-full min-w-0 max-w-sm items-center justify-center sm:mx-0 sm:max-w-none sm:justify-start">
+                  <div className="flex w-[calc(100%-5.5rem)] min-w-0 items-center gap-1.5 sm:w-full">
+                    <button type="button" onClick={() => onAdjust(workload.id, -1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Decrease ${workload.label} quantity`}>
+                      <Minus className="size-3.5" />
+                    </button>
+                    <div className="relative min-w-0 flex-1">
+                      <input
+                        ref={(element) => { inputRefs.current[index] = element }}
+                        id={`workload-${workload.id}`}
+                        type="text"
+                        inputMode="text"
+                        autoComplete="off"
+                        placeholder="0"
+                        value={input}
+                        onChange={(event) => onChange(workload.id, event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Escape') {
+                            event.preventDefault()
+                            onClear(workload.id)
+                            return
+                          }
+                          if (event.key === 'Enter') {
+                            event.preventDefault()
+                            onNext(index)
+                            return
+                          }
+                          if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                            event.preventDefault()
+                            onAdjust(workload.id, event.key === 'ArrowUp' ? 1 : -1)
+                          }
+                        }}
+                        className={`h-10 w-full min-w-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                        aria-invalid={invalid}
+                        aria-label={`Number of ${workload.unit} for ${workload.label}`}
+                      />
+                    </div>
+                    <button type="button" onClick={() => onAdjust(workload.id, 1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Increase ${workload.label} quantity`}>
+                      <Plus className="size-3.5" />
+                    </button>
                   </div>
-                  <button type="button" onClick={() => onAdjust(workload.id, 1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Increase ${workload.label} quantity`}>
-                    <Plus className="size-3.5" />
-                  </button>
-                  <button type="button" onClick={() => onClear(workload.id)} className={`flex size-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${hasInput ? '' : 'invisible pointer-events-none'}`} aria-label={`Clear ${workload.label}`} aria-hidden={!hasInput} tabIndex={hasInput ? 0 : -1} title="Clear">
+                  <button type="button" onClick={() => onClear(workload.id)} className={`absolute right-0 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${hasInput ? '' : 'invisible pointer-events-none'}`} aria-label={`Clear ${workload.label}`} aria-hidden={!hasInput} tabIndex={hasInput ? 0 : -1} title="Clear">
                     <X className="size-3.5" />
                   </button>
                 </div>
