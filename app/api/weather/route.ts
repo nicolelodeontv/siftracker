@@ -3,6 +3,13 @@ import { fetchCurrentWeather } from "@/lib/weather";
 
 export const dynamic = "force-dynamic";
 
+const LOCAL_DEFAULT_LOCATION = {
+  name: "Cebu City, Philippines",
+  lat: 10.3157,
+  lon: 123.8854,
+  timezone: "Asia/Manila",
+};
+
 function parseCoordinate(value: string | null, min: number, max: number) {
   if (value === null) return null;
   const parsed = Number(value);
@@ -25,7 +32,9 @@ function getVercelIpLocation(request: NextRequest) {
 
   const city = decodeHeader(request.headers.get("x-vercel-ip-city"));
   const country = request.headers.get("x-vercel-ip-country")?.toUpperCase() ?? "";
-  const location = city ? `${city}${country ? `, ${country}` : ""}` : "Approximate location";
+  const location = city
+    ? `Approx. ${city}${country ? `, ${country}` : ""}`
+    : "Approximate location";
 
   return {
     lat,
@@ -35,22 +44,34 @@ function getVercelIpLocation(request: NextRequest) {
   };
 }
 
+function getLocalDevelopmentLocation() {
+  if (process.env.NODE_ENV === "development" || process.env.VERCEL_ENV === "development") {
+    return LOCAL_DEFAULT_LOCATION;
+  }
+  return null;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const lat = parseCoordinate(request.nextUrl.searchParams.get("lat"), -90, 90);
     const lon = parseCoordinate(request.nextUrl.searchParams.get("lon"), -180, 180);
     const requestedLocation = request.nextUrl.searchParams.get("location")?.trim().slice(0, 120);
 
-    const preciseLocation = lat !== null && lon !== null
-      ? {
-          lat,
-          lon,
-          location: requestedLocation || "Current location",
-          timezone: "auto",
-        }
-      : null;
+    const preciseLocation =
+      lat !== null && lon !== null
+        ? {
+            lat,
+            lon,
+            location: requestedLocation || "Current location",
+            timezone: "auto",
+          }
+        : null;
 
-    const location = preciseLocation ?? getVercelIpLocation(request);
+    const location =
+      preciseLocation ??
+      getVercelIpLocation(request) ??
+      getLocalDevelopmentLocation();
+
     if (!location) {
       return NextResponse.json(
         { error: "Location unavailable" },
