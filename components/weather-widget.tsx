@@ -35,7 +35,7 @@ const WEATHER_ICONS: Record<string, LucideIcon> = {
 
 const LABEL_CLASS =
   "text-[10px] font-semibold uppercase tracking-wider text-muted-foreground";
-const VALUE_CLASS = "text-sm font-semibold text-foreground";
+const VALUE_CLASS = "text-sm font-mono text-foreground";
 
 export function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
