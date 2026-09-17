@@ -46,7 +46,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
             className="grid gap-3 border-b border-border px-4 py-2 last:border-b-0 sm:grid-cols-[minmax(0,1.2fr)_minmax(10rem,1.2fr)_6.5rem] sm:items-center sm:gap-4"
             role="row"
           >
-            <div className="min-w-0" role="cell">
+            <div className="min-w-0 self-stretch flex flex-col justify-center" role="cell">
               <div className="flex items-baseline justify-between gap-3 sm:justify-start">
                 <div className="min-w-0">
                   <h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3>
