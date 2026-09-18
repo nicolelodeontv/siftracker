@@ -176,7 +176,7 @@ export function WeatherWidget() {
       </div>
 
       <div
-        className="hidden min-w-0 flex-col items-end gap-0.5 rounded-2xl border border-border bg-card/80 px-3 py-1.5 text-right leading-tight shadow-sm backdrop-blur sm:flex"
+        className="hidden min-w-0 flex-col items-center gap-0.5 rounded-2xl border border-border bg-card/80 px-3.5 py-2 text-center leading-tight shadow-sm backdrop-blur sm:flex"
         aria-label={
           weather
             ? `Weather in ${weather.location}: ${primaryText}; ${secondaryText}`
@@ -186,14 +186,14 @@ export function WeatherWidget() {
         }
         title={weather ? weather.location : error ? "Weather unavailable" : "Weather loading"}
       >
-        <span className={`${VALUE_TEXT_CLASS} flex items-center justify-end gap-1 whitespace-nowrap`}>
+        <span className={`${VALUE_TEXT_CLASS} flex items-center justify-center gap-1 whitespace-nowrap text-center`}>
           <Icon className={`h-3 w-3 shrink-0 ${!weather ? "animate-pulse" : ""}`} />
           <span>{primaryText}</span>
         </span>
-        <span className="whitespace-nowrap text-[7px] font-semibold text-muted-foreground sm:text-[8px]">
+        <span className="whitespace-nowrap text-center text-[7px] font-semibold text-muted-foreground sm:text-[8px]">
           {secondaryText}
         </span>
-        <span className="max-w-[16rem] truncate text-[7px] font-semibold text-muted-foreground/80 sm:text-[8px]" title={locationText}>
+        <span className="max-w-[16rem] truncate text-center text-[7px] font-semibold text-muted-foreground/80 sm:text-[8px]" title={locationText}>
           {locationText}
         </span>
       </div>

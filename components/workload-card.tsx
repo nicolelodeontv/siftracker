@@ -20,6 +20,9 @@ type Props = {
 }
 
 export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChange, onAdjust, onClear, onNext }: Props) {
+  const totalQuantity = calculatedValues.reduce((total, { value }) => total + Math.max(0, value ?? 0), 0)
+  const formattedTotalQuantity = Number.isInteger(totalQuantity) ? String(totalQuantity) : totalQuantity.toFixed(2)
+
   return (
     <div className="mx-auto flex h-full w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-card/60" role="table" aria-label="Today's workload">
       <div className="hidden grid-cols-[1fr_1.75fr_0.75fr] items-center gap-4 border-b border-border px-4 py-2.5 text-center text-[8px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:grid" role="row">
@@ -113,6 +116,23 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
             </div>
           )
         })}
+      </div>
+
+      <div
+        className="grid grid-cols-[1fr_1.75fr_0.75fr] items-center gap-2 border-t border-border bg-background/35 px-4 py-2.5 text-center sm:gap-4"
+        role="row"
+        aria-label="Workload totals"
+      >
+        <span className="text-[8px] font-bold uppercase tracking-[0.16em] text-foreground" role="rowheader">
+          Total
+        </span>
+        <div className="font-mono text-[10px] font-bold tabular-nums text-foreground" role="cell">
+          {formattedTotalQuantity}
+          <span className="ml-1 text-[8px] font-semibold text-muted-foreground">qty</span>
+        </div>
+        <output className="font-mono text-[10px] font-bold tabular-nums text-foreground sm:text-sm" role="cell">
+          {formatDuration(totalSeconds)}
+        </output>
       </div>
     </div>
   )

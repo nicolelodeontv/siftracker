@@ -164,13 +164,13 @@ export default function Page() {
                   <span className={`size-1.5 rounded-full ${hasClockIn ? 'bg-primary' : 'bg-muted-foreground'}`} aria-hidden="true" />
                   {hasClockIn ? `Clocked in at ${formatPhilippineTime(clockInTime, timeFormat)} · ${formatDuration(shift.elapsedShiftSeconds)} elapsed` : 'Not clocked in yet'}
                 </div>
-                <div className={`grid w-full max-w-sm gap-2 pt-2 ${hasClockIn && totalUnits > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                  <div className="rounded-xl border border-border/70 bg-card/40 px-3 py-2 text-left">
+                <div className="flex w-full max-w-sm flex-wrap items-center justify-center gap-2 pt-2">
+                  <div className="inline-flex min-w-[8.5rem] flex-col items-center justify-center rounded-xl border border-border/70 bg-card/40 px-3 py-2 text-center">
                     <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Worked so far</p>
                     <p className="mt-1 font-mono text-sm font-bold tabular-nums">{hasClockIn ? formatDuration(shift.elapsedShiftSeconds) : '—'}</p>
                   </div>
                   {hasClockIn && totalUnits > 0 && (
-                    <div className="rounded-xl border border-border/70 bg-card/40 px-3 py-2 text-left">
+                    <div className="inline-flex min-w-[8.5rem] flex-col items-center justify-center rounded-xl border border-border/70 bg-card/40 px-3 py-2 text-center">
                       <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Time remaining</p>
                       <p className="mt-1 font-mono text-sm font-bold tabular-nums">{formatDuration(shift.timeLeftSeconds)}</p>
                     </div>
