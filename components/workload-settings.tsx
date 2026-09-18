@@ -1,7 +1,6 @@
 'use client'
 
 import { Minus, Plus, RotateCcw, X } from 'lucide-react'
-import type { TimeFormat } from '@/lib/use-philippine-clock'
 import type { Workload } from '@/lib/workloads'
 
 type Props = {
@@ -18,11 +17,9 @@ type Props = {
   onReset: () => void
   onSave: () => void
   onClose: () => void
-  timeFormat: TimeFormat
-  onTimeFormatChange: (value: TimeFormat) => void
 }
 
-export function WorkloadSettings({ workloads, rates, savedRates, editingRate, rateDraft, onAdjust, onBeginEdit, onDraftChange, onCommitEdit, onCancelEdit, onReset, onSave, onClose, timeFormat, onTimeFormatChange }: Props) {
+export function WorkloadSettings({ workloads, rates, savedRates, editingRate, rateDraft, onAdjust, onBeginEdit, onDraftChange, onCommitEdit, onCancelEdit, onReset, onSave, onClose }: Props) {
   const unsavedRates = workloads.some(({ id }) => rates[id] !== savedRates[id])
 
   return (
@@ -35,33 +32,6 @@ export function WorkloadSettings({ workloads, rates, savedRates, editingRate, ra
         <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="Close settings">
           <X className="size-3.5" />
         </button>
-      </div>
-
-      <div className="mb-4 rounded-xl border border-border bg-background/40 px-3 py-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <span className="block text-[10px] font-semibold">Clock format</span>
-            <span className="text-[8px] text-muted-foreground">Applies to the live PHT clocks. Saved automatically.</span>
-          </div>
-          <div className="inline-flex rounded-full border border-border bg-background/70 p-0.5" role="group" aria-label="Clock time format">
-            <button
-              type="button"
-              onClick={() => onTimeFormatChange('24h')}
-              className={`rounded-full px-3 py-1.5 font-mono text-[8px] font-bold transition ${timeFormat === '24h' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-              aria-pressed={timeFormat === '24h'}
-            >
-              24-hour
-            </button>
-            <button
-              type="button"
-              onClick={() => onTimeFormatChange('12h')}
-              className={`rounded-full px-3 py-1.5 font-mono text-[8px] font-bold transition ${timeFormat === '12h' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}
-              aria-pressed={timeFormat === '12h'}
-            >
-              12-hour
-            </button>
-          </div>
-        </div>
       </div>
 
       <div className="divide-y divide-border border-y border-border">
