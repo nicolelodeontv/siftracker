@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Sun,
   CloudSun,
@@ -12,6 +12,12 @@ import {
   CloudLightning,
   type LucideIcon,
 } from "lucide-react";
+import {
+  formatPhilippineDate,
+  formatPhilippineTime,
+  getCurrentClockIn,
+  type TimeFormat,
+} from "@/lib/use-philippine-clock";
 
 type WeatherResponse = {
   location: string;
@@ -41,9 +47,6 @@ const WEATHER_ICONS: Record<string, LucideIcon> = {
 const CACHE_KEY = "sif-weather-v2";
 const CACHE_TTL = 15 * 60 * 1000;
 const LOCATION_TIMEOUT = 5000;
-
-const VALUE_TEXT_CLASS =
-  "font-mono text-[8px] font-bold tabular-nums sm:text-[10px]";
 
 function readCachedWeather() {
   try {
@@ -109,9 +112,27 @@ async function fetchWeather(path: string) {
   }
 }
 
-export function WeatherWidget() {
+type Props = {
+  timeFormat: TimeFormat;
+};
+
+export function WeatherWidget({ timeFormat }: Props) {
+  const dateRef = useRef<HTMLSpanElement>(null);
+  const timeRef = useRef<HTMLTimeElement>(null);
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      if (dateRef.current) dateRef.current.textContent = formatPhilippineDate(now);
+      if (timeRef.current) timeRef.current.textContent = formatPhilippineTime(getCurrentClockIn(), timeFormat);
+    };
+
+    tick();
+    const clockInterval = window.setInterval(tick, 1000);
+    return () => window.clearInterval(clockInterval);
+  }, [timeFormat]);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,12 +178,9 @@ export function WeatherWidget() {
   }, []);
 
   const Icon = weather ? WEATHER_ICONS[weather.icon] ?? Cloud : Cloud;
-  const primaryText = weather ? `${Math.round(weather.tempC)}°C · ${weather.label}` : error ? "— · Weather unavailable" : "— · Loading weather";
-  const secondaryText = weather
-    ? `Feels like ${Math.round(weather.feelsLikeC)}°C`
-    : error
-      ? "Weather unavailable"
-      : "Loading…";
+  const primaryText = weather ? `${Math.round(weather.tempC)}°C` : "—";
+  const conditionText = weather ? weather.label : error ? "Weather unavailable" : "Loading weather";
+  const feelsText = weather ? `feels ${Math.round(weather.feelsLikeC)}°C` : error ? "—" : "Loading…";
   const locationText = weather ? weather.location : error ? "Location unavailable" : "Resolving location…";
 
   return (
@@ -176,26 +194,35 @@ export function WeatherWidget() {
       </div>
 
       <div
-        className="hidden min-w-0 flex-col items-center gap-0.5 rounded-2xl border border-border bg-card/80 px-3.5 py-2 text-center leading-tight shadow-sm backdrop-blur sm:flex"
+        className="hidden min-w-0 flex-col items-end leading-tight sm:flex"
         aria-label={
           weather
-            ? `Weather in ${weather.location}: ${primaryText}; ${secondaryText}`
+            ? `Philippine Standard Time · ${locationText} · ${primaryText} · ${conditionText} · ${feelsText}`
             : error
-              ? "Weather unavailable"
-              : "Weather loading"
+              ? "Philippine Standard Time · Location unavailable · Weather unavailable"
+              : "Philippine Standard Time · Resolving location · Loading weather"
         }
-        title={weather ? weather.location : error ? "Weather unavailable" : "Weather loading"}
+        title={weather ? locationText : error ? "Weather unavailable" : "Weather loading"}
       >
-        <span className={`${VALUE_TEXT_CLASS} flex items-center justify-center gap-1 whitespace-nowrap text-center`}>
-          <Icon className={`h-3 w-3 shrink-0 ${!weather ? "animate-pulse" : ""}`} />
-          <span>{primaryText}</span>
-        </span>
-        <span className="whitespace-nowrap text-center text-[7px] font-semibold text-muted-foreground sm:text-[8px]">
-          {secondaryText}
-        </span>
-        <span className="max-w-[16rem] truncate text-center text-[7px] font-semibold text-muted-foreground/80 sm:text-[8px]" title={locationText}>
-          {locationText}
-        </span>
+        <div className="flex max-w-[48rem] items-center justify-end gap-2 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.12em]">
+          <span>Philippine Standard Time</span>
+          <span aria-hidden="true">·</span>
+          <span className="truncate">{locationText}</span>
+        </div>
+        <div className="mt-0.5 flex max-w-[48rem] items-center justify-end gap-1 whitespace-nowrap font-mono text-[8px] font-bold tabular-nums sm:text-[10px]">
+          <span ref={dateRef} suppressHydrationWarning>--</span>
+          <span aria-hidden="true">·</span>
+          <time ref={timeRef} suppressHydrationWarning>--:--:--</time>
+          <span aria-hidden="true">·</span>
+          <span className="inline-flex items-center gap-1">
+            <Icon className={`h-3 w-3 shrink-0 ${!weather ? "animate-pulse" : ""}`} />
+            <span>{primaryText}</span>
+          </span>
+          <span aria-hidden="true">·</span>
+          <span>{conditionText}</span>
+          <span aria-hidden="true">·</span>
+          <span>{feelsText}</span>
+        </div>
       </div>
     </>
   );
