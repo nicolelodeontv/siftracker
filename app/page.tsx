@@ -158,7 +158,27 @@ export default function Page() {
               <div className="text-center sm:text-left"><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">02 / Clock In</p><h2 id="clock-in-heading" className="mt-1 text-sm font-semibold">Clock In</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Set or edit your start time for today&apos;s shift.</p></div>
               <div className="flex flex-1 flex-col items-center justify-center gap-3 py-8 text-center">
                 <time className="font-mono text-5xl font-bold tabular-nums tracking-tight text-foreground" suppressHydrationWarning><PhtLiveTime timeFormat={timeFormat} /></time>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Philippine Standard Time</p>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Philippine Standard Time</p>
+                  <div className="inline-flex rounded-full border border-border bg-background/70 p-0.5" role="group" aria-label="Clock time format">
+                    <button
+                      type="button"
+                      onClick={() => changeTimeFormat('24h')}
+                      className={`rounded-full px-2 py-1 font-mono text-[8px] font-bold uppercase transition ${timeFormat === '24h' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}
+                      aria-pressed={timeFormat === '24h'}
+                    >
+                      24H
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => changeTimeFormat('12h')}
+                      className={`rounded-full px-2 py-1 font-mono text-[8px] font-bold uppercase transition ${timeFormat === '12h' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground'}`}
+                      aria-pressed={timeFormat === '12h'}
+                    >
+                      12H
+                    </button>
+                  </div>
+                </div>
                 <div className={`mt-2 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[9px] font-semibold ${hasClockIn ? 'border-primary/30 bg-primary/10 text-primary' : 'border-border text-muted-foreground'}`}>
                   <span className={`size-1.5 rounded-full ${hasClockIn ? 'bg-primary' : 'bg-muted-foreground'}`} aria-hidden="true" />
                   {hasClockIn ? `Clocked in at ${formatPhilippineTime(clockInTime, timeFormat)} · ${formatDuration(shift.elapsedShiftSeconds)} elapsed` : 'Not clocked in yet'}
@@ -187,7 +207,7 @@ export default function Page() {
         <footer className="flex flex-row items-center justify-center gap-4 border-t border-border pt-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:justify-between sm:gap-1"><span>SIF Tracker</span><a href="https://github.com/nicolelodeontv" target="_blank" rel="noreferrer" className="transition hover:text-foreground hover:underline hover:underline-offset-2">Created by Nicole</a></footer>
       </div>
       {feedback && <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status"><Check className="size-3 text-primary" />{feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'All workloads cleared'}</div>}
-      {settingsOpen && <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setSettingsOpen(false) }}><div className="w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl"><p id="settings-modal-title" className="sr-only">SIF Tracker settings</p><WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} timeFormat={timeFormat} onTimeFormatChange={changeTimeFormat} /></div></div>}
+      {settingsOpen && <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setSettingsOpen(false) }}><div className="w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl"><p id="settings-modal-title" className="sr-only">SIF Tracker settings</p><WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} /></div></div>}
       {confirmReset && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="reset-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setConfirmReset(false) }}><div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl"><div className="flex items-start justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Confirm reset</p><h3 id="reset-title" className="mt-1 text-sm font-semibold">Reset today&apos;s workload?</h3><p className="mt-2 text-[10px] leading-5 text-muted-foreground">This clears all quantities and resets Clock In to the current PHT time.</p></div><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground" aria-label="Close reset confirmation"><X className="size-4" /></button></div><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full border border-border px-4 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground">Cancel</button><button type="button" onClick={performReset} className="rounded-full bg-primary px-4 py-2 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90">Reset</button></div></div></div>}
       <ClockInPicker value={clockInTime} onChange={setClockInTime} />
     </main>
