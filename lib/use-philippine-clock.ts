@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
+export type TimeFormat = '24h' | '12h'
+
 type PhilippineClock = {
   time: string
   date: string
@@ -27,6 +29,30 @@ export function getCurrentClockIn() {
   return `${parts.hour}:${parts.minute}:${parts.second}`
 }
 
+export function formatPhilippineTime(time: string, timeFormat: TimeFormat = '24h') {
+  const match = /^(\\d{2}):(\\d{2}):(\\d{2})$/.exec(time)
+  if (!match) return time
+
+  const hours24 = Number(match[1])
+  const minutes = match[2]
+  const seconds = match[3]
+
+  if (timeFormat === '24h') return `${match[1]}:${minutes}:${seconds}`
+
+  const period = hours24 >= 12 ? 'PM' : 'AM'
+  const hours12 = hours24 % 12 || 12
+  return `${hours12}:${minutes}:${seconds} ${period}`
+}
+
+export function formatPhilippineDate(date = new Date()) {
+  return new Intl.DateTimeFormat('en-PH', {
+    timeZone: TIME_ZONE,
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  }).format(date)
+}
+
 function readClock(date = new Date()): PhilippineClock {
   const parts = getParts(date)
   const hour = Number(parts.hour)
@@ -35,12 +61,7 @@ function readClock(date = new Date()): PhilippineClock {
 
   return {
     time: `${parts.hour}:${parts.minute}:${parts.second}`,
-    date: new Intl.DateTimeFormat('en-PH', {
-      timeZone: TIME_ZONE,
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
-    }).format(date),
+    date: formatPhilippineDate(date),
     seconds: hour * 3600 + minute * 60 + second,
   }
 }

@@ -52,7 +52,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                     <h3 className="truncate text-sm font-semibold tracking-tight">{workload.label}</h3>
                     <p className="mt-0.5 text-[9px] text-muted-foreground">{workload.minutesPerUnit} min / {workload.unit.slice(0, -1)}</p>
                   </div>
-                  <span className="shrink-0 font-mono text-[10px] font-semibold text-muted-foreground sm:hidden">{formatDuration(duration)}</span>
+                  <span className={`shrink-0 font-mono text-[10px] font-semibold sm:hidden ${safeValue > 0 ? 'text-muted-foreground' : 'text-muted-foreground/40'}`}>{formatDuration(duration)}</span>
                 </div>
               </div>
 
@@ -89,7 +89,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                             onAdjust(workload.id, event.key === 'ArrowUp' ? 1 : -1)
                           }
                         }}
-                        className={`h-10 w-full min-w-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                        className={`h-10 w-full min-w-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground placeholder:text-muted-foreground/35 outline-none transition-colors ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
                         aria-invalid={invalid}
                         aria-label={`Number of ${workload.unit} for ${workload.label}`}
                       />
@@ -105,7 +105,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
               </div>
 
               <div className="hidden text-center sm:block" role="cell">
-                <output className="font-mono text-sm font-bold tabular-nums">{formatDuration(duration)}</output>
+                <output className={`font-mono text-sm font-bold tabular-nums ${safeValue > 0 ? 'text-foreground' : 'text-muted-foreground/40'}`}>{formatDuration(duration)}</output>
                 <div className="mx-auto mt-1.5 h-1 w-16 overflow-hidden rounded-full bg-muted" aria-hidden="true">
                   <div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${share}%` }} />
                 </div>

@@ -158,57 +158,45 @@ export function WeatherWidget() {
     };
   }, []);
 
-  if (error && !weather) return null;
-
   const Icon = weather ? WEATHER_ICONS[weather.icon] ?? Cloud : Cloud;
+  const primaryText = weather ? `${Math.round(weather.tempC)}°C · ${weather.label}` : error ? "— · Weather unavailable" : "— · Loading weather";
+  const secondaryText = weather
+    ? `Feels like ${Math.round(weather.feelsLikeC)}°C`
+    : error
+      ? "Weather unavailable"
+      : "Loading…";
+  const locationText = weather ? weather.location : error ? "Location unavailable" : "Resolving location…";
 
   return (
     <>
       <div
         className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card/80 text-foreground shadow-sm backdrop-blur sm:hidden"
-        aria-label={
-          weather
-            ? `Weather: ${Math.round(weather.tempC)}°C, ${weather.label}`
-            : "Weather loading"
-        }
-        title={weather ? `${Math.round(weather.tempC)}°C · ${weather.label}` : "Weather loading"}
+        aria-label={weather ? `Weather: ${primaryText}` : error ? "Weather unavailable" : "Weather loading"}
+        title={weather ? `${primaryText} · ${weather.location}` : error ? "Weather unavailable" : "Weather loading"}
       >
-        <Icon
-          className={`size-3.5 shrink-0 ${!weather ? "animate-pulse" : ""}`}
-        />
+        <Icon className={`size-3.5 shrink-0 ${!weather ? "animate-pulse" : ""}`} />
       </div>
 
       <div
-        className="hidden min-w-0 text-right leading-tight sm:block"
+        className="hidden min-w-0 flex-col items-end gap-0.5 rounded-2xl border border-border bg-card/80 px-3 py-1.5 text-right leading-tight shadow-sm backdrop-blur sm:flex"
         aria-label={
           weather
-            ? `Weather in ${weather.location}: ${Math.round(weather.tempC)}°C, ${weather.label}`
-            : "Weather loading"
+            ? `Weather in ${weather.location}: ${primaryText}; ${secondaryText}`
+            : error
+              ? "Weather unavailable"
+              : "Weather loading"
         }
+        title={weather ? weather.location : error ? "Weather unavailable" : "Weather loading"}
       >
-        <span className={`${LABEL_CLASS} truncate`}>
-          {weather ? weather.location : "Weather"}
+        <span className={`${VALUE_TEXT_CLASS} flex items-center justify-end gap-1 whitespace-nowrap`}>
+          <Icon className={`h-3 w-3 shrink-0 ${!weather ? "animate-pulse" : ""}`} />
+          <span>{primaryText}</span>
         </span>
-        <span
-          className={`${VALUE_TEXT_CLASS} flex items-center justify-end gap-1 whitespace-nowrap`}
-        >
-          <Icon
-            className={`h-2.5 w-2.5 shrink-0 sm:h-3 sm:w-3 ${!weather ? "animate-pulse" : ""}`}
-          />
-          {weather ? (
-            <>
-              <span className="truncate">
-                {Math.round(weather.tempC)}°C · {weather.label}
-              </span>
-              <span
-                className={`${VALUE_TEXT_CLASS} shrink-0 text-muted-foreground`}
-              >
-                · feels {Math.round(weather.feelsLikeC)}°C
-              </span>
-            </>
-          ) : (
-            <span>Loading…</span>
-          )}
+        <span className="whitespace-nowrap text-[7px] font-semibold text-muted-foreground sm:text-[8px]">
+          {secondaryText}
+        </span>
+        <span className="max-w-[16rem] truncate text-[7px] font-semibold text-muted-foreground/80 sm:text-[8px]" title={locationText}>
+          {locationText}
         </span>
       </div>
     </>
