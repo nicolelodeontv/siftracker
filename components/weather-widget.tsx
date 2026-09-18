@@ -42,8 +42,6 @@ const CACHE_KEY = "sif-weather-v2";
 const CACHE_TTL = 15 * 60 * 1000;
 const LOCATION_TIMEOUT = 5000;
 
-const LABEL_CLASS =
-  "block whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.16em]";
 const VALUE_TEXT_CLASS =
   "font-mono text-[8px] font-bold tabular-nums sm:text-[10px]";
 
