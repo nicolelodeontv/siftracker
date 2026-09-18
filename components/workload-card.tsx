@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import { Minus, Plus, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { calculateValue, formatDuration } from '@/lib/calculator'
 import type { Workload } from '@/lib/workloads'
 
@@ -62,11 +62,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
               <div className="w-full min-w-0" role="cell">
                 <label htmlFor={`workload-${workload.id}`} className="sr-only">Number of {workload.unit} for {workload.label}</label>
                 <div className="relative mx-auto flex w-full min-w-0 max-w-sm items-center justify-center sm:mx-0 sm:max-w-none sm:justify-start">
-                  <div className="flex w-[calc(100%-5.5rem)] min-w-0 items-center gap-1.5 sm:w-full">
-                    <button type="button" onClick={() => onAdjust(workload.id, -1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Decrease ${workload.label} quantity`}>
-                      <Minus className="size-3.5" />
-                    </button>
-                    <div className="relative min-w-0 flex-1">
+                  <div className="relative w-full min-w-0">
                       <input
                         ref={(element) => { inputRefs.current[index] = element }}
                         id={`workload-${workload.id}`}
@@ -92,15 +88,11 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
                             onAdjust(workload.id, event.key === 'ArrowUp' ? 1 : -1)
                           }
                         }}
-                        className={`h-10 w-full min-w-0 rounded-xl border bg-input-background px-3 font-mono text-base font-medium tabular-nums text-foreground placeholder:text-muted-foreground/35 outline-none transition-colors ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
+                        className={`h-10 w-full min-w-0 rounded-xl border bg-input-background px-3 pr-12 font-mono text-base font-medium tabular-nums text-foreground placeholder:text-muted-foreground/35 outline-none transition-colors ${invalid ? 'border-border focus:ring-4 focus:ring-primary/10' : 'border-input focus:border-primary focus:ring-4 focus:ring-primary/10'}`}
                         aria-invalid={invalid}
                         aria-label={`Number of ${workload.unit} for ${workload.label}`}
                       />
                     </div>
-                    <button type="button" onClick={() => onAdjust(workload.id, 1)} className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Increase ${workload.label} quantity`}>
-                      <Plus className="size-3.5" />
-                    </button>
-                  </div>
                   <button type="button" onClick={() => onClear(workload.id)} className={`absolute right-0 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${hasInput ? '' : 'invisible pointer-events-none'}`} aria-label={`Clear ${workload.label}`} aria-hidden={!hasInput} tabIndex={hasInput ? 0 : -1} title="Clear">
                     <X className="size-3.5" />
                   </button>
