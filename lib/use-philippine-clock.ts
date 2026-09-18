@@ -30,7 +30,7 @@ export function getCurrentClockIn() {
 }
 
 export function formatPhilippineTime(time: string, timeFormat: TimeFormat = '24h') {
-  const match = /^(\\d{2}):(\\d{2}):(\\d{2})$/.exec(time)
+  const match = /^(\d{2}):(\d{2}):(\d{2})$/.exec(time)
   if (!match) return time
 
   const hours24 = Number(match[1])
