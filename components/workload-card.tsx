@@ -46,7 +46,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
               data-workload-id={workload.id}
               data-workload-label={workload.label}
               data-duration-seconds={duration}
-              className="grid flex-[1_1_auto] gap-2 border-b border-border px-4 py-2 text-center last:border-b-0 sm:grid-cols-[1fr_1.75fr_0.75fr] sm:items-center sm:gap-4"
+              className="grid flex-[1_1_auto] gap-2 border-b border-border px-4 py-1.5 text-center last:border-b-0 sm:grid-cols-[1fr_1.75fr_0.75fr] sm:items-center sm:gap-4"
               role="row"
             >
               <div className="min-w-0 self-stretch flex flex-col items-center justify-center" role="cell">
@@ -128,7 +128,7 @@ export function WorkloadCard({ calculatedValues, totalSeconds, inputRefs, onChan
         </span>
         <div className="font-mono text-[10px] font-bold tabular-nums text-foreground" role="cell">
           {formattedTotalQuantity}
-          <span className="ml-1 text-[8px] font-semibold text-muted-foreground">qty</span>
+          <span className="ml-1 text-[10px] font-bold text-foreground">qty</span>
         </div>
         <output className="font-mono text-[10px] font-bold tabular-nums text-foreground sm:text-sm" role="cell">
           {formatDuration(totalSeconds)}
