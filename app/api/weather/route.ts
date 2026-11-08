@@ -86,8 +86,9 @@ export async function GET(request: NextRequest) {
       location.timezone
     );
 
+    // Per-visitor (location comes from the request), so cache privately and only briefly.
     return NextResponse.json(weather, {
-      headers: { "Cache-Control": "no-store" },
+      headers: { "Cache-Control": "private, max-age=300" },
     });
   } catch {
     return NextResponse.json(
