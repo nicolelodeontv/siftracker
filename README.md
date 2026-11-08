@@ -24,6 +24,9 @@ A lightweight production workload tracker that turns workload quantities into to
 - Light and dark mode support, with matching light/dark favicon variants
 - Responsive desktop and mobile layouts with touch-friendly controls
 - Workload inputs reset on refresh while saved rates persist locally
+- Optional **Keep today's entries after refresh** (Tools): restores your quantities and Clock In for the current Philippine date, then expires automatically
+- **Copy day summary** button for a plain-text recap of workloads, total time, Clock In and estimated Clock Out
+- Installable web app (manifest and icons) so it can be added to a phone's home screen
 
 ## 🌤️ Weather Widget
 

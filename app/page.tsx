@@ -1,26 +1,32 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Check, Eraser, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
+import { Check, Copy, Eraser, HelpCircle, RotateCcw, Settings2, TimerReset, X } from 'lucide-react'
 import { ClockInPicker } from '@/components/clock-in-picker'
 import { PhtLiveTime } from '@/components/pht-live-time'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { WorkloadCard } from '@/components/workload-card'
 import { WorkloadSettings } from '@/components/workload-settings'
 import { WeatherWidget } from '@/components/weather-widget'
-import { calculateValue, formatDuration, formatMilitaryTime } from '@/lib/calculator'
+import { calculateValue, formatDuration, formatMilitaryTime, timeToSeconds } from '@/lib/calculator'
 import { loadSavedRates, persistSavedRates } from '@/lib/rates-storage'
 import { calculateShift, calculateWorkloads } from '@/lib/shift'
 import { formatPhilippineTime, getCurrentClockIn, type TimeFormat, usePhilippineClock } from '@/lib/use-philippine-clock'
 import { DEFAULT_RATES, DEFAULT_WORKLOADS } from '@/lib/workloads'
 
 type RateMap = Record<string, number>
-type Feedback = 'saved' | 'cleared' | 'reset' | null
+type Feedback = 'saved' | 'cleared' | 'reset' | 'copied' | 'copyFailed' | null
 type ApiStatus = 'checking' | 'ready' | 'error'
 
 const EMPTY_VALUES = Object.fromEntries(DEFAULT_WORKLOADS.map(({ id }) => [id, '']))
 const CARD_CLASS = 'rounded-2xl border border-border bg-card/60'
 const TIME_FORMAT_KEY = 'sif-time-format-v1'
+const KEEP_ENTRIES_KEY = 'sif-keep-entries-v1'
+const ENTRIES_KEY = 'sif-entries-v1'
+
+function getPhilippineDate() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Manila' }).format(new Date())
+}
 
 export default function Page() {
   const [values, setValues] = useState<Record<string, string>>({ ...EMPTY_VALUES })
@@ -34,6 +40,8 @@ export default function Page() {
   const [editingRate, setEditingRate] = useState<string | null>(null)
   const [rateDraft, setRateDraft] = useState('')
   const [timeFormat, setTimeFormat] = useState<TimeFormat>('24h')
+  const [keepEntries, setKeepEntries] = useState(false)
+  const hydrated = useRef(false)
   const inputRefs = useRef<Array<HTMLInputElement | null>>([])
   const { seconds: nowSeconds } = usePhilippineClock()
 
@@ -45,9 +53,38 @@ export default function Page() {
       setClockInTime(getCurrentClockIn())
       const savedTimeFormat = window.localStorage.getItem(TIME_FORMAT_KEY)
       if (savedTimeFormat === '12h' || savedTimeFormat === '24h') setTimeFormat(savedTimeFormat)
+      try {
+        // Opt-in: restore today's entries (they expire when the Philippine date changes).
+        if (window.localStorage.getItem(KEEP_ENTRIES_KEY) === '1') {
+          setKeepEntries(true)
+          const stored = JSON.parse(window.localStorage.getItem(ENTRIES_KEY) ?? 'null')
+          if (stored?.date === getPhilippineDate() && stored.values && typeof stored.values === 'object') {
+            setValues(Object.fromEntries(Object.keys(EMPTY_VALUES).map((id) => [id, typeof stored.values[id] === 'string' ? stored.values[id] : ''])))
+            if (typeof stored.clockIn === 'string' && timeToSeconds(stored.clockIn) !== null) setClockInTime(stored.clockIn)
+          }
+        }
+      } catch {
+        // Storage unavailable or corrupted: start fresh.
+      }
+      hydrated.current = true
     }, 0)
     return () => window.clearTimeout(hydrate)
   }, [])
+
+  useEffect(() => {
+    if (!hydrated.current) return
+    try {
+      if (keepEntries) {
+        window.localStorage.setItem(KEEP_ENTRIES_KEY, '1')
+        window.localStorage.setItem(ENTRIES_KEY, JSON.stringify({ date: getPhilippineDate(), values, clockIn: clockInTime }))
+      } else {
+        window.localStorage.removeItem(KEEP_ENTRIES_KEY)
+        window.localStorage.removeItem(ENTRIES_KEY)
+      }
+    } catch {
+      // Keeping entries is a convenience; ignore storage failures.
+    }
+  }, [keepEntries, values, clockInTime])
 
   useEffect(() => {
     let active = true
@@ -132,6 +169,24 @@ export default function Page() {
     }
   }
   function performReset() { setValues({ ...EMPTY_VALUES }); setClockInTime(getCurrentClockIn()); setConfirmReset(false); setFeedback('reset'); inputRefs.current[0]?.focus() }
+  async function copySummary() {
+    const lines = calculatedValues
+      .filter(({ value }) => value !== null && value > 0)
+      .map(({ workload, value }) => `${workload.label}: ${value} ${workload.unit}`)
+    const text = [
+      `SIF Tracker · ${getPhilippineDate()}`,
+      ...lines,
+      `Total work time: ${totalUnits > 0 ? formatDuration(totalSeconds) : '—'}`,
+      `Clock in: ${hasClockIn ? formatPhilippineTime(clockInTime, timeFormat) : '—'}`,
+      `Estimated clock out: ${clockOut}`,
+    ].join('\n')
+    try {
+      await navigator.clipboard.writeText(text)
+      setFeedback('copied')
+    } catch {
+      setFeedback('copyFailed')
+    }
+  }
   function openQuickGuide() { window.dispatchEvent(new Event('sif:open-welcome')) }
 
   return (
@@ -201,12 +256,12 @@ export default function Page() {
             </section>
           </div>
 
-          <section id="tools" className={`${CARD_CLASS} scroll-mt-20 p-4`} aria-labelledby="tools-heading"><div className="text-center sm:text-left"><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p><h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Manage today&apos;s workload.</p></div><button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button></section>
+          <section id="tools" className={`${CARD_CLASS} scroll-mt-20 p-4`} aria-labelledby="tools-heading"><div className="text-center sm:text-left"><p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">03 / Tools</p><h2 id="tools-heading" className="mt-1 text-sm font-semibold">Daily controls</h2><p className="mt-1 text-[9px] leading-4 text-muted-foreground">Manage today&apos;s workload.</p></div><button type="button" onClick={() => setConfirmReset(true)} className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><RotateCcw className="size-3" />Reset today&apos;s workload</button><button type="button" onClick={copySummary} className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><Copy className="size-3" />Copy day summary</button><label className="mt-3 flex items-center justify-between gap-3 text-[9px] font-semibold text-muted-foreground"><span>Keep today&apos;s entries after refresh</span><input type="checkbox" checked={keepEntries} onChange={(event) => setKeepEntries(event.target.checked)} className="size-4 accent-primary" /></label></section>
         </div>
 
         <footer className="flex flex-row items-center justify-center gap-4 border-t border-border pt-4 text-[8px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:justify-between sm:gap-1"><span>SIF Tracker</span><a href="https://github.com/nicolelodeontv" target="_blank" rel="noreferrer" className="transition hover:text-foreground hover:underline hover:underline-offset-2">Created by Nicole</a></footer>
       </div>
-      {feedback && <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status"><Check className="size-3 text-primary" />{feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : 'All workloads cleared'}</div>}
+      {feedback && <div className="fixed bottom-4 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-[10px] font-semibold shadow-lg" role="status"><Check className="size-3 text-primary" />{feedback === 'saved' ? 'Rates saved' : feedback === 'reset' ? 'Workload reset' : feedback === 'copied' ? 'Summary copied' : feedback === 'copyFailed' ? 'Could not copy summary' : 'All workloads cleared'}</div>}
       {settingsOpen && <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setSettingsOpen(false) }}><div className="w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl"><p id="settings-modal-title" className="sr-only">SIF Tracker settings</p><WorkloadSettings workloads={workloads} rates={rates} savedRates={savedRates} editingRate={editingRate} rateDraft={rateDraft} onAdjust={adjustRate} onBeginEdit={beginRateEdit} onDraftChange={setRateDraft} onCommitEdit={commitRateEdit} onCancelEdit={cancelRateEdit} onReset={resetRates} onSave={saveRates} onClose={() => setSettingsOpen(false)} /></div></div>}
       {confirmReset && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 p-4 backdrop-blur-[2px]" role="dialog" aria-modal="true" aria-labelledby="reset-title" onMouseDown={(event) => { if (event.currentTarget === event.target) setConfirmReset(false) }}><div className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-2xl"><div className="flex items-start justify-between gap-3"><div><p className="text-[8px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Confirm reset</p><h3 id="reset-title" className="mt-1 text-sm font-semibold">Reset today&apos;s workload?</h3><p className="mt-2 text-[10px] leading-5 text-muted-foreground">This clears all quantities and resets Clock In to the current PHT time.</p></div><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full p-1.5 text-muted-foreground transition hover:bg-accent hover:text-foreground" aria-label="Close reset confirmation"><X className="size-4" /></button></div><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={() => setConfirmReset(false)} className="rounded-full border border-border px-4 py-2 text-[9px] font-semibold text-muted-foreground transition hover:bg-accent hover:text-foreground">Cancel</button><button type="button" onClick={performReset} className="rounded-full bg-primary px-4 py-2 text-[9px] font-bold text-primary-foreground transition hover:bg-primary/90">Reset</button></div></div></div>}
       <ClockInPicker value={clockInTime} onChange={setClockInTime} />

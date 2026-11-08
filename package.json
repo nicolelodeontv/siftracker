@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "node --experimental-strip-types --test tests/calculator.test.mjs",
+    "test": "node --experimental-strip-types --import ./tests/register-alias.mjs --test tests/*.test.mjs",
     "check": "pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
